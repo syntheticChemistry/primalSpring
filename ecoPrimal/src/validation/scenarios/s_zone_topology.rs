@@ -248,6 +248,7 @@ fn validate_mesh_addresses(v: &mut ValidationResult) {
         ("pepti", "10.13.37.4"),
         ("eastGate", "10.13.37.5"),
         ("flockGate", "10.13.37.6"),
+        ("ironGate", "10.13.37.7"),
     ];
 
     for (gate, ip) in expected {
@@ -260,13 +261,7 @@ fn validate_mesh_addresses(v: &mut ValidationResult) {
     }
 
     // Unassigned gates should return None
-    let unpeered = [
-        "northGate",
-        "ironGate",
-        "strandGate",
-        "southGate",
-        "swiftGate",
-    ];
+    let unpeered = ["northGate", "strandGate", "southGate", "swiftGate"];
     for gate in &unpeered {
         v.check_bool(
             &format!("mesh:{gate}:unassigned"),

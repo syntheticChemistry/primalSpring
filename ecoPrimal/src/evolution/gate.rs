@@ -179,10 +179,27 @@ static MESH_REGISTRY: std::sync::LazyLock<Vec<MeshEntry>> = std::sync::LazyLock:
         .filter_map(|g| {
             let t = g.as_table()?;
             let name = t.get("name")?.as_str()?.to_owned();
-            let address = t.get("address").and_then(|v| v.as_str()).unwrap_or("").to_owned();
-            let role = t.get("role").and_then(|v| v.as_str()).unwrap_or("").to_owned();
-            let zone = t.get("zone").and_then(|v| v.as_str()).unwrap_or("").to_owned();
-            Some(MeshEntry { name, address, role, zone })
+            let address = t
+                .get("address")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_owned();
+            let role = t
+                .get("role")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_owned();
+            let zone = t
+                .get("zone")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_owned();
+            Some(MeshEntry {
+                name,
+                address,
+                role,
+                zone,
+            })
         })
         .collect()
 });

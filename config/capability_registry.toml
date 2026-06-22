@@ -806,6 +806,8 @@ owner = "songbird"
 methods = [
     "mesh.announce",
     "mesh.auto_discover",
+    "mesh.capabilities_announce",
+    "mesh.capabilities_query",
     "mesh.connect",
     "mesh.discover_remotes",
     "mesh.find_path",
