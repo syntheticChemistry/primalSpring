@@ -165,7 +165,13 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     } else {
         phase_prepare_runtime(&config, &socket_dir);
         phase_stop_existing(&config, &primals);
-        let s = phase_start_primals(&config, &primals, &mut nucleation, &family_seed_str, health_timeout);
+        let s = phase_start_primals(
+            &config,
+            &primals,
+            &mut nucleation,
+            &family_seed_str,
+            health_timeout,
+        );
         let h = phase_health_sweep(&config, &primals, &nucleation, health_timeout);
         (s, h)
     };
@@ -503,7 +509,10 @@ fn phase_registry_seeding(
     registered
 }
 
-#[expect(deprecated, reason = "SONGBIRD_PEERS fallback for backward compatibility")]
+#[expect(
+    deprecated,
+    reason = "SONGBIRD_PEERS fallback for backward compatibility"
+)]
 fn phase_peer_seeding(config: &LaunchConfig, nucleation: &SocketNucleation) {
     let discovery_owner = primalspring::composition::capability_to_primal("discovery");
     let songbird_port = registry::effective_port_for(discovery_owner, config.uds_only);

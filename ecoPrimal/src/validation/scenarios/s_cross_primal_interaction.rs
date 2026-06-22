@@ -19,7 +19,6 @@ use std::path::{Path, PathBuf};
 
 use crate::composition::CompositionContext;
 use crate::ipc::client::PrimalClient;
-use crate::primal_names;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -48,7 +47,19 @@ fn run_cross_primal_interaction(v: &mut ValidationResult, _ctx: &mut Composition
     phase_biomeos_neural(v, &dir);
 }
 
-const PRIMARY_PRIMALS: &[&str] = primal_names::Primal::ALL_SLUGS_NO_BIOMEOS;
+const PRIMARY_PRIMALS: &[&str] = &[
+    "barracuda",
+    "beardog",
+    "coralreef",
+    "loamspine",
+    "nestgate",
+    "rhizocrypt",
+    "skunkbat",
+    "songbird",
+    "squirrel",
+    "sweetgrass",
+    "toadstool",
+];
 
 fn phase_primary_primals(v: &mut ValidationResult, dir: &Path) {
     let mut alive = 0u32;
@@ -246,8 +257,7 @@ fn probe_health(sock: &Path, label: &str) -> ProbeResult {
 }
 
 fn socket_dir() -> Option<PathBuf> {
-    let runtime = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_owned());
-    let dir = PathBuf::from(runtime).join("biomeos");
+    let dir = crate::tolerances::platform::biomeos_socket_dir();
     dir.is_dir().then_some(dir)
 }
 

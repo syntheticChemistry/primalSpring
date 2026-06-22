@@ -126,7 +126,6 @@ impl LiveMeshConfig {
         let local_key = gates_table
             .keys()
             .find(|k| k.replace('-', "") == local_gate.replace('-', ""))
-            .or_else(|| gates_table.keys().find(|k| k.contains("east")))
             .cloned()
             .unwrap_or_else(|| local_gate.clone());
 

@@ -214,19 +214,8 @@ fn phase_degradation_tracking(v: &mut ValidationResult) {
 }
 
 fn socket_base_dir() -> Option<PathBuf> {
-    if let Ok(xdg) = std::env::var("XDG_RUNTIME_DIR") {
-        let xdg_path = PathBuf::from(&xdg).join("biomeos");
-        if xdg_path.is_dir() {
-            return Some(xdg_path);
-        }
-    }
-    let id_output = std::process::Command::new("id").arg("-u").output().ok()?;
-    let uid = String::from_utf8_lossy(&id_output.stdout).trim().to_owned();
-    let runtime = PathBuf::from(format!("/run/user/{uid}/biomeos"));
-    if runtime.is_dir() {
-        return Some(runtime);
-    }
-    None
+    let dir = crate::tolerances::platform::biomeos_socket_dir();
+    dir.is_dir().then_some(dir)
 }
 
 #[cfg(test)]

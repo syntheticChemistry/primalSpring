@@ -271,8 +271,7 @@ fn phase_provenance_socket(v: &mut ValidationResult, dir: &Path) {
 }
 
 fn socket_dir() -> Option<PathBuf> {
-    let runtime = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/run/user/1000".to_owned());
-    let dir = PathBuf::from(runtime).join("biomeos");
+    let dir = crate::tolerances::platform::biomeos_socket_dir();
     dir.is_dir().then_some(dir)
 }
 

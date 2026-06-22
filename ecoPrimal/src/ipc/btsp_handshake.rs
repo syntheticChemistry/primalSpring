@@ -330,12 +330,15 @@ pub fn negotiate_phase3(
         return Ok(None);
     }
 
-    let result = resp.get("result").ok_or_else(|| IpcError::ProtocolError {
-        detail: "BTSP Phase 3: negotiate response missing 'result'".to_owned(),
-    })?;
+    let result = resp
+        .get("result")
+        .cloned()
+        .ok_or_else(|| IpcError::ProtocolError {
+            detail: "BTSP Phase 3: negotiate response missing 'result'".to_owned(),
+        })?;
 
     let negotiate_resp: NegotiateResponse =
-        serde_json::from_value(result.clone()).map_err(|e| IpcError::ProtocolError {
+        serde_json::from_value(result).map_err(|e| IpcError::ProtocolError {
             detail: format!("BTSP Phase 3 NegotiateResponse parse: {e}"),
         })?;
 
