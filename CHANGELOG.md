@@ -3,7 +3,20 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased] — Waves 109–114: guideStone Convergence + Sovereign Compute (2026-06-11–15)
+## [0.9.33] — Wave 123: Cross-Gate Scenarios + Deep Debt Zero (2026-06-22)
+
+### Wave 123: Cross-Gate Trust + Deep Debt Resolution (June 22)
+- **3 new validation scenarios** — `s_btsp_cross_gate_trust`, `s_mesh_capability_propagation`,
+  `s_cross_gate_compute_dispatch`. 99 total scenarios (12 tracks, 3 tiers).
+- **1000 lib tests passing** — P1 goal achieved.
+- **Deep debt zero** — All `too_many_lines` suppressions eliminated via function decomposition
+  (`certification/btsp.rs`, `nucleus_launcher/orchestrator`, `validate_nucleus.rs`).
+  Zero clippy warnings, zero unsafe blocks, zero hardcoded assumptions.
+- **5-node mesh** — ironGate (.7) enrolled with WG address in `mesh_topology.toml`.
+- **Capability registry** — `auth.trust_issuer` and `[fleet]` domain added.
+- **SSOT slug arrays + clone reduction** — Slugs now single-source constants.
+
+## [0.9.32] — Waves 109–114: guideStone Convergence + Sovereign Compute (2026-06-11–15)
 
 ### Wave 114: Validation Tooling + Bootstrap Readiness (June 15)
 - **`nucleus_launcher validate` subcommand** — Run validation scenarios against a live NUCLEUS

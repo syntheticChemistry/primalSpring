@@ -10,11 +10,11 @@ been consolidated upstream.
 
 | Item | Current |
 |------|---------|
-| **Wave** | 111 |
-| **Tests** | 1005 (910 lib + 20 ecosystem + 16 experiment + 59 doc) |
+| **Wave** | 123 |
+| **Tests** | 1000 lib (+ experiment + doc) |
 | **Experiments** | 96 (21 tracks) |
-| **Scenarios** | 60 (11 tracks, 3 tiers) |
-| **Compositions** | 100 graph TOMLs (~67 deploy + 33 compositions) |
+| **Scenarios** | 99 (12 tracks, 3 tiers) |
+| **Compositions** | 114 graph TOMLs (~80 deploy + 34 compositions) |
 | **Methods** | 490+ registered capability methods |
 
 ## See Also

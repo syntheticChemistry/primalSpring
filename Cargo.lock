@@ -500,7 +500,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring"
-version = "0.9.32"
+version = "0.9.33"
 dependencies = [
  "base64",
  "blake3",
@@ -1259,7 +1259,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp112"
-version = "0.9.30"
+version = "0.9.33"
 dependencies = [
  "primalspring",
  "serde",
@@ -1268,7 +1268,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp113"
-version = "0.9.30"
+version = "0.9.33"
 dependencies = [
  "primalspring",
  "serde",
@@ -1277,7 +1277,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp114"
-version = "0.9.30"
+version = "0.9.33"
 dependencies = [
  "primalspring",
  "serde",
@@ -1286,7 +1286,7 @@ dependencies = [
 
 [[package]]
 name = "primalspring-exp115"
-version = "0.9.30"
+version = "0.9.33"
 dependencies = [
  "primalspring",
  "serde",

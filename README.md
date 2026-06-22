@@ -5,15 +5,15 @@
 | | |
 |-|-|
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
-| **Version** | 0.9.32 |
+| **Version** | 0.9.33 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 1000 lib (+ experiment + doc) |
 | **Experiments** | 96 (21 tracks) — 99 validation scenarios (12 tracks, 3 tiers) |
-| **Deploy Graphs** | 100 graph TOMLs (~67 deploy + 33 compositions) — fragment-first with `resolve = true` |
+| **Deploy Graphs** | 101 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
-| **Mesh** | 4-node sovereign relay (golgi ↔ sporeGate ↔ eastGate ↔ flockGate). WG overlay 10.13.37.0/24. TOML-driven topology (`config/mesh_topology.toml`). K-Derm cytoplasm zones: backbone/house2/garage/wan. Three-hub triangle topology. Live overlay validation (s_mesh_overlay). |
+| **Mesh** | 5-node sovereign relay (golgi ↔ sporeGate ↔ eastGate ↔ flockGate ↔ ironGate). WG overlay 10.13.37.0/24. TOML-driven topology (`config/mesh_topology.toml`). K-Derm cytoplasm zones: backbone/house2/garage/wan. Three-hub triangle topology. Live overlay validation (s_mesh_overlay). |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`). `#![warn(missing_docs)]` enforced. |
@@ -471,7 +471,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
 **57/57 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–67 complete).
 
-## Live Integration Status (June 21, 2026)
+## Live Integration Status (June 22, 2026)
 
 **13/13 primals ALIVE** on eastGate + flockGate (plasmidBin-only, post-primordial).
 Zero debt, 13/13 BTSP Phase 3 FULL AEAD, 13/13 MethodGate adopted.
