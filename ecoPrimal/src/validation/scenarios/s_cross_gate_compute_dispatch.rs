@@ -266,4 +266,28 @@ mod tests {
         let iron = gates.iter().find(|g| g.name == "ironGate");
         assert!(iron.is_some(), "ironGate should be in mesh_topology.toml");
     }
+
+    #[test]
+    fn irongate_has_wg_address() {
+        let addr = mesh_address("ironGate");
+        assert_eq!(addr, Some("10.13.37.7"), "ironGate WG address should be .7");
+    }
+
+    #[test]
+    fn compute_methods_in_registry() {
+        assert!(REGISTRY_TOML.contains("compute.dispatch"));
+        assert!(REGISTRY_TOML.contains("fleet.submit") || REGISTRY_TOML.contains("fleet.status"));
+    }
+
+    #[test]
+    fn shader_domain_resolves() {
+        let primal = capability_to_primal("shader");
+        assert!(!primal.is_empty(), "shader domain should resolve");
+    }
+
+    #[test]
+    fn ml_domain_resolves() {
+        let primal = capability_to_primal("ml");
+        assert!(!primal.is_empty(), "ml domain should resolve");
+    }
 }

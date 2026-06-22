@@ -283,4 +283,29 @@ mod tests {
         let gates = all_mesh_gates();
         assert!(!gates.is_empty(), "mesh_topology.toml should have gates");
     }
+
+    #[test]
+    fn auth_trust_issuer_in_registry() {
+        assert!(REGISTRY_TOML.contains("auth.trust_issuer"));
+    }
+
+    #[test]
+    fn auth_verify_ionic_in_registry() {
+        assert!(REGISTRY_TOML.contains("auth.verify_ionic"));
+    }
+
+    #[test]
+    fn multi_gate_mesh_count() {
+        let gates = all_mesh_gates();
+        let meshed = gates.iter().filter(|g| !g.address.is_empty()).count();
+        assert!(meshed >= 3, "need ≥3 meshed gates, got {meshed}");
+    }
+
+    #[test]
+    fn trust_related_methods_coverage() {
+        let trust_methods = ["auth.issue_ionic", "btsp.capabilities", "btsp.negotiate"];
+        for method in trust_methods {
+            assert!(REGISTRY_TOML.contains(method), "{method} missing from registry");
+        }
+    }
 }

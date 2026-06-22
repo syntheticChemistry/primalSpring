@@ -327,6 +327,7 @@ methods = [
     "auth.issue_session",  # BearDog JH-4: purpose-based token issuance
     "auth.mode",
     "auth.peer_info",
+    "auth.trust_issuer",
     "auth.verify_ionic",
 ]
 
@@ -619,6 +620,14 @@ methods = [
 owner = "toadstool"
 methods = [
     "dispatch.submit",
+]
+
+[fleet]
+owner = "toadstool"
+methods = [
+    "fleet.status",
+    "fleet.submit",
+    "fleet.nodes",
 ]
 
 [toadstool]
