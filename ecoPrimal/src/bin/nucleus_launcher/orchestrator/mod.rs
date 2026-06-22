@@ -133,21 +133,83 @@ fn capability_ordered_primals(atomic: AtomicType) -> Vec<&'static str> {
 
 /// Execute the full NUCLEUS launch sequence.
 #[expect(
-    clippy::too_many_lines,
-    reason = "orchestration phases are sequential; splitting loses readability"
-)]
-#[expect(
     clippy::needless_pass_by_value,
     reason = "config is consumed; caller never reuses it"
-)]
-#[expect(
-    deprecated,
-    reason = "SONGBIRD_PEERS fallback for backward compatibility"
 )]
 pub fn run(config: LaunchConfig) -> LaunchResult {
     let primals = ordered_primals(config.atomic);
     let total = primals.len();
 
+    print_banner(&config, &primals);
+
+    if let Some(early) = phase_preflight(&config, &primals, total) {
+        return early;
+    }
+
+    let runtime_dir = tolerances::runtime_dir();
+    let socket_dir = PathBuf::from(&runtime_dir).join(primalspring::env_keys::BIOMEOS_SUBDIR);
+    let _ = std::fs::create_dir_all(&socket_dir);
+
+    let family_seed = spawn::resolve_family_seed(&socket_dir);
+    let family_seed_str = String::from_utf8_lossy(&family_seed).to_string();
+
+    let seed_file = socket_dir.join(".family.seed");
+    let _ = std::fs::write(&seed_file, &family_seed);
+
+    let mut nucleation = SocketNucleation::new(PathBuf::from(&runtime_dir));
+    nucleation.set_family_seed(family_seed);
+
+    let health_timeout = Duration::from_secs(config.health_timeout_secs);
+    let (started, healthy) = if config.seed_only {
+        (0, 0)
+    } else {
+        phase_prepare_runtime(&config, &socket_dir);
+        phase_stop_existing(&config, &primals);
+        let s = phase_start_primals(&config, &primals, &mut nucleation, &family_seed_str, health_timeout);
+        let h = phase_health_sweep(&config, &primals, &nucleation, health_timeout);
+        (s, h)
+    };
+
+    let registered = phase_registry_seeding(&config, &primals, &nucleation);
+    phase_peer_seeding(&config, &nucleation);
+
+    println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
+    println!("\x1b[36m  NUCLEUS Ready\x1b[0m");
+    println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
+    println!();
+    println!("  Composition: {:?}", config.atomic);
+    println!("  Family:      {}", config.family_id);
+    println!("  Node:        {}", config.node_id);
+    println!();
+
+    if config.validate && !config.dry_run {
+        phase_validate(&config);
+    }
+
+    let success = if config.dry_run {
+        true
+    } else if config.allow_degraded {
+        started == total && healthy >= total / 2
+    } else {
+        started == total && healthy == total
+    };
+
+    if !success && !config.dry_run && !config.no_rollback {
+        println!("\x1b[31m=== Launch FAILED — rolling back ===\x1b[0m");
+        stop_all(&primals);
+        println!();
+    }
+
+    LaunchResult {
+        success,
+        started,
+        healthy,
+        registered,
+        total,
+    }
+}
+
+fn print_banner(config: &LaunchConfig, primals: &[&str]) {
     println!();
     println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
     println!("\x1b[36m  NUCLEUS Launcher (Rust)\x1b[0m");
@@ -167,177 +229,192 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     );
     println!("  Dark Forest: {}", config.dark_forest);
     println!();
+}
 
-    // Phase 0: Pre-flight validation
-    if !config.skip_preflight && !config.dry_run {
-        let pf = preflight::run_preflight(&primals, config.uds_only);
-        if !pf.passed {
-            println!("\x1b[31mPre-flight FAILED — aborting launch.\x1b[0m");
-            if !pf.binary_missing.is_empty() {
-                println!("  Missing binaries: {}", pf.binary_missing.join(", "));
-                println!("  Run: plasmidbin sync   (or set ECOPRIMALS_ROOT)");
+fn phase_preflight(config: &LaunchConfig, primals: &[&str], total: usize) -> Option<LaunchResult> {
+    if config.skip_preflight || config.dry_run {
+        return None;
+    }
+    let pf = preflight::run_preflight(primals, config.uds_only);
+    if pf.passed {
+        return None;
+    }
+    println!("\x1b[31mPre-flight FAILED — aborting launch.\x1b[0m");
+    if !pf.binary_missing.is_empty() {
+        println!("  Missing binaries: {}", pf.binary_missing.join(", "));
+        println!("  Run: plasmidbin sync   (or set ECOPRIMALS_ROOT)");
+    }
+    if !pf.port_conflicts.is_empty() {
+        println!("  Port conflicts detected — fix ports.env");
+    }
+    println!();
+    Some(LaunchResult {
+        success: false,
+        started: 0,
+        healthy: 0,
+        registered: 0,
+        total,
+    })
+}
+
+fn phase_prepare_runtime(config: &LaunchConfig, socket_dir: &std::path::Path) {
+    let runtime_dir = tolerances::runtime_dir();
+    info!("Phase 1: Prepare runtime");
+    println!("=== Phase 1: Prepare runtime ===");
+    println!("  Runtime: {runtime_dir}");
+    println!("  Sockets: {}", socket_dir.display());
+    if let Some(fed_port) = config.federation_port {
+        println!("  Federation: TCP :{fed_port} (LAN mesh enabled)");
+    } else {
+        println!("  Federation: disabled (UDS-only, no LAN mesh)");
+    }
+    println!();
+}
+
+fn phase_stop_existing(config: &LaunchConfig, primals: &[&str]) {
+    println!(
+        "=== Phase 2: Stop existing primals (family: {}) ===",
+        config.family_id
+    );
+    if !config.dry_run {
+        for primal in primals {
+            spawn::stop_existing_family(primal, &config.family_id);
+        }
+        std::thread::sleep(Duration::from_secs(1));
+    }
+    println!("  Cleared.");
+    println!();
+}
+
+fn phase_start_primals(
+    config: &LaunchConfig,
+    primals: &[&str],
+    nucleation: &mut SocketNucleation,
+    family_seed_str: &str,
+    health_timeout: Duration,
+) -> usize {
+    println!("=== Phase 3: Start primals (dependency order) ===");
+    println!();
+
+    let mut started = 0usize;
+    for primal in primals {
+        let port = registry::effective_port_for(primal, config.uds_only);
+        let socket = nucleation.assign(primal, &config.family_id);
+
+        if config.uds_only {
+            print!("  {primal:<14} uds-only    ");
+        } else {
+            print!("  {primal:<14} tcp={port:<5} ");
+        }
+
+        if config.dry_run {
+            println!("\x1b[33m[dry-run]\x1b[0m");
+            started += 1;
+            continue;
+        }
+
+        match spawn::spawn_primal(primal, port, &socket, config, family_seed_str) {
+            Ok(()) => {
+                std::thread::sleep(Duration::from_secs(3));
+                if port > 0 {
+                    match registry::health_check_tcp(port, health_timeout) {
+                        registry::ProbeResult::Healthy => println!("\x1b[32mALIVE\x1b[0m"),
+                        registry::ProbeResult::Reachable => {
+                            println!("\x1b[32mALIVE\x1b[0m (no health method)");
+                        }
+                        registry::ProbeResult::Unreachable => {
+                            println!("\x1b[33mSTARTED\x1b[0m (health probe pending)");
+                        }
+                    }
+                } else {
+                    println!("\x1b[32mSTARTED\x1b[0m (UDS)");
+                }
+                started += 1;
             }
-            if !pf.port_conflicts.is_empty() {
-                println!("  Port conflicts detected — fix ports.env");
+            Err(e) => {
+                println!("\x1b[31mFAIL\x1b[0m ({e})");
             }
-            println!();
-            return LaunchResult {
-                success: false,
-                started: 0,
-                healthy: 0,
-                registered: 0,
-                total,
-            };
         }
     }
 
-    let runtime_dir = tolerances::runtime_dir();
-    let socket_dir = PathBuf::from(&runtime_dir).join(primalspring::env_keys::BIOMEOS_SUBDIR);
-    let _ = std::fs::create_dir_all(&socket_dir);
+    println!();
+    println!("  Started: {started} / {}", primals.len());
+    println!();
+    started
+}
 
-    let family_seed = spawn::resolve_family_seed(&socket_dir);
-    let family_seed_str = String::from_utf8_lossy(&family_seed).to_string();
-
-    let seed_file = socket_dir.join(".family.seed");
-    let _ = std::fs::write(&seed_file, &family_seed);
-
-    let mut nucleation = SocketNucleation::new(PathBuf::from(&runtime_dir));
-    nucleation.set_family_seed(family_seed);
-
-    let health_timeout = Duration::from_secs(config.health_timeout_secs);
-    let mut started = 0usize;
+fn phase_health_sweep(
+    config: &LaunchConfig,
+    primals: &[&str],
+    nucleation: &SocketNucleation,
+    health_timeout: Duration,
+) -> usize {
+    println!("=== Phase 4: Health sweep ===");
     let mut healthy = 0usize;
 
-    if !config.seed_only {
-        info!("Phase 1: Prepare runtime");
-        println!("=== Phase 1: Prepare runtime ===");
-        println!("  Runtime: {runtime_dir}");
-        println!("  Sockets: {}", socket_dir.display());
-        if let Some(fed_port) = config.federation_port {
-            println!("  Federation: TCP :{fed_port} (LAN mesh enabled)");
+    for primal in primals {
+        let port = registry::effective_port_for(primal, config.uds_only);
+
+        if config.uds_only {
+            print!("  {primal:<14} uds  ");
         } else {
-            println!("  Federation: disabled (UDS-only, no LAN mesh)");
-        }
-        println!();
-
-        println!(
-            "=== Phase 2: Stop existing primals (family: {}) ===",
-            config.family_id
-        );
-        if !config.dry_run {
-            for primal in &primals {
-                spawn::stop_existing_family(primal, &config.family_id);
-            }
-            std::thread::sleep(Duration::from_secs(1));
-        }
-        println!("  Cleared.");
-        println!();
-
-        println!("=== Phase 3: Start primals (dependency order) ===");
-        println!();
-
-        for primal in &primals {
-            let port = registry::effective_port_for(primal, config.uds_only);
-            let socket = nucleation.assign(primal, &config.family_id);
-
-            if config.uds_only {
-                print!("  {primal:<14} uds-only    ");
-            } else {
-                print!("  {primal:<14} tcp={port:<5} ");
-            }
-
-            if config.dry_run {
-                println!("\x1b[33m[dry-run]\x1b[0m");
-                started += 1;
-                continue;
-            }
-
-            match spawn::spawn_primal(primal, port, &socket, &config, &family_seed_str) {
-                Ok(()) => {
-                    std::thread::sleep(Duration::from_secs(3));
-                    if port > 0 {
-                        match registry::health_check_tcp(port, health_timeout) {
-                            registry::ProbeResult::Healthy => println!("\x1b[32mALIVE\x1b[0m"),
-                            registry::ProbeResult::Reachable => {
-                                println!("\x1b[32mALIVE\x1b[0m (no health method)");
-                            }
-                            registry::ProbeResult::Unreachable => {
-                                println!("\x1b[33mSTARTED\x1b[0m (health probe pending)");
-                            }
-                        }
-                    } else {
-                        println!("\x1b[32mSTARTED\x1b[0m (UDS)");
-                    }
-                    started += 1;
-                }
-                Err(e) => {
-                    println!("\x1b[31mFAIL\x1b[0m ({e})");
-                }
-            }
+            print!("  {primal:<14} :{port}  ");
         }
 
-        println!();
-        println!("  Started: {started} / {total}");
-        println!();
+        if config.dry_run {
+            println!("\x1b[33m[dry-run]\x1b[0m");
+            healthy += 1;
+            continue;
+        }
 
-        println!("=== Phase 4: Health sweep ===");
-        for primal in &primals {
-            let port = registry::effective_port_for(primal, config.uds_only);
-
-            if config.uds_only {
-                print!("  {primal:<14} uds  ");
-            } else {
-                print!("  {primal:<14} :{port}  ");
-            }
-
-            if config.dry_run {
-                println!("\x1b[33m[dry-run]\x1b[0m");
-                healthy += 1;
-                continue;
-            }
-
-            if port > 0 {
-                match registry::health_check_tcp(port, health_timeout) {
-                    registry::ProbeResult::Healthy => {
-                        println!("\x1b[32mHEALTHY\x1b[0m");
-                        healthy += 1;
-                    }
-                    registry::ProbeResult::Reachable => {
-                        println!("\x1b[32mALIVE\x1b[0m (no health method)");
-                        healthy += 1;
-                    }
-                    registry::ProbeResult::Unreachable => {
-                        let log_hint = PathBuf::from(tolerances::runtime_dir())
-                            .join(primalspring::env_keys::BIOMEOS_SUBDIR)
-                            .join("logs")
-                            .join(format!("{primal}.log"));
-                        println!("\x1b[31mUNREACHABLE\x1b[0m  (check {})", log_hint.display());
-                    }
-                }
-            } else if config.uds_only {
-                let socket = nucleation.get(primal, &config.family_id);
-                let alive = socket.as_ref().is_some_and(|s| s.exists());
-                if alive {
-                    println!("\x1b[32mSOCKET LIVE\x1b[0m");
+        if port > 0 {
+            match registry::health_check_tcp(port, health_timeout) {
+                registry::ProbeResult::Healthy => {
+                    println!("\x1b[32mHEALTHY\x1b[0m");
                     healthy += 1;
-                } else {
+                }
+                registry::ProbeResult::Reachable => {
+                    println!("\x1b[32mALIVE\x1b[0m (no health method)");
+                    healthy += 1;
+                }
+                registry::ProbeResult::Unreachable => {
                     let log_hint = PathBuf::from(tolerances::runtime_dir())
                         .join(primalspring::env_keys::BIOMEOS_SUBDIR)
                         .join("logs")
                         .join(format!("{primal}.log"));
-                    println!(
-                        "\x1b[31mSOCKET ABSENT\x1b[0m  (check {})",
-                        log_hint.display()
-                    );
+                    println!("\x1b[31mUNREACHABLE\x1b[0m  (check {})", log_hint.display());
                 }
             }
+        } else if config.uds_only {
+            let socket = nucleation.get(primal, &config.family_id);
+            let alive = socket.as_ref().is_some_and(|s| s.exists());
+            if alive {
+                println!("\x1b[32mSOCKET LIVE\x1b[0m");
+                healthy += 1;
+            } else {
+                let log_hint = PathBuf::from(tolerances::runtime_dir())
+                    .join(primalspring::env_keys::BIOMEOS_SUBDIR)
+                    .join("logs")
+                    .join(format!("{primal}.log"));
+                println!(
+                    "\x1b[31mSOCKET ABSENT\x1b[0m  (check {})",
+                    log_hint.display()
+                );
+            }
         }
-
-        println!();
-        println!("  Healthy: {healthy} / {total}");
-        println!();
     }
 
+    println!();
+    println!("  Healthy: {healthy} / {}", primals.len());
+    println!();
+    healthy
+}
+
+fn phase_registry_seeding(
+    config: &LaunchConfig,
+    primals: &[&str],
+    nucleation: &SocketNucleation,
+) -> usize {
     println!("=== Phase 5: Registry seeding (discovery ipc.register) ===");
     let discovery_owner = primalspring::composition::capability_to_primal("discovery");
     let songbird_port = registry::effective_port_for(discovery_owner, config.uds_only);
@@ -360,7 +437,7 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     let mut registered = 0usize;
     let capability_map = registry::build_capability_map();
 
-    for primal in &primals {
+    for primal in primals {
         if *primal == discovery_owner {
             continue;
         }
@@ -423,6 +500,21 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
     println!();
     println!("  Registered: {registered}");
     println!();
+    registered
+}
+
+#[expect(deprecated, reason = "SONGBIRD_PEERS fallback for backward compatibility")]
+fn phase_peer_seeding(config: &LaunchConfig, nucleation: &SocketNucleation) {
+    let discovery_owner = primalspring::composition::capability_to_primal("discovery");
+    let songbird_port = registry::effective_port_for(discovery_owner, config.uds_only);
+    let songbird_uds: Option<&std::path::Path> = if config.uds_only {
+        nucleation
+            .get(discovery_owner, &config.family_id)
+            .filter(|s| s.exists())
+            .map(std::path::PathBuf::as_path)
+    } else {
+        None
+    };
 
     let peer_list: Vec<String> = if config.peers.is_empty() {
         std::env::var(env_keys::MESH_PEERS)
@@ -438,10 +530,10 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
 
     if !peer_list.is_empty() {
         println!("=== Phase 5b: Peer seeding (cross-gate mesh) ===");
-        let seeded = match songbird_uds {
-            Some(uds) => registry::seed_discovery_peers_uds(uds, &peer_list, &config.node_id),
-            None => registry::seed_discovery_peers(songbird_port, &peer_list, &config.node_id),
-        };
+        let seeded = songbird_uds.map_or_else(
+            || registry::seed_discovery_peers(songbird_port, &peer_list, &config.node_id),
+            |uds| registry::seed_discovery_peers_uds(uds, &peer_list, &config.node_id),
+        );
         if seeded > 0 {
             println!(
                 "  \x1b[32mSeeded {seeded} peer(s)\x1b[0m: {}",
@@ -455,52 +547,21 @@ pub fn run(config: LaunchConfig) -> LaunchResult {
         }
         println!();
     }
+}
 
-    println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
-    println!("\x1b[36m  NUCLEUS Ready\x1b[0m");
-    println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
-    println!();
-    println!("  Composition: {:?}", config.atomic);
-    println!("  Family:      {}", config.family_id);
-    println!("  Node:        {}", config.node_id);
-    println!();
-
-    if config.validate && !config.dry_run {
-        println!("\x1b[36m=== Phase 6: Composition Validation ===\x1b[0m");
-        let result = primalspring::coordination::validate_composition_ctx(config.atomic);
-        if result.all_healthy {
-            println!("  \x1b[32mPASS\x1b[0m — all primals healthy");
-        } else {
-            println!("  \x1b[31mFAIL\x1b[0m — some primals unhealthy");
-            for p in &result.primals {
-                let status = if p.health_ok { "UP" } else { "DOWN" };
-                println!("    [{status}] {}", p.name);
-            }
-        }
-        println!();
-    }
-
-    let success = if config.dry_run {
-        true
-    } else if config.allow_degraded {
-        started == total && healthy >= total / 2
+fn phase_validate(config: &LaunchConfig) {
+    println!("\x1b[36m=== Phase 6: Composition Validation ===\x1b[0m");
+    let result = primalspring::coordination::validate_composition_ctx(config.atomic);
+    if result.all_healthy {
+        println!("  \x1b[32mPASS\x1b[0m — all primals healthy");
     } else {
-        started == total && healthy == total
-    };
-
-    if !success && !config.dry_run && !config.no_rollback {
-        println!("\x1b[31m=== Launch FAILED — rolling back ===\x1b[0m");
-        stop_all(&primals);
-        println!();
+        println!("  \x1b[31mFAIL\x1b[0m — some primals unhealthy");
+        for p in &result.primals {
+            let status = if p.health_ok { "UP" } else { "DOWN" };
+            println!("    [{status}] {}", p.name);
+        }
     }
-
-    LaunchResult {
-        success,
-        started,
-        healthy,
-        registered,
-        total,
-    }
+    println!();
 }
 
 /// Stop all primals in the given list (reverse dependency order).

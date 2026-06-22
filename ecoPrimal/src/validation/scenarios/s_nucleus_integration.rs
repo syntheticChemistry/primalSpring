@@ -20,6 +20,7 @@
 use std::path::PathBuf;
 
 use crate::composition::CompositionContext;
+use crate::primal_names;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -177,22 +178,10 @@ fn phase_socket_alignment(v: &mut ValidationResult) {
         &format!("{} .sock files in biomeos dir", entries.len()),
     );
 
-    let expected_primals = [
-        "barracuda",
-        "skunkbat",
-        "squirrel",
-        "sweetgrass",
-        "loamspine",
-        "rhizocrypt",
-        "petaltongue",
-        "toadstool",
-        "coralreef",
-        "beardog",
-        "songbird",
-    ];
+    let expected_primals = primal_names::Primal::ALL_SLUGS;
 
     let mut matched = 0usize;
-    for primal in &expected_primals {
+    for primal in expected_primals {
         let sock_name = format!("{primal}.sock");
         if entries.iter().any(|e| e == &sock_name) {
             matched += 1;

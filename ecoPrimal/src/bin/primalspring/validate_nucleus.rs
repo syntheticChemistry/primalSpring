@@ -157,10 +157,6 @@ impl NucleusGate {
         );
     }
 
-    #[expect(
-        clippy::too_many_lines,
-        reason = "NUCLEUS launch and startup polling sequence"
-    )]
     fn tier1_launch(&mut self) {
         self.v.section("Tier 1: NUCLEUS Launch");
 
@@ -219,7 +215,10 @@ impl NucleusGate {
             .check_bool("nucleus-spawn", true, &format!("PID {pid}"));
 
         self.nucleus_child = Some(child);
+        self.poll_startup(pid);
+    }
 
+    fn poll_startup(&mut self, pid: u32) {
         let start = Instant::now();
         let mut neural_up = false;
         while start.elapsed() < LAUNCH_TIMEOUT {

@@ -14,12 +14,19 @@
 //! 4. Live: ToadStool/BarraCuda health probing for dispatch readiness
 
 use crate::composition::{CompositionContext, capability_to_primal, method_to_capability_domain};
+use crate::primal_names;
 use crate::evolution::{all_mesh_gates, mesh_address};
 use crate::tolerances::ports;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
 const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
+
+const COMPUTE_PRIMALS: &[&str] = &[
+    primal_names::TOADSTOOL,
+    primal_names::BARRACUDA,
+    primal_names::CORALREEF,
+];
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -79,8 +86,7 @@ fn phase_structural(v: &mut ValidationResult) {
         );
     }
 
-    let compute_primals = ["toadstool", "barracuda", "coralreef"];
-    for slug in compute_primals {
+    for slug in COMPUTE_PRIMALS {
         let port = ports::default_port_for(slug);
         v.check_bool(
             &format!("struct:{slug}_port_assigned"),
@@ -254,7 +260,7 @@ mod tests {
 
     #[test]
     fn node_primals_have_ports() {
-        for slug in ["toadstool", "barracuda", "coralreef"] {
+        for slug in COMPUTE_PRIMALS {
             let port = ports::default_port_for(slug);
             assert!(port > 0, "{slug} should have a non-zero port");
         }

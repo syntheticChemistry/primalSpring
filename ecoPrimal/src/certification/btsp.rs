@@ -370,10 +370,6 @@ fn validate_ed25519_verify(
 /// Validate that the method gate (JH-0) is wired into the primalSpring
 /// dispatcher. Calls `auth.mode` and `auth.peer_info` to verify the gate
 /// is active and reports its configuration.
-#[expect(
-    clippy::too_many_lines,
-    reason = "validation function with sequential IPC checks; splitting loses narrative"
-)]
 pub fn validate_method_gate(v: &mut ValidationResult) {
     use crate::ipc::client::PrimalClient;
     use crate::ipc::discover;
@@ -406,7 +402,14 @@ pub fn validate_method_gate(v: &mut ValidationResult) {
         }
     };
 
-    // auth.mode — verify gate responds
+    validate_auth_mode(v, &mut client);
+    validate_peer_info(v, &mut client);
+    validate_whitelist(v, &mut client);
+    validate_auth_check_shape(v, &mut client);
+    validate_protected_access(v, &mut client);
+}
+
+fn validate_auth_mode(v: &mut ValidationResult, client: &mut crate::ipc::client::PrimalClient) {
     match client.call("auth.mode", serde_json::Value::Null) {
         Ok(resp) if resp.is_success() => {
             let mode = resp
@@ -451,8 +454,9 @@ pub fn validate_method_gate(v: &mut ValidationResult) {
             v.check_skip("security:method_gate:mode", "call failed");
         }
     }
+}
 
-    // auth.peer_info — verify peer credential extraction
+fn validate_peer_info(v: &mut ValidationResult, client: &mut crate::ipc::client::PrimalClient) {
     match client.call("auth.peer_info", serde_json::Value::Null) {
         Ok(resp) if resp.is_success() => {
             let origin = resp
@@ -482,9 +486,9 @@ pub fn validate_method_gate(v: &mut ValidationResult) {
             );
         }
     }
+}
 
-    // Whitelist validation: public methods should be accessible,
-    // verify health.check still works through the gate
+fn validate_whitelist(v: &mut ValidationResult, client: &mut crate::ipc::client::PrimalClient) {
     match client.call("health.check", serde_json::Value::Null) {
         Ok(resp) if resp.is_success() => {
             v.check_bool(
@@ -508,9 +512,12 @@ pub fn validate_method_gate(v: &mut ValidationResult) {
             );
         }
     }
+}
 
-    // auth.check enrichment — verify scope/verified fields in response
-    // (JH-11 evolution: auth.check now returns scope detail when token present)
+fn validate_auth_check_shape(
+    v: &mut ValidationResult,
+    client: &mut crate::ipc::client::PrimalClient,
+) {
     match client.call("auth.check", serde_json::Value::Null) {
         Ok(resp) if resp.is_success() => {
             let result = resp.result.as_ref();
@@ -549,9 +556,12 @@ pub fn validate_method_gate(v: &mut ValidationResult) {
             );
         }
     }
+}
 
-    // Token-gated call validation — verify PERMISSION_DENIED for protected
-    // method in enforced mode without token
+fn validate_protected_access(
+    v: &mut ValidationResult,
+    client: &mut crate::ipc::client::PrimalClient,
+) {
     match client.call("coordination.validate_composition", serde_json::Value::Null) {
         Ok(resp) if resp.is_success() => {
             v.check_bool(

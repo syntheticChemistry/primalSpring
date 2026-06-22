@@ -179,7 +179,7 @@ impl IonicContractRegistry {
 
         let now = iso_now();
         contract.state = ContractState::Active;
-        contract.negotiated_constraints = constraints.clone();
+        contract.negotiated_constraints.clone_from(&constraints);
         contract.accepted_at = Some(now);
 
         if contract.proposal.duration_secs > 0 {
@@ -270,7 +270,8 @@ impl IonicContractRegistry {
         if !contract
             .usage
             .distinct_methods
-            .contains(&capability.to_owned())
+            .iter()
+            .any(|m| m == capability)
         {
             contract.usage.distinct_methods.push(capability.to_owned());
         }
@@ -289,14 +290,15 @@ impl IonicContractRegistry {
         &mut self,
         modification: &ScopeModification,
     ) -> Result<&IonicContract, IonicProtocolError> {
+        let contract_id = &modification.contract_id;
         let contract = self
             .contracts
-            .get_mut(&modification.contract_id)
-            .ok_or_else(|| IonicProtocolError::NotFound(modification.contract_id.clone()))?;
+            .get_mut(contract_id.as_str())
+            .ok_or_else(|| IonicProtocolError::NotFound(contract_id.clone()))?;
 
         if contract.state != ContractState::Active {
             return Err(IonicProtocolError::InvalidTransition {
-                contract_id: modification.contract_id.clone(),
+                contract_id: contract_id.clone(),
                 from: contract.state,
                 to: ContractState::Modifying,
             });
@@ -327,17 +329,18 @@ impl IonicContractRegistry {
         &mut self,
         request: &TerminationRequest,
     ) -> Result<ProvenanceSeal, IonicProtocolError> {
+        let contract_id = &request.contract_id;
         let contract = self
             .contracts
-            .get_mut(&request.contract_id)
-            .ok_or_else(|| IonicProtocolError::NotFound(request.contract_id.clone()))?;
+            .get_mut(contract_id.as_str())
+            .ok_or_else(|| IonicProtocolError::NotFound(contract_id.clone()))?;
 
         if !matches!(
             contract.state,
             ContractState::Active | ContractState::Modifying
         ) {
             return Err(IonicProtocolError::InvalidTransition {
-                contract_id: request.contract_id.clone(),
+                contract_id: contract_id.clone(),
                 from: contract.state,
                 to: ContractState::Terminating,
             });
@@ -346,7 +349,7 @@ impl IonicContractRegistry {
         contract.state = ContractState::Terminating;
 
         let seal = ProvenanceSeal {
-            contract_id: request.contract_id.clone(),
+            contract_id: contract_id.clone(),
             final_usage: contract.usage.clone(),
             merkle_root: format!("blake3:{:016x}", contract.usage.total_bytes),
             commit_id: format!("loam-{}", timestamp_suffix()),

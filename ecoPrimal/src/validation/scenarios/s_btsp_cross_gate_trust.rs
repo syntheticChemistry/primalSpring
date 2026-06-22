@@ -15,6 +15,7 @@
 use crate::composition::CompositionContext;
 use crate::evolution::{all_mesh_gates, mesh_address};
 use crate::ipc::client::PrimalClient;
+use crate::primal_names;
 use crate::validation::ValidationResult;
 use crate::validation::live_mesh::LiveMeshConfig;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -241,7 +242,7 @@ fn phase_cross_gate_verify(v: &mut ValidationResult, ctx: &mut CompositionContex
 
     for (gate_id, addr) in &mesh_config.remote_gates {
         let check_id = format!("live:verify_on_{gate_id}");
-        match PrimalClient::connect_tcp(addr, "beardog") {
+        match PrimalClient::connect_tcp(addr, primal_names::BEARDOG) {
             Ok(mut remote) => {
                 let resp = remote.call("health.liveness", serde_json::json!({}));
                 v.check_bool(

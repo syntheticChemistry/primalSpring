@@ -18,6 +18,7 @@
 use std::path::PathBuf;
 
 use crate::composition::CompositionContext;
+use crate::primal_names::{self, Primal};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -34,23 +35,8 @@ pub const SCENARIO: Scenario = Scenario {
     run: run_nucleus_user_deploy,
 };
 
-const EXPECTED_PRIMALS: &[&str] = &[
-    "barracuda",
-    "beardog",
-    "biomeos",
-    "coralreef",
-    "loamspine",
-    "nestgate",
-    "petaltongue",
-    "rhizocrypt",
-    "skunkbat",
-    "squirrel",
-    "sweetgrass",
-    "toadstool",
-];
-
 const KNOWN_MISSING: &[(&str, &str)] = &[(
-    "songbird",
+    primal_names::SONGBIRD,
     "runs as songbird-federation.service, not nucleus template",
 )];
 
@@ -87,7 +73,10 @@ fn phase_systemd_units(v: &mut ValidationResult) {
         &format!("{} membrane-nucleus@ units running", active_units.len()),
     );
 
-    for primal in EXPECTED_PRIMALS {
+    for primal in Primal::ALL_SLUGS {
+        if *primal == primal_names::SONGBIRD {
+            continue;
+        }
         let unit_name = format!("membrane-nucleus@{primal}.service");
         let running = active_units.iter().any(|l| l.contains(&unit_name));
         v.check_bool(

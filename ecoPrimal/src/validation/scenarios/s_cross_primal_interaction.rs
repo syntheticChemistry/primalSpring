@@ -19,6 +19,7 @@ use std::path::{Path, PathBuf};
 
 use crate::composition::CompositionContext;
 use crate::ipc::client::PrimalClient;
+use crate::primal_names;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -47,19 +48,7 @@ fn run_cross_primal_interaction(v: &mut ValidationResult, _ctx: &mut Composition
     phase_biomeos_neural(v, &dir);
 }
 
-const PRIMARY_PRIMALS: &[&str] = &[
-    "barracuda",
-    "beardog",
-    "coralreef",
-    "loamspine",
-    "nestgate",
-    "rhizocrypt",
-    "skunkbat",
-    "songbird",
-    "squirrel",
-    "sweetgrass",
-    "toadstool",
-];
+const PRIMARY_PRIMALS: &[&str] = primal_names::Primal::ALL_SLUGS_NO_BIOMEOS;
 
 fn phase_primary_primals(v: &mut ValidationResult, dir: &Path) {
     let mut alive = 0u32;
