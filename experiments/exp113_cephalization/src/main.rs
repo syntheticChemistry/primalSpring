@@ -284,7 +284,7 @@ fn phase_migration_plan(v: &mut ValidationResult) {
         .filter(|o| o.domain_sockets.len() >= 3)
         .map(|o| (o.primal, o.domain_sockets.len()))
         .collect();
-    phase_a.sort_by(|a, b| b.1.cmp(&a.1));
+    phase_a.sort_by_key(|a| std::cmp::Reverse(a.1));
 
     v.check_bool(
         "migration:phase_a",

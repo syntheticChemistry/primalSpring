@@ -27,10 +27,7 @@ fn phase_structural(v: &mut ValidationResult) {
     );
     let auth_line = auth_req.to_line();
     let auth_ok = auth_line.is_ok();
-    let auth_str = auth_line
-        .as_ref()
-        .map(std::string::String::as_str)
-        .unwrap_or("");
+    let auth_str = auth_line.as_deref().unwrap_or("");
     v.check_bool(
         "security_authenticate_request_serializes",
         auth_ok && auth_str.contains("security.authenticate"),

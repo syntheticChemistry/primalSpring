@@ -10,10 +10,7 @@ fn phase_request_serialization(v: &mut ValidationResult) {
     let req = JsonRpcRequest::new("health.check", serde_json::Value::Null);
     let serialized = req.to_line();
     let serialize_ok = serialized.is_ok();
-    let line = serialized
-        .as_ref()
-        .map(std::string::String::as_str)
-        .unwrap_or("");
+    let line = serialized.as_deref().unwrap_or("");
     let has_method = line.contains("\"method\":\"health.check\"");
     let has_jsonrpc = line.contains("\"jsonrpc\":\"2.0\"");
     v.check_bool(
@@ -25,10 +22,7 @@ fn phase_request_serialization(v: &mut ValidationResult) {
     let notify_req = JsonRpcRequest::notify("health.check");
     let notify_line = notify_req.to_line();
     let notify_ok = notify_line.is_ok();
-    let notify_str = notify_line
-        .as_ref()
-        .map(std::string::String::as_str)
-        .unwrap_or("");
+    let notify_str = notify_line.as_deref().unwrap_or("");
     v.check_bool(
         "jsonrpc_request_notify_works",
         notify_ok && notify_str.contains("health.check"),

@@ -89,9 +89,7 @@ fn phase_ludospring(v: &mut ValidationResult, ctx: &mut CompositionContext, brid
         );
         v.check_bool(
             "game.evaluate_flow",
-            flow.as_ref()
-                .map(|r| r.get("state").is_some())
-                .unwrap_or(false),
+            flow.as_ref().is_ok_and(|r| r.get("state").is_some()),
             "flow evaluation returns state",
         );
 
@@ -104,8 +102,7 @@ fn phase_ludospring(v: &mut ValidationResult, ctx: &mut CompositionContext, brid
             "game.fitts_cost",
             fitts
                 .as_ref()
-                .map(|r| r.get("movement_time_ms").is_some())
-                .unwrap_or(false),
+                .is_ok_and(|r| r.get("movement_time_ms").is_some()),
             "Fitts cost returns movement_time_ms",
         );
 

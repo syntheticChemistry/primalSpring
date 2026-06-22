@@ -175,7 +175,7 @@ fn validate_graph_merge(v: &mut ValidationResult) {
         v.check_bool("load_overlay_graph", false, "load_graph tower_ai.toml");
         return;
     };
-    let merged = merge_graphs(&base, &overlay);
+    let merged = merge_graphs(base, overlay);
 
     v.check_bool(
         "merge_name",

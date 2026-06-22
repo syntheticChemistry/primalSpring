@@ -395,7 +395,7 @@ fn phase_unibin_composability(v: &mut ValidationResult) {
         .into_iter()
         .flatten()
         .filter_map(std::result::Result::ok)
-        .filter(|e| e.metadata().map(|m| m.len() > 1_000_000).unwrap_or(false))
+        .filter(|e| e.metadata().is_ok_and(|m| m.len() > 1_000_000))
         .count();
 
     v.check_bool(
@@ -409,9 +409,7 @@ fn phase_unibin_composability(v: &mut ValidationResult) {
         let binary = pdir.join(primal);
         if binary.exists() {
             #[expect(clippy::cast_precision_loss, reason = "count fits f64")]
-            let size_mb = std::fs::metadata(&binary)
-                .map(|m| m.len() as f64 / 1_048_576.0)
-                .unwrap_or(0.0);
+            let size_mb = std::fs::metadata(&binary).map_or(0.0, |m| m.len() as f64 / 1_048_576.0);
             v.check_bool(
                 &format!("unibin:{primal}"),
                 size_mb > 1.0,

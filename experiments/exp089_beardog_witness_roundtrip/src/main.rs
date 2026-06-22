@@ -170,8 +170,7 @@ fn phase_live_sign_to_witness(v: &mut ValidationResult, host: &str, port: u16) {
 
     let now_nanos = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX))
-        .unwrap_or(0);
+        .map_or(0, |d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX));
 
     let witness = serde_json::json!({
         "agent": "beardog:local",

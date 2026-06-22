@@ -39,8 +39,8 @@ fn probe_gate(host: &str) -> (bool, bool, Duration) {
     let bd_ok = bd.is_ok();
     let sg_ok = sg.is_ok();
     let max_latency = [
-        bd.as_ref().map(|(_, d)| *d).unwrap_or(Duration::ZERO),
-        sg.as_ref().map(|(_, d)| *d).unwrap_or(Duration::ZERO),
+        bd.as_ref().map_or(Duration::ZERO, |(_, d)| *d),
+        sg.as_ref().map_or(Duration::ZERO, |(_, d)| *d),
     ]
     .into_iter()
     .max()
@@ -58,8 +58,7 @@ fn measure_latency_pair(host_a: &str, host_b: &str) -> (Duration, Duration) {
         methods::health::LIVENESS,
         &serde_json::json!({}),
     )
-    .map(|(_, d)| d)
-    .unwrap_or(Duration::from_secs(999));
+    .map_or(Duration::from_secs(999), |(_, d)| d);
 
     let b_to_a = tcp_rpc(
         host_a,
@@ -67,8 +66,7 @@ fn measure_latency_pair(host_a: &str, host_b: &str) -> (Duration, Duration) {
         methods::health::LIVENESS,
         &serde_json::json!({}),
     )
-    .map(|(_, d)| d)
-    .unwrap_or(Duration::from_secs(999));
+    .map_or(Duration::from_secs(999), |(_, d)| d);
 
     (a_to_b, b_to_a)
 }

@@ -55,7 +55,6 @@ pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
 pub mod s_bootstrap_readiness;
-pub mod s_btsp_cross_gate_trust;
 pub mod s_btsp_cross_gate_verify;
 pub mod s_btsp_cross_primal;
 pub mod s_capability_convergence;
@@ -73,7 +72,6 @@ pub mod s_coralreef_shader_targets;
 pub mod s_covalent_bond;
 pub mod s_covalent_mesh;
 pub mod s_cross_gate_capability_call;
-pub mod s_cross_gate_compute_dispatch;
 pub mod s_cross_primal_interaction;
 pub mod s_cross_spring_data_flow;
 pub mod s_cross_target_parity;
@@ -101,11 +99,11 @@ pub mod s_ionic_bond;
 pub mod s_kderm_boundary;
 pub mod s_kderm_live_layers;
 pub mod s_loam_certificate_lifecycle;
-pub mod s_mesh_capability_propagation;
 pub mod s_mesh_overlay;
 pub mod s_mesh_reachability;
 pub mod s_mesh_topology;
 pub mod s_meta_tier_compositions;
+pub mod s_metallic_bond;
 pub mod s_multi_gate_nucleus;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
@@ -117,6 +115,7 @@ pub mod s_nucleus_integration;
 pub mod s_nucleus_orchestration;
 pub mod s_nucleus_user_deploy;
 pub mod s_observatory_parity;
+pub mod s_parallel_graph;
 pub mod s_plasmodium_collective;
 pub mod s_pressure_surface;
 pub mod s_primal_announce;
@@ -150,10 +149,6 @@ pub mod s_zone_topology;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
 #[must_use]
-#[expect(
-    clippy::too_many_lines,
-    reason = "flat registration list; splitting would add indirection"
-)]
 pub fn build_registry() -> ScenarioRegistry {
     let mut r = ScenarioRegistry::new();
     r.register(s_tower_atomic::SCENARIO);
@@ -214,7 +209,6 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_deployment_pipeline::SCENARIO);
     r.register(s_tcp_fallback::SCENARIO);
     r.register(s_btsp_cross_primal::SCENARIO);
-    r.register(s_btsp_cross_gate_verify::SCENARIO);
     r.register(s_gate_expansion_readiness::SCENARIO);
     r.register(s_graphenegate_readiness::SCENARIO);
     r.register(s_version_skew_detection::SCENARIO);
@@ -227,7 +221,6 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_pressure_surface::SCENARIO);
     r.register(s_cascade_drift::SCENARIO);
     r.register(s_mesh_topology::SCENARIO);
-    r.register(s_mesh_capability_propagation::SCENARIO);
     r.register(s_gate_readiness::SCENARIO);
     r.register(s_kderm_boundary::SCENARIO);
     r.register(s_nucleus_orchestration::SCENARIO);
@@ -253,8 +246,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_defense_attestation::SCENARIO);
     r.register(s_sovereignty_audit_chain::SCENARIO);
     r.register(s_capability_convergence::SCENARIO);
-    r.register(s_btsp_cross_gate_trust::SCENARIO);
-    r.register(s_cross_gate_compute_dispatch::SCENARIO);
+    r.register(s_parallel_graph::SCENARIO);
+    r.register(s_metallic_bond::SCENARIO);
+    r.register(s_btsp_cross_gate_verify::SCENARIO);
     r
 }
 
@@ -265,7 +259,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 99;
+    const EXPECTED_SCENARIO_COUNT: usize = 98;
 
     #[test]
     fn registry_scenario_count() {
@@ -325,7 +319,8 @@ mod tests {
         // shipped. grapheneGate 13/13 alive. Zero known debt.
         // Wave 120: cascade-drift resolved. mesh-overlay has 3 live-probe
         // failures (pepti offline, flockGate WAN relay intermittent).
-        const KNOWN_DEBT: &[(&str, u32)] = &[("mesh-overlay", 3)];
+        // Wave 123: cascade-drift depot freshness failure (binary >168h old).
+        const KNOWN_DEBT: &[(&str, u32)] = &[("mesh-overlay", 3), ("cascade-drift", 1)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
