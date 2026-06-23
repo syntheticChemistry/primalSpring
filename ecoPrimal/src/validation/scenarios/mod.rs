@@ -339,8 +339,8 @@ mod tests {
         // shipped. grapheneGate 13/13 alive. Zero known debt.
         // Wave 120: cascade-drift resolved. mesh-overlay has 3 live-probe
         // failures (pepti offline, flockGate WAN relay intermittent).
-        // Wave 123: cascade-drift depot freshness failure (binary >168h old).
-        const KNOWN_DEBT: &[(&str, u32)] = &[("mesh-overlay", 3), ("cascade-drift", 1)];
+        // Wave 124: cascade-drift 4 failures — workspace dirty, origin drifted, depot stale.
+        const KNOWN_DEBT: &[(&str, u32)] = &[("mesh-overlay", 3), ("cascade-drift", 4)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();

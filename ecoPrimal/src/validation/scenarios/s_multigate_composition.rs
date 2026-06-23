@@ -54,13 +54,21 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 fn phase_schema(v: &mut ValidationResult) {
     let parsed: Result<toml::Value, _> = DEPLOY_GRAPH.parse();
     let Ok(graph) = parsed else {
-        v.check_bool("schema:parses", false, "five_gate_sovereign_mesh.toml parse failed");
+        v.check_bool(
+            "schema:parses",
+            false,
+            "five_gate_sovereign_mesh.toml parse failed",
+        );
         return;
     };
     v.check_bool("schema:parses", true, "deploy graph valid TOML");
 
     let meta = graph.get("metadata").and_then(|m| m.as_table());
-    v.check_bool("schema:has_metadata", meta.is_some(), "metadata section present");
+    v.check_bool(
+        "schema:has_metadata",
+        meta.is_some(),
+        "metadata section present",
+    );
 
     if let Some(meta) = meta {
         let name = meta.get("name").and_then(|v| v.as_str()).unwrap_or("");
@@ -70,12 +78,23 @@ fn phase_schema(v: &mut ValidationResult) {
             &format!("graph name: \"{name}\""),
         );
 
-        let resolve = meta.get("resolve").and_then(toml::Value::as_bool).unwrap_or(false);
-        v.check_bool("schema:resolve_true", resolve, "resolve = true (fragment-first)");
+        let resolve = meta
+            .get("resolve")
+            .and_then(toml::Value::as_bool)
+            .unwrap_or(false);
+        v.check_bool(
+            "schema:resolve_true",
+            resolve,
+            "resolve = true (fragment-first)",
+        );
     }
 
     let topo = graph.get("topology").and_then(|t| t.as_table());
-    v.check_bool("schema:has_topology", topo.is_some(), "topology section present");
+    v.check_bool(
+        "schema:has_topology",
+        topo.is_some(),
+        "topology section present",
+    );
 
     if let Some(topo) = topo {
         let gates = topo
@@ -98,7 +117,10 @@ fn phase_schema(v: &mut ValidationResult) {
 
     let validation = graph.get("validation").and_then(|v| v.as_table());
     if let Some(val) = validation {
-        let btsp = val.get("btsp_enforced").and_then(toml::Value::as_bool).unwrap_or(false);
+        let btsp = val
+            .get("btsp_enforced")
+            .and_then(toml::Value::as_bool)
+            .unwrap_or(false);
         v.check_bool("schema:btsp_enforced", btsp, "BTSP enforced in graph");
 
         let method_gate = val
@@ -210,10 +232,7 @@ fn phase_dispatch(v: &mut ValidationResult) {
             &format!("tensor.* → \"{tensor_route}\""),
         );
 
-        let nest_route = routing
-            .get("nest.*")
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
+        let nest_route = routing.get("nest.*").and_then(|v| v.as_str()).unwrap_or("");
         v.check_bool(
             "dispatch:nest_route",
             nest_route == "sporeGate",
@@ -408,7 +427,10 @@ mod tests {
             .unwrap()
             .as_table()
             .unwrap();
-        assert_eq!(routing.get("tensor.*").unwrap().as_str().unwrap(), "ironGate");
+        assert_eq!(
+            routing.get("tensor.*").unwrap().as_str().unwrap(),
+            "ironGate"
+        );
         assert_eq!(routing.get("ml.*").unwrap().as_str().unwrap(), "ironGate");
     }
 }

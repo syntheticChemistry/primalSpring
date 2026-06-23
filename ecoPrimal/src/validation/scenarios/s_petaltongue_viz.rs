@@ -269,7 +269,10 @@ mod tests {
 
     #[test]
     fn petaltongue_owns_interaction() {
-        assert_eq!(capability_to_primal("interaction"), primal_names::PETALTONGUE);
+        assert_eq!(
+            capability_to_primal("interaction"),
+            primal_names::PETALTONGUE
+        );
     }
 
     #[test]
