@@ -110,6 +110,7 @@ pub mod s_mesh_topology;
 pub mod s_meta_tier_compositions;
 pub mod s_metallic_bond;
 pub mod s_multi_gate_nucleus;
+pub mod s_multigate_composition;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
 pub mod s_nestgate_content_pipeline;
@@ -121,6 +122,7 @@ pub mod s_nucleus_orchestration;
 pub mod s_nucleus_user_deploy;
 pub mod s_observatory_parity;
 pub mod s_parallel_graph;
+pub mod s_petaltongue_viz;
 pub mod s_plasmodium_collective;
 pub mod s_pressure_surface;
 pub mod s_primal_announce;
@@ -245,6 +247,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_composition_live_state::SCENARIO);
     r.register(s_gate_parity::SCENARIO);
     r.register(s_multi_gate_nucleus::SCENARIO);
+    r.register(s_multigate_composition::SCENARIO);
+    r.register(s_petaltongue_viz::SCENARIO);
     r.register(s_genetics_compliance::SCENARIO);
     r.register(s_kderm_live_layers::SCENARIO);
     r.register(s_mesh_reachability::SCENARIO);
@@ -275,7 +279,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 104;
+    const EXPECTED_SCENARIO_COUNT: usize = 106;
 
     #[test]
     fn registry_scenario_count() {
