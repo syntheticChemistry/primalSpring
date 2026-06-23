@@ -689,6 +689,8 @@ methods = [
 owner = "barracuda"
 methods = [
     "ml.esn_predict",
+    "ml.lstm_predict",
+    "ml.lstm_train",
     "ml.mlp_train",
 ]
 

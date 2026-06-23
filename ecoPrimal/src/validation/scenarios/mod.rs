@@ -71,7 +71,9 @@ pub mod s_coordination_api;
 pub mod s_coralreef_shader_targets;
 pub mod s_covalent_bond;
 pub mod s_covalent_mesh;
+pub mod s_btsp_cross_gate_trust;
 pub mod s_cross_gate_capability_call;
+pub mod s_cross_gate_compute_dispatch;
 pub mod s_cross_primal_interaction;
 pub mod s_cross_spring_data_flow;
 pub mod s_cross_target_parity;
@@ -100,6 +102,7 @@ pub mod s_ionic_bond;
 pub mod s_kderm_boundary;
 pub mod s_kderm_live_layers;
 pub mod s_loam_certificate_lifecycle;
+pub mod s_mesh_capability_propagation;
 pub mod s_mesh_overlay;
 pub mod s_mesh_reachability;
 pub mod s_mesh_topology;
@@ -194,8 +197,11 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_nest_commit_live::SCENARIO);
     r.register(s_sporeprint_pure_primal::SCENARIO);
     r.register(s_sporeprint_surface::SCENARIO);
+    r.register(s_btsp_cross_gate_trust::SCENARIO);
     r.register(s_cross_gate_capability_call::SCENARIO);
+    r.register(s_cross_gate_compute_dispatch::SCENARIO);
     r.register(s_cross_primal_interaction::SCENARIO);
+    r.register(s_mesh_capability_propagation::SCENARIO);
     r.register(s_neural_routing::SCENARIO);
     r.register(s_neural_dispatch_live::SCENARIO);
     r.register(s_observatory_parity::SCENARIO);
@@ -262,7 +268,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 99;
+    const EXPECTED_SCENARIO_COUNT: usize = 102;
 
     #[test]
     fn registry_scenario_count() {

@@ -100,8 +100,8 @@ fn phase_wire_contract(v: &mut ValidationResult) {
     let compute_methods = [
         ("compute.dispatch", "dispatch workload to fleet"),
         ("compute.status", "query compute node status"),
-        ("ml.infer", "ML inference dispatch"),
-        ("ml.train", "ML training dispatch"),
+        ("ml.lstm_train", "LSTM training dispatch"),
+        ("ml.lstm_predict", "LSTM inference dispatch"),
         ("fleet.status", "fleet node health"),
         ("fleet.submit", "submit workload to fleet"),
         ("shader.compile", "WGSL/SPIR-V shader compilation"),
