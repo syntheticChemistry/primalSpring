@@ -306,7 +306,10 @@ mod tests {
     fn trust_related_methods_coverage() {
         let trust_methods = ["auth.issue_ionic", "btsp.capabilities", "btsp.negotiate"];
         for method in trust_methods {
-            assert!(REGISTRY_TOML.contains(method), "{method} missing from registry");
+            assert!(
+                REGISTRY_TOML.contains(method),
+                "{method} missing from registry"
+            );
         }
     }
 }

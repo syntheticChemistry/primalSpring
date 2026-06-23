@@ -1,0 +1,127 @@
+# Five-Gate Sovereign Mesh Composition
+# =============================================================================
+#
+# Deploys a full 5-gate sovereign NUCLEUS mesh via WireGuard overlay:
+#
+#   golgi       (DO droplet)         — relay hub, Forgejo, cascade timer
+#   sporeGate   (Ryzen 5 6600H)     — build authority, Nest provenance
+#   eastGate    (i7 64GB)            — orchestration, primalSpring, Meta
+#   flockGate   (i9-13900K WAN)     — Tower primals, sporePrint
+#   ironGate    (i9-12900K + RTX 5070) — Node compute, GPU
+#
+# Network topology (WireGuard 10.13.37.0/24):
+#   golgi (.1) ↔ all gates (hub-and-spoke relay)
+#   sporeGate (.2) ↔ eastGate (.5) ↔ flockGate (.6) ↔ ironGate (.7)
+#
+# Trust model:
+#   BTSP Phase 3 — all authenticated, ionic tokens, MethodGate enforced.
+#   Dark Forest — relay encrypted, no plaintext on WAN.
+#   Quorum Phase 1 — golgi auto-cascades every 15min.
+#
+# Role allocation (K-Derm zones):
+#   Periplasm (golgi)       — VPS relay, no local primal builds
+#   Peptidoglycan (spore)   — structural: CI, provenance, firewall
+#   Cytoplasm (east, iron)  — coordination + heavy compute
+#   Outer Membrane (flock)  — trust boundary, WAN-facing services
+
+[metadata]
+name = "five-gate-sovereign-mesh"
+description = "Full 5-gate sovereign NUCLEUS deployment with role-based composition"
+version = "0.9.33"
+wave = 124
+resolve = true
+
+[topology]
+mesh = "wireguard"
+subnet = "10.13.37.0/24"
+hub = "golgi"
+gates = ["golgi", "sporeGate", "eastGate", "flockGate", "ironGate"]
+
+[topology.zones]
+periplasm = ["golgi"]
+peptidoglycan = ["sporeGate"]
+cytoplasm = ["eastGate", "ironGate"]
+outer_membrane = ["flockGate"]
+
+# Gate compositions — which atomics each gate runs
+
+[gates.golgi]
+address = "10.13.37.1"
+role = "relay"
+composition = "services"
+primals = ["songbird"]
+notes = "Relay-only: WG hub, Forgejo hosting, cascade-sense timer"
+
+[gates.sporeGate]
+address = "10.13.37.2"
+role = "build_authority"
+composition = "full"
+primals = [
+    "beardog", "songbird", "skunkbat",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "biomeos", "squirrel", "petaltongue",
+]
+notes = "Build authority, sovereign CI, Nest provenance"
+
+[gates.eastGate]
+address = "10.13.37.5"
+role = "orchestration"
+composition = "full"
+primals = [
+    "beardog", "songbird", "skunkbat",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "biomeos", "squirrel", "petaltongue",
+]
+notes = "Overwatch, primalSpring validation, Meta primals"
+
+[gates.flockGate]
+address = "10.13.37.6"
+role = "tower"
+composition = "full"
+primals = [
+    "beardog", "songbird", "skunkbat",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "biomeos", "squirrel", "petaltongue",
+]
+notes = "Tower primals, sporePrint, WAN trust boundary"
+
+[gates.ironGate]
+address = "10.13.37.7"
+role = "compute"
+composition = "node_focused"
+target = "x86_64-unknown-linux-musl"
+gpu_target = "x86_64-unknown-linux-gnu"
+primals = [
+    "beardog", "songbird", "skunkbat",
+    "toadstool", "barracuda", "coralreef",
+    "nestgate", "rhizocrypt", "loamspine", "sweetgrass",
+    "biomeos", "squirrel",
+]
+notes = "GPU compute (RTX 5070), dual-target: musl + gnu for CUDA"
+
+# Cross-gate dispatch rules
+
+[dispatch]
+gpu_workloads = "ironGate"
+build_artifacts = "sporeGate"
+cascade_relay = "golgi"
+trust_anchor = "sporeGate"
+
+[dispatch.routing]
+"tensor.*" = "ironGate"
+"ml.*" = "ironGate"
+"shader.*" = "ironGate"
+"compute.gpu" = "ironGate"
+"nest.*" = "sporeGate"
+"provenance.*" = "sporeGate"
+
+# Validation constraints
+
+[validation]
+min_gates = 5
+required_primals_per_gate = 3
+btsp_enforced = true
+method_gate_enforced = true

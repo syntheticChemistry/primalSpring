@@ -14,8 +14,8 @@
 //! 4. Live: ToadStool/BarraCuda health probing for dispatch readiness
 
 use crate::composition::{CompositionContext, capability_to_primal, method_to_capability_domain};
-use crate::primal_names;
 use crate::evolution::{all_mesh_gates, mesh_address};
+use crate::primal_names;
 use crate::tolerances::ports;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};

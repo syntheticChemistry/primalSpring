@@ -55,6 +55,7 @@ pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
 pub mod s_bootstrap_readiness;
+pub mod s_btsp_cross_gate_trust;
 pub mod s_btsp_cross_gate_verify;
 pub mod s_btsp_cross_primal;
 pub mod s_capability_convergence;
@@ -71,7 +72,6 @@ pub mod s_coordination_api;
 pub mod s_coralreef_shader_targets;
 pub mod s_covalent_bond;
 pub mod s_covalent_mesh;
-pub mod s_btsp_cross_gate_trust;
 pub mod s_cross_gate_capability_call;
 pub mod s_cross_gate_compute_dispatch;
 pub mod s_cross_primal_interaction;
@@ -93,6 +93,7 @@ pub mod s_gate_failure;
 pub mod s_gate_parity;
 pub mod s_gate_readiness;
 pub mod s_genetics_compliance;
+pub mod s_gpu_dispatch_cross_gate;
 pub mod s_gpu_pipeline_validation;
 pub mod s_graph_pipeline_depth;
 pub mod s_graphenegate_readiness;
@@ -133,6 +134,7 @@ pub mod s_ribocipher_acceptance;
 pub mod s_routing_consistency;
 pub mod s_schema_standard;
 pub mod s_sequential_graph;
+pub mod s_shader_compilation_pipeline;
 pub mod s_socket_discovery;
 pub mod s_sovereignty_audit_chain;
 pub mod s_sovereignty_ledger;
@@ -153,7 +155,10 @@ pub mod s_zone_topology;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
 #[must_use]
-#[expect(clippy::too_many_lines, reason = "flat registration list; splitting would add indirection")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "flat registration list; splitting would add indirection"
+)]
 pub fn build_registry() -> ScenarioRegistry {
     let mut r = ScenarioRegistry::new();
     r.register(s_tower_atomic::SCENARIO);
@@ -251,7 +256,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_wireguard_mesh::SCENARIO);
     r.register(s_provenance_cross_gate::SCENARIO);
     r.register(s_graph_pipeline_depth::SCENARIO);
+    r.register(s_gpu_dispatch_cross_gate::SCENARIO);
     r.register(s_gpu_pipeline_validation::SCENARIO);
+    r.register(s_shader_compilation_pipeline::SCENARIO);
     r.register(s_defense_attestation::SCENARIO);
     r.register(s_sovereignty_audit_chain::SCENARIO);
     r.register(s_capability_convergence::SCENARIO);
@@ -268,7 +275,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 102;
+    const EXPECTED_SCENARIO_COUNT: usize = 104;
 
     #[test]
     fn registry_scenario_count() {

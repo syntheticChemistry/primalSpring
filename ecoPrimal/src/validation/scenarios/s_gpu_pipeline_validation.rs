@@ -16,8 +16,8 @@
 //! 5. Live: GPU primal health + tensor create + ml dispatch readiness
 
 use crate::composition::{CompositionContext, capability_to_primal};
-use crate::primal_names;
 use crate::evolution::mesh_address;
+use crate::primal_names;
 use crate::tolerances::ports;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -91,7 +91,11 @@ fn phase_manifest(v: &mut ValidationResult) {
         return;
     };
 
-    v.check_bool("manifest:parses", true, "ecosystem_manifest.toml valid TOML");
+    v.check_bool(
+        "manifest:parses",
+        true,
+        "ecosystem_manifest.toml valid TOML",
+    );
 
     let gates = manifest.get("gates").and_then(|g| g.as_table());
     let Some(gates) = gates else {
@@ -128,19 +132,13 @@ fn phase_manifest(v: &mut ValidationResult) {
         v.check_bool(
             &format!("manifest:{gate_name}:dual_target"),
             main_target != gpu_target,
-            &format!(
-                "{gate_name} dual-target: main=\"{main_target}\" gpu=\"{gpu_target}\""
-            ),
+            &format!("{gate_name} dual-target: main=\"{main_target}\" gpu=\"{gpu_target}\""),
         );
 
         let roles = gate
             .get("roles")
             .and_then(|v| v.as_array())
-            .map(|a| {
-                a.iter()
-                    .filter_map(|v| v.as_str())
-                    .collect::<Vec<_>>()
-            })
+            .map(|a| a.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>())
             .unwrap_or_default();
 
         v.check_bool(
@@ -169,7 +167,10 @@ fn phase_capability_coverage(v: &mut ValidationResult) {
     v.check_bool(
         "cap:pipeline_breadth",
         covered >= 10,
-        &format!("{covered}/{} GPU pipeline methods registered", PIPELINE_METHODS.len()),
+        &format!(
+            "{covered}/{} GPU pipeline methods registered",
+            PIPELINE_METHODS.len()
+        ),
     );
 
     let gpu_domains = ["tensor", "ml", "nautilus", "shader", "compute", "rng"];
@@ -194,8 +195,8 @@ fn phase_capability_coverage(v: &mut ValidationResult) {
 }
 
 fn phase_precision_model(v: &mut ValidationResult) {
-    let has_f64_method = REGISTRY_TOML.contains("precision")
-        || REGISTRY_TOML.contains("compute.precision");
+    let has_f64_method =
+        REGISTRY_TOML.contains("precision") || REGISTRY_TOML.contains("compute.precision");
     v.check_bool(
         "precision:compute_precision_method",
         has_f64_method,
@@ -211,7 +212,10 @@ fn phase_precision_model(v: &mut ValidationResult) {
     v.check_bool(
         "precision:tensor_ops_count",
         tensor_methods.len() >= 3,
-        &format!("{} tensor operations for GPU dispatch", tensor_methods.len()),
+        &format!(
+            "{} tensor operations for GPU dispatch",
+            tensor_methods.len()
+        ),
     );
 
     let has_matmul = REGISTRY_TOML.contains("tensor.matmul");
@@ -230,7 +234,10 @@ fn phase_precision_model(v: &mut ValidationResult) {
     v.check_bool(
         "precision:ml_pipeline_depth",
         ml_count >= 2,
-        &format!("{ml_count}/{} ML training+inference methods", ml_methods.len()),
+        &format!(
+            "{ml_count}/{} ML training+inference methods",
+            ml_methods.len()
+        ),
     );
 }
 
@@ -332,7 +339,10 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                     );
                 }
                 Err(e) if e.is_skippable() => {
-                    v.check_skip("live:tensor_create_responds", &format!("tensor.create: {e}"));
+                    v.check_skip(
+                        "live:tensor_create_responds",
+                        &format!("tensor.create: {e}"),
+                    );
                 }
                 Err(e) => {
                     v.check_bool("live:tensor_create_responds", false, &format!("{e}"));
@@ -380,7 +390,10 @@ mod tests {
         let iron = gates.get("ironGate").unwrap();
         let main = iron.get("target").and_then(|v| v.as_str()).unwrap();
         let gpu = iron.get("gpu_target").and_then(|v| v.as_str()).unwrap();
-        assert_ne!(main, gpu, "main and gpu targets should differ (musl vs gnu)");
+        assert_ne!(
+            main, gpu,
+            "main and gpu targets should differ (musl vs gnu)"
+        );
     }
 
     #[test]
