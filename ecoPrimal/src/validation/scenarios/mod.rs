@@ -91,6 +91,7 @@ pub mod s_gate_failure;
 pub mod s_gate_parity;
 pub mod s_gate_readiness;
 pub mod s_genetics_compliance;
+pub mod s_gpu_pipeline_validation;
 pub mod s_graph_pipeline_depth;
 pub mod s_graphenegate_readiness;
 pub mod s_health_lifecycle_surface;
@@ -149,6 +150,7 @@ pub mod s_zone_topology;
 
 /// Build the canonical scenario registry with all absorbed scenarios.
 #[must_use]
+#[expect(clippy::too_many_lines, reason = "flat registration list; splitting would add indirection")]
 pub fn build_registry() -> ScenarioRegistry {
     let mut r = ScenarioRegistry::new();
     r.register(s_tower_atomic::SCENARIO);
@@ -243,6 +245,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_wireguard_mesh::SCENARIO);
     r.register(s_provenance_cross_gate::SCENARIO);
     r.register(s_graph_pipeline_depth::SCENARIO);
+    r.register(s_gpu_pipeline_validation::SCENARIO);
     r.register(s_defense_attestation::SCENARIO);
     r.register(s_sovereignty_audit_chain::SCENARIO);
     r.register(s_capability_convergence::SCENARIO);
@@ -259,7 +262,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 98;
+    const EXPECTED_SCENARIO_COUNT: usize = 99;
 
     #[test]
     fn registry_scenario_count() {
