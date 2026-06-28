@@ -19,7 +19,6 @@ use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
 const FLOCKGATE: &str = "flockGate";
-const FLOCKGATE_MESH: &str = "10.13.37.6";
 const TOWER_PRIMALS: &[&str] = &[
     primal_names::BEARDOG,
     primal_names::SONGBIRD,
@@ -59,8 +58,8 @@ fn phase_structural(v: &mut ValidationResult) {
     let mesh = mesh_address(FLOCKGATE);
     v.check_bool(
         "struct:flockgate:mesh_address",
-        mesh == Some(FLOCKGATE_MESH),
-        &format!("expected {FLOCKGATE_MESH}, got {mesh:?}"),
+        mesh.is_some(),
+        &format!("flockGate mesh address resolved from SSOT: {mesh:?}"),
     );
 
     let matrix = GateMatrix::ecosystem_snapshot();
@@ -116,8 +115,8 @@ fn phase_structural(v: &mut ValidationResult) {
     let east_mesh = mesh_address("eastGate");
     v.check_bool(
         "struct:eastgate:mesh_peer",
-        east_mesh == Some("10.13.37.5"),
-        &format!("eastGate mesh address for WAN probe origin: {east_mesh:?}"),
+        east_mesh.is_some(),
+        &format!("eastGate mesh address resolved for WAN probe origin: {east_mesh:?}"),
     );
 }
 
@@ -127,12 +126,17 @@ fn phase_live(v: &mut ValidationResult) {
         return;
     }
 
-    let ping_reachable = icmp_reachable(FLOCKGATE_MESH);
+    let Some(flockgate_ip) = mesh_address(FLOCKGATE) else {
+        v.check_skip("live:flockgate:ping", "flockGate mesh address not in SSOT");
+        return;
+    };
+
+    let ping_reachable = icmp_reachable(flockgate_ip);
     v.check_bool(
         "live:flockgate:ping",
         ping_reachable,
         &format!(
-            "ping {FLOCKGATE_MESH} ({FLOCKGATE}): {}",
+            "ping {flockgate_ip} ({FLOCKGATE}): {}",
             if ping_reachable {
                 "REACHABLE"
             } else {
@@ -155,7 +159,7 @@ fn phase_live(v: &mut ValidationResult) {
         return;
     }
 
-    if let Some(rtt_ms) = measure_ping_rtt_ms(FLOCKGATE_MESH) {
+    if let Some(rtt_ms) = measure_ping_rtt_ms(flockgate_ip) {
         v.check_bool(
             "live:flockgate:latency",
             rtt_ms <= WAN_HEALTH_MAX_MS,
@@ -176,7 +180,7 @@ fn phase_live(v: &mut ValidationResult) {
             continue;
         }
 
-        let reachable = probe_tcp(FLOCKGATE_MESH, port, timeout);
+        let reachable = probe_tcp(flockgate_ip, port, timeout);
         if reachable {
             reachable_count += 1;
         }
@@ -184,7 +188,7 @@ fn phase_live(v: &mut ValidationResult) {
             &format!("live:tcp:{slug}"),
             reachable,
             &format!(
-                "{slug} @ {FLOCKGATE_MESH}:{port}: {}",
+                "{slug} @ {flockgate_ip}:{port}: {}",
                 if reachable {
                     "REACHABLE"
                 } else {

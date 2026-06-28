@@ -19,6 +19,7 @@
 //! 3. Transfer bytes > 0 for at least one peer
 
 use crate::composition::CompositionContext;
+use crate::evolution::all_mesh_gates;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::{Scenario, ScenarioMeta, Tier, Track};
 use std::path::{Path, PathBuf};
@@ -29,14 +30,14 @@ const WG_PORT: u16 = 51820;
 const WG_IFACE: &str = "wg0";
 const HANDSHAKE_MAX_AGE_SECS: u64 = 300;
 
-/// Expected mesh peers (name → overlay address).
-const EXPECTED_PEERS: &[(&str, &str)] = &[
-    ("golgi", "10.13.37.1"),
-    ("sporeGate", "10.13.37.2"),
-    ("eastGate", "10.13.37.5"),
-    ("flockGate", "10.13.37.6"),
-    ("ironGate", "10.13.37.7"),
-];
+/// Build expected peers dynamically from mesh topology SSOT.
+fn expected_peers() -> Vec<(&'static str, &'static str)> {
+    all_mesh_gates()
+        .iter()
+        .filter(|g| !g.address.is_empty())
+        .map(|g| (g.name.as_str(), g.address.as_str()))
+        .collect()
+}
 
 /// WireGuard mesh topology validation scenario.
 pub const SCENARIO: Scenario = Scenario {
@@ -125,7 +126,8 @@ fn phase_config_structure(v: &mut ValidationResult) {
         ),
     );
 
-    let peer_summary: Vec<String> = EXPECTED_PEERS
+    let peers = expected_peers();
+    let peer_summary: Vec<String> = peers
         .iter()
         .map(|(name, ip)| format!("{name}={ip}"))
         .collect();

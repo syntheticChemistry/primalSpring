@@ -11,6 +11,7 @@
 use crate::bonding::{BondType, BondingPolicy};
 use crate::btsp::{self, BtspCipherSuite};
 use crate::composition::CompositionContext;
+use crate::evolution::all_mesh_gates;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -150,18 +151,17 @@ fn phase_security_mode(v: &mut ValidationResult) {
 }
 
 fn phase_cross_gate_trust_topology(v: &mut ValidationResult) {
-    let gates = [
-        ("sporeGate", "10.13.37.2", "build_authority"),
-        ("eastGate", "10.13.37.5", "overwatch"),
-        ("flockGate", "10.13.37.6", "tower_atomic"),
-        ("ironGate", "10.13.37.7", "node_atomic"),
-        ("golgi", "10.13.37.1", "relay"),
-    ];
+    let mesh_gates = all_mesh_gates();
+    let gates: Vec<(&str, &str, &str)> = mesh_gates
+        .iter()
+        .filter(|g| !g.address.is_empty())
+        .map(|g| (g.name.as_str(), g.address.as_str(), g.role.as_str()))
+        .collect();
 
     v.check_bool(
         "topology:mesh_size",
         gates.len() >= 5,
-        &format!("{} gates in trust topology", gates.len()),
+        &format!("{} gates in trust topology (from SSOT)", gates.len()),
     );
 
     for (gate, wg_ip, role) in &gates {
@@ -249,19 +249,24 @@ fn phase_live_cross_gate_auth(v: &mut ValidationResult, ctx: &CompositionContext
         }
     }
 
-    let wg_reachable = std::process::Command::new("ping")
-        .args(["-c", "1", "-W", "1", "10.13.37.1"])
-        .output()
-        .is_ok_and(|o| o.status.success());
+    let golgi_addr = crate::evolution::gate::mesh_address("golgi");
+    if let Some(hub_ip) = golgi_addr {
+        let wg_reachable = std::process::Command::new("ping")
+            .args(["-c", "1", "-W", "1", hub_ip])
+            .output()
+            .is_ok_and(|o| o.status.success());
 
-    if wg_reachable {
-        v.check_bool(
-            "live:mesh_reachable",
-            true,
-            "golgi (10.13.37.1) reachable — cross-gate auth path available",
-        );
+        if wg_reachable {
+            v.check_bool(
+                "live:mesh_reachable",
+                true,
+                &format!("golgi ({hub_ip}) reachable — cross-gate auth path available"),
+            );
+        } else {
+            v.check_skip("live:mesh_reachable", "mesh not reachable (no WG tunnel)");
+        }
     } else {
-        v.check_skip("live:mesh_reachable", "mesh not reachable (no WG tunnel)");
+        v.check_skip("live:mesh_reachable", "golgi address not in topology SSOT");
     }
 }
 

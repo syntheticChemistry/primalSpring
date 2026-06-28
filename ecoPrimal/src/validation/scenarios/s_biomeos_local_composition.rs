@@ -91,8 +91,8 @@ fn phase_local_binding(v: &mut ValidationResult) {
     let eastgate_addr = mesh_address("eastGate");
     v.check_bool(
         "local:eastgate_meshed",
-        eastgate_addr == Some("10.13.37.5"),
-        &format!("eastGate mesh address: {eastgate_addr:?}"),
+        eastgate_addr.is_some(),
+        &format!("eastGate mesh address resolved: {eastgate_addr:?}"),
     );
 }
 

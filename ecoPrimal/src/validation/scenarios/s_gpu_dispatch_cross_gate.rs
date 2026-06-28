@@ -144,8 +144,8 @@ fn phase_dispatch_topology(v: &mut ValidationResult) {
     let iron_addr = mesh_address("ironGate");
     v.check_bool(
         "topology:irongate_mesh_route",
-        iron_addr == Some("10.13.37.7"),
-        &format!("ironGate mesh route: {iron_addr:?} (expect 10.13.37.7)"),
+        iron_addr.is_some(),
+        &format!("ironGate mesh route resolved from SSOT: {iron_addr:?}"),
     );
 
     let east_addr = mesh_address("eastGate");

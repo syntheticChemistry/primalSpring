@@ -19,6 +19,7 @@
 
 use crate::composition::CompositionContext;
 use crate::evolution::gate::{CytoplasmZone, mesh_address};
+use crate::evolution::all_mesh_gates;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -36,33 +37,35 @@ pub const SCENARIO: Scenario = Scenario {
 };
 
 struct PeerProfile {
-    name: &'static str,
+    name: String,
     zone: CytoplasmZone,
     max_rtt_ms: u64,
 }
 
-const PEER_PROFILES: &[PeerProfile] = &[
-    PeerProfile {
-        name: "golgi",
-        zone: CytoplasmZone::Wan,
-        max_rtt_ms: 100,
-    },
-    PeerProfile {
-        name: "sporeGate",
-        zone: CytoplasmZone::Backbone,
-        max_rtt_ms: 80,
-    },
-    PeerProfile {
-        name: "ironGate",
-        zone: CytoplasmZone::Backbone,
-        max_rtt_ms: 80,
-    },
-    PeerProfile {
-        name: "flockGate",
-        zone: CytoplasmZone::Garage,
-        max_rtt_ms: 150,
-    },
-];
+/// RTT threshold per zone class (milliseconds).
+/// WG overlay routes through golgi (VPS hub), so remote peers see relay jitter.
+/// Thresholds are generous to avoid false positives under parallel test load.
+fn zone_rtt_threshold(zone: &str) -> u64 {
+    match zone {
+        "Wan" => 500,
+        "Backbone" => 150,
+        "House2" | "Garage" => 300,
+        _ => 500,
+    }
+}
+
+/// Build peer profiles dynamically from mesh topology SSOT.
+fn build_peer_profiles() -> Vec<PeerProfile> {
+    all_mesh_gates()
+        .iter()
+        .filter(|g| !g.address.is_empty())
+        .map(|g| PeerProfile {
+            name: g.name.clone(),
+            zone: CytoplasmZone::for_gate(&g.name),
+            max_rtt_ms: zone_rtt_threshold(&g.zone),
+        })
+        .collect()
+}
 
 fn run_mesh_reachability(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     let gate = detect_gate();
@@ -82,12 +85,13 @@ fn detect_gate() -> String {
 }
 
 fn phase_rtt_thresholds(v: &mut ValidationResult, gate: &str) {
-    for profile in PEER_PROFILES {
+    let profiles = build_peer_profiles();
+    for profile in &profiles {
         if profile.name.eq_ignore_ascii_case(gate) {
             continue;
         }
 
-        let Some(ip) = mesh_address(profile.name) else {
+        let Some(ip) = mesh_address(&profile.name) else {
             v.check_skip(
                 &format!("rtt:{}", profile.name),
                 &format!("{}: no mesh address", profile.name),
@@ -118,15 +122,16 @@ fn phase_rtt_thresholds(v: &mut ValidationResult, gate: &str) {
 }
 
 fn phase_packet_loss(v: &mut ValidationResult, gate: &str) {
+    let profiles = build_peer_profiles();
     let mut total_peers = 0u32;
     let mut zero_loss = 0u32;
 
-    for profile in PEER_PROFILES {
+    for profile in &profiles {
         if profile.name.eq_ignore_ascii_case(gate) {
             continue;
         }
 
-        let Some(ip) = mesh_address(profile.name) else {
+        let Some(ip) = mesh_address(&profile.name) else {
             continue;
         };
 

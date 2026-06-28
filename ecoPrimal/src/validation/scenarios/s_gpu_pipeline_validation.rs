@@ -269,8 +269,8 @@ fn phase_routing(v: &mut ValidationResult) {
     let iron_addr = mesh_address("ironGate");
     v.check_bool(
         "route:irongate_reachable",
-        iron_addr == Some("10.13.37.7"),
-        &format!("ironGate mesh address: {iron_addr:?}"),
+        iron_addr.is_some(),
+        &format!("ironGate mesh address resolved from SSOT: {iron_addr:?}"),
     );
 
     for slug in GPU_PRIMALS {

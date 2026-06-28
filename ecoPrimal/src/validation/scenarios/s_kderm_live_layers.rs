@@ -16,6 +16,7 @@
 //! This scenario is tier Both (structural assertions + live probes).
 
 use crate::composition::CompositionContext;
+use crate::evolution::gate::mesh_address;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -145,23 +146,27 @@ fn phase_periplasm(v: &mut ValidationResult) {
         );
     }
 
-    let ping_golgi = std::process::Command::new("ping")
-        .args(["-c1", "-W2", "10.13.37.1"])
-        .output()
-        .is_ok_and(|o| o.status.success());
+    if let Some(golgi_ip) = mesh_address("golgi") {
+        let ping_golgi = std::process::Command::new("ping")
+            .args(["-c1", "-W2", golgi_ip])
+            .output()
+            .is_ok_and(|o| o.status.success());
 
-    v.check_bool(
-        "periplasm:relay_reachable",
-        ping_golgi,
-        &format!(
-            "golgi relay (10.13.37.1): {}",
-            if ping_golgi {
-                "reachable"
-            } else {
-                "UNREACHABLE"
-            }
-        ),
-    );
+        v.check_bool(
+            "periplasm:relay_reachable",
+            ping_golgi,
+            &format!(
+                "golgi relay ({golgi_ip}): {}",
+                if ping_golgi {
+                    "reachable"
+                } else {
+                    "UNREACHABLE"
+                }
+            ),
+        );
+    } else {
+        v.check_skip("periplasm:relay_reachable", "golgi address not in mesh SSOT");
+    }
 }
 
 fn phase_outer_membrane(v: &mut ValidationResult) {

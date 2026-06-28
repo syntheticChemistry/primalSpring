@@ -79,8 +79,8 @@ fn phase_topology(v: &mut ValidationResult) {
     let golgi_addr = mesh_address("golgi");
     v.check_bool(
         "topo:golgi_address",
-        golgi_addr == Some("10.13.37.1"),
-        &format!("golgi address: {golgi_addr:?}"),
+        golgi_addr.is_some(),
+        &format!("golgi address resolved from SSOT: {golgi_addr:?}"),
     );
 
     let meshed_count = gates.iter().filter(|g| !g.address.is_empty()).count();

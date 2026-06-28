@@ -15,6 +15,7 @@
 
 use crate::composition::CompositionContext;
 use crate::evolution::gate::mesh_address;
+use crate::evolution::all_mesh_gates;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -102,13 +103,12 @@ fn phase_live_reachability(v: &mut ValidationResult) {
         return;
     }
 
-    let peers: &[(&str, &str)] = &[
-        ("golgi", "10.13.37.1"),
-        ("sporeGate", "10.13.37.2"),
-        ("eastGate", "10.13.37.5"),
-        ("flockGate", "10.13.37.6"),
-        ("ironGate", "10.13.37.7"),
-    ];
+    let peer_entries: Vec<(&str, &str)> = all_mesh_gates()
+        .iter()
+        .filter(|g| !g.address.is_empty())
+        .map(|g| (g.name.as_str(), g.address.as_str()))
+        .collect();
+    let peers = &peer_entries[..];
 
     let mut reachable_count = 0u32;
 
