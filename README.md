@@ -94,7 +94,8 @@ primalSpring/
 │   └── federation/               # 1 content distribution
 ├── docs/                          # Structured gap registry and subsystem documentation
 │   └── PRIMAL_GAPS.md            # Per-primal gap inventory with severity and fix paths
-├── tools/                         # Fossilized — all tooling absorbed into Rust
+├── notebooks/                     # Jupyter evidence notebooks (scaffolded, data gen pending)
+├── benchScale/                    # Local mesh topology configs for live_mesh scenarios
 ├── niches/                        # BYOB niche deployment YAML
 ├── specs/                         # Architecture specs
 ├── wateringHole/                  # Fossilized — see infra/wateringHole/
@@ -170,9 +171,9 @@ cargo coverage
 
 This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report. Release gate (`primalspring release`) enforces a **70%** floor. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
 
-## Validation Scenarios (92 across 12 tracks)
+## Validation Scenarios (103 across 12 tracks)
 
-primalSpring ships 99 validation scenarios organized into 12 tracks:
+primalSpring ships 103 validation scenarios organized into 12 tracks:
 
 | Track | Scenarios | Tier |
 |-------|-----------|------|
@@ -471,13 +472,15 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
 **57/57 (100%)** — all scenarios passing. See `docs/PRIMAL_GAPS.md` for the structured gap registry (13/13 zero debt, Waves 1–67 complete).
 
-## Live Integration Status (June 22, 2026)
+## Live Integration Status (June 28, 2026)
 
 **13/13 primals ALIVE** on eastGate + flockGate (plasmidBin-only, post-primordial).
 Zero debt, 13/13 BTSP Phase 3 FULL AEAD, 13/13 MethodGate adopted.
 Zero-port Tower Atomic standard: UDS-only default, TCP opt-in via `PRIMALSPRING_TCP_TIER5=1`.
-4-node WireGuard mesh (golgi ↔ sporeGate ↔ eastGate ↔ flockGate).
+5-node WireGuard mesh (golgi ↔ sporeGate ↔ eastGate ↔ flockGate ↔ ironGate).
+sporeGate role: ephemeral compute (hot-pluggable, no network-critical services).
 Songbird TCP :7700 federation. Config-driven topology (`config/mesh_topology.toml`).
+Validation scenarios derive mesh topology from SSOT (zero hardcoded IPs in production paths).
 
 | Primal | Status | Notes |
 |--------|--------|-------|
@@ -539,12 +542,12 @@ Former CI/validation scripts (`validate_release.sh`, `validate_nucleus_deploymen
 `validate_deployment_matrix.sh`, etc.) have been replaced by the `primalspring release`
 and `primalspring nucleus` Rust subcommands (Wave 82c deep debt sprint).
 
-**`tools/`** — empty (all tooling absorbed into Rust as of Wave 120).
+**`tools/`** — removed (all tooling absorbed into Rust as of Wave 120).
 
-All tools (25+ shell scripts, GDScript, Python) have been deleted or fossilized
-to `fossilRecord/` as part of deep debt sprints (Waves 82c, 120). Shell composition
-library, NUCLEUS launchers, method audit tools, and desktop launchers are all absorbed
-into idiomatic Rust (`nucleus_launcher`, `primalspring` subcommands).
+All tools (25+ shell scripts, GDScript, Python) were deleted or fossilized to
+`fossilRecord/` during deep debt sprints (Waves 82c, 120). Shell composition library,
+NUCLEUS launchers, method audit tools, and desktop launchers are all absorbed into
+idiomatic Rust (`nucleus_launcher`, `primalspring` subcommands).
 
 ---
 

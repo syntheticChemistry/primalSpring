@@ -150,35 +150,10 @@ fn phase_dashboard_contract(v: &mut ValidationResult) {
 }
 
 fn phase_web_ui(v: &mut ValidationResult) {
-    let web_dir = std::path::Path::new("web");
-    let play_html = web_dir.join("play.html");
-
-    v.check_bool(
-        "web:play_html_exists",
-        play_html.exists(),
-        "web/play.html static dashboard shell present",
+    v.check_skip(
+        "web:viz_served_by_primal",
+        "petalTongue serves viz natively (web/ fossilized Wave 128)",
     );
-
-    if play_html.exists() {
-        let content = std::fs::read_to_string(&play_html).unwrap_or_default();
-        let has_composition_ref = content.contains("Composition")
-            || content.contains("composition")
-            || content.contains("Monitor");
-        v.check_bool(
-            "web:dashboard_content",
-            has_composition_ref,
-            "play.html references composition/monitor concepts",
-        );
-
-        let has_websocket = content.contains("WebSocket")
-            || content.contains("ws://")
-            || content.contains("EventSource");
-        v.check_bool(
-            "web:realtime_capable",
-            has_websocket,
-            "play.html has real-time transport (WebSocket/EventSource)",
-        );
-    }
 }
 
 fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {

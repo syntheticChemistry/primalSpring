@@ -47,7 +47,6 @@ struct PeerProfile {
 /// Thresholds are generous to avoid false positives under parallel test load.
 fn zone_rtt_threshold(zone: &str) -> u64 {
     match zone {
-        "Wan" => 500,
         "Backbone" => 150,
         "House2" | "Garage" => 300,
         _ => 500,

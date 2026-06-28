@@ -5,7 +5,7 @@
 # Binary checksums sourced from $ECOPRIMALS_PLASMID_BIN/primals/x86_64-unknown-linux-musl/
 #
 # Verify: primalspring certify — Layer 0.5 (Seed Provenance)
-# Regenerate: tools/gen_seed_fingerprints.sh
+# Regenerate: primalspring certify --bare (Layer 0.5 validates these)
 
 [fingerprints]
 barracuda       = "60cccf707d26996c88b4b1e1f92f0033c2aae02f9e902e425c940d6b99b615ad"

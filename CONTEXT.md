@@ -98,7 +98,7 @@ to primalSpring as experiment targets.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 92 absorbed experiment scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 103 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
