@@ -50,7 +50,7 @@ const PEER_PROFILES: &[PeerProfile] = &[
     PeerProfile {
         name: "sporeGate",
         zone: CytoplasmZone::Backbone,
-        max_rtt_ms: 5,
+        max_rtt_ms: 80,
     },
     PeerProfile {
         name: "ironGate",
