@@ -67,8 +67,11 @@ struct ProfilesConfig {
 /// Returns [`LaunchError::ProfileParseError`] if the TOML is malformed.
 pub fn load_launch_profiles() -> Result<(LaunchProfile, HashMap<String, LaunchProfile>), LaunchError>
 {
-    let config: ProfilesConfig = toml::from_str(LAUNCH_PROFILES_TOML)
-        .map_err(|e| LaunchError::ProfileParseError(e.to_string()))?;
+    let config: ProfilesConfig =
+        toml::from_str(LAUNCH_PROFILES_TOML).map_err(|e| LaunchError::ProfileParseError {
+            context: "launch profiles".to_owned(),
+            detail: e.to_string(),
+        })?;
     Ok((config.default, config.profiles))
 }
 

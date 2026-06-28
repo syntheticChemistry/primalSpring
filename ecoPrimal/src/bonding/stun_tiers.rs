@@ -19,6 +19,10 @@ const DEFAULT_MAX_LINEAGE_HOPS: u32 = 3;
 const DEFAULT_RELAY_BANDWIDTH_MBPS: u64 = 100;
 const DEFAULT_MAX_CONCURRENT_RELAYS: u32 = 10;
 
+/// Sovereignty policy: substring patterns identifying corporate STUN providers.
+/// Sovereignty-first mode warns when Tier 3 servers match these patterns.
+const CORPORATE_STUN_PATTERNS: [&str; 3] = ["google", "cloudflare", "twilio"];
+
 /// Parsed STUN multi-tier configuration.
 #[derive(Debug, Clone)]
 pub struct StunTierConfig {
@@ -332,7 +336,7 @@ pub fn validate_sovereignty_first(config: &StunTierConfig) -> Vec<String> {
         }
     }
 
-    let corporate_patterns = ["google", "cloudflare", "twilio"];
+    let corporate_patterns = CORPORATE_STUN_PATTERNS;
     for server in &config.public_stun.servers {
         if server.enabled {
             let addr_lower = server.address.to_lowercase();

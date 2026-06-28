@@ -552,16 +552,16 @@ impl AtomicHarness {
             ));
         };
 
-        let graph = deploy::load_graph(graph_path).map_err(|e| {
-            LaunchError::ProfileParseError(format!("deploy graph {}: {e}", graph_path.display()))
+        let graph = deploy::load_graph(graph_path).map_err(|e| LaunchError::ProfileParseError {
+            context: format!("deploy graph {}", graph_path.display()),
+            detail: e.to_string(),
         })?;
 
-        let waves = deploy::topological_waves(&graph).map_err(|e| {
-            LaunchError::ProfileParseError(format!(
-                "topological sort of {}: {e}",
-                graph_path.display()
-            ))
-        })?;
+        let waves =
+            deploy::topological_waves(&graph).map_err(|e| LaunchError::ProfileParseError {
+                context: format!("topological sort of {}", graph_path.display()),
+                detail: e.to_string(),
+            })?;
 
         let spawnable: HashSet<String> = deploy::graph_spawnable_primals(&graph)
             .into_iter()

@@ -4,13 +4,15 @@
 //! Gate readiness matrix — tracks deployment posture per gate.
 //!
 //! Each gate in the ecosystem has a readiness state determined by:
-//! - Primal liveness (how many of 13 are running)
+//! - Primal liveness (how many NUCLEUS primals are running)
 //! - Depot freshness (how old are the binaries)
 //! - VCS sync status (is it on HEAD)
 //! - Mesh connectivity (federation peers reachable)
 //! - Identity configuration (GATE_NAME, FAMILY_SEED)
 
 use std::fmt;
+
+use crate::tolerances::ports::all_primal_slugs;
 
 /// Readiness classification for a single gate.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -130,7 +132,11 @@ impl GateStatus {
             readiness,
             zone,
             primals_alive: 0,
-            primals_expected: 13,
+            #[expect(
+                clippy::cast_possible_truncation,
+                reason = "primal count fits in u8 (currently 13)"
+            )]
+            primals_expected: all_primal_slugs().len() as u8,
             depot_fresh: false,
             vcs_synced: false,
             mesh_peers: 0,
@@ -399,7 +405,7 @@ pub fn local_assessment() -> GateStatus {
         name,
         readiness: ReadinessLevel::Offline,
         primals_alive: primals_alive as u8,
-        primals_expected: 13,
+        primals_expected: all_primal_slugs().len() as u8,
         depot_fresh: true,
         vcs_synced,
         mesh_peers: mesh_peers as u8,

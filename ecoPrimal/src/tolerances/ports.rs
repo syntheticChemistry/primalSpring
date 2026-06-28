@@ -114,11 +114,15 @@ fn toml_port_for(primal: &str) -> Option<u16> {
         .map(|e| e.port)
 }
 
-/// All 13 NUCLEUS primals — canonical port registry.
+/// Static port registry — backward compatibility only.
 ///
+/// **Prefer [`default_port_for`] and [`all_primal_slugs`]** for new code.
+/// These constants duplicate `config/ports.toml`; drift is caught by tests.
 /// Port assignments confirmed against ironGate live deployment (2026-05-04).
-/// These constants remain for backward compatibility; the authoritative
-/// source is `config/ports.toml`.
+#[deprecated(
+    since = "0.9.33",
+    note = "use default_port_for() / all_primal_slugs() instead of static PORT_REGISTRY"
+)]
 pub static PORT_REGISTRY: &[PortEntry] = &[
     PortEntry {
         slug: primal_names::BEARDOG,

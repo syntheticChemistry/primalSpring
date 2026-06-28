@@ -184,9 +184,12 @@ fn launch_error_display_health_check_failed() {
 
 #[test]
 fn launch_error_display_profile_parse() {
-    let err = LaunchError::ProfileParseError("bad toml".to_owned());
+    let err = LaunchError::ProfileParseError {
+        context: "launch profiles".to_owned(),
+        detail: "bad toml".to_owned(),
+    };
     let msg = err.to_string();
-    assert!(msg.contains("launch profile parse error"));
+    assert!(msg.contains("parse error"));
 }
 
 #[test]
@@ -206,7 +209,10 @@ fn launch_error_source_none_for_other_variants() {
     };
     assert!(std::error::Error::source(&err).is_none());
 
-    let err2 = LaunchError::ProfileParseError("x".to_owned());
+    let err2 = LaunchError::ProfileParseError {
+        context: "test".to_owned(),
+        detail: "x".to_owned(),
+    };
     assert!(std::error::Error::source(&err2).is_none());
 }
 

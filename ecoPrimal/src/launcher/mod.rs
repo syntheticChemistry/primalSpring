@@ -106,12 +106,14 @@ pub enum LaunchError {
         /// Detail from the failed health call.
         detail: String,
     },
-    /// Launch profiles TOML failed to parse.
-    #[error("launch profile parse error: {0}")]
-    ProfileParseError(
-        /// Parse error detail.
-        String,
-    ),
+    /// Launch profiles TOML or deploy graph failed to parse.
+    #[error("profile/graph parse error: {context}: {detail}")]
+    ProfileParseError {
+        /// What was being parsed (e.g. "launch profiles", "deploy graph /path").
+        context: String,
+        /// The underlying parse error message.
+        detail: String,
+    },
     /// Deterministic seed generation failed (harness HKDF, etc.).
     #[error("seed generation failed: {detail}")]
     SeedGenerationFailed {

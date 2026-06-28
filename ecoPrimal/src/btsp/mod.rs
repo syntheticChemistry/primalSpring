@@ -170,8 +170,15 @@ pub fn security_mode_from_env() -> SecurityMode {
 
 /// Error returned when the BTSP security guard detects conflicting env config.
 #[derive(Debug, thiserror::Error)]
-#[error("{0}")]
-pub struct BtspGuardError(pub String);
+pub enum BtspGuardError {
+    /// `FAMILY_ID` and `BIOMEOS_INSECURE=1` cannot coexist.
+    #[error(
+        "FATAL: FAMILY_ID and BIOMEOS_INSECURE=1 cannot coexist. \
+         Production mode (FAMILY_ID set) requires BTSP authentication. \
+         Remove BIOMEOS_INSECURE to run in production, or unset FAMILY_ID for development."
+    )]
+    InsecureWithFamilyId,
+}
 
 /// Validate that `FAMILY_ID` and `BIOMEOS_INSECURE` are not both set.
 ///
@@ -185,12 +192,7 @@ pub fn validate_insecure_guard() -> Result<(), BtspGuardError> {
         std::env::var(crate::env_keys::BIOMEOS_INSECURE).is_ok_and(|v| v == "1" || v == "true");
 
     if has_family && insecure {
-        return Err(BtspGuardError(
-            "FATAL: FAMILY_ID and BIOMEOS_INSECURE=1 cannot coexist. \
-             Production mode (FAMILY_ID set) requires BTSP authentication. \
-             Remove BIOMEOS_INSECURE to run in production, or unset FAMILY_ID for development."
-                .to_owned(),
-        ));
+        return Err(BtspGuardError::InsecureWithFamilyId);
     }
     Ok(())
 }
