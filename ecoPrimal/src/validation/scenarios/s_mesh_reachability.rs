@@ -49,13 +49,13 @@ const PEER_PROFILES: &[PeerProfile] = &[
     },
     PeerProfile {
         name: "sporeGate",
-        zone: CytoplasmZone::Wan,
-        max_rtt_ms: 150,
+        zone: CytoplasmZone::Backbone,
+        max_rtt_ms: 5,
     },
     PeerProfile {
-        name: "pepti",
-        zone: CytoplasmZone::Wan,
-        max_rtt_ms: 100,
+        name: "ironGate",
+        zone: CytoplasmZone::Backbone,
+        max_rtt_ms: 80,
     },
     PeerProfile {
         name: "flockGate",

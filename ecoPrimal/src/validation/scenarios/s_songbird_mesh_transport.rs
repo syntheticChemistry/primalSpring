@@ -90,7 +90,10 @@ fn phase_mesh_coverage(v: &mut ValidationResult) {
     v.check_bool(
         "mesh:coverage_breadth",
         registered >= 8,
-        &format!("{registered}/{} mesh methods registered", MESH_METHODS.len()),
+        &format!(
+            "{registered}/{} mesh methods registered",
+            MESH_METHODS.len()
+        ),
     );
 }
 
@@ -141,7 +144,10 @@ fn phase_relay_federation(v: &mut ValidationResult) {
     v.check_bool(
         "fed:federation_depth",
         fed_count >= 3,
-        &format!("{fed_count}/{} federation methods present", FEDERATION_METHODS.len()),
+        &format!(
+            "{fed_count}/{} federation methods present",
+            FEDERATION_METHODS.len()
+        ),
     );
 
     let has_relay = REGISTRY_TOML.contains("mesh.relay");
@@ -292,7 +298,10 @@ mod tests {
     #[test]
     fn all_gates_addressable() {
         for gate in &["eastGate", "sporeGate", "flockGate", "ironGate", "golgi"] {
-            assert!(mesh_address(gate).is_some(), "{gate} should have WG address");
+            assert!(
+                mesh_address(gate).is_some(),
+                "{gate} should have WG address"
+            );
         }
     }
 

@@ -72,7 +72,7 @@ fn phase_local_interface(v: &mut ValidationResult) {
 }
 
 fn phase_addressing(v: &mut ValidationResult) {
-    let live_nodes = ["golgi", "sporeGate", "pepti", "eastGate", "flockGate"];
+    let live_nodes = ["golgi", "sporeGate", "eastGate", "flockGate", "ironGate"];
     let mut assigned_count = 0u32;
 
     for node in &live_nodes {
@@ -105,8 +105,9 @@ fn phase_live_reachability(v: &mut ValidationResult) {
     let peers: &[(&str, &str)] = &[
         ("golgi", "10.13.37.1"),
         ("sporeGate", "10.13.37.2"),
-        ("pepti", "10.13.37.4"),
+        ("eastGate", "10.13.37.5"),
         ("flockGate", "10.13.37.6"),
+        ("ironGate", "10.13.37.7"),
     ];
 
     let mut reachable_count = 0u32;

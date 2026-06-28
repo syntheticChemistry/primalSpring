@@ -83,7 +83,10 @@ fn phase_domains(v: &mut ValidationResult) {
     v.check_bool(
         "domain:skunkbat_owns_defense",
         owned_count == defense_related.len(),
-        &format!("skunkbat owns {owned_count}/{} defense domains", defense_related.len()),
+        &format!(
+            "skunkbat owns {owned_count}/{} defense domains",
+            defense_related.len()
+        ),
     );
 }
 
@@ -110,7 +113,10 @@ fn phase_method_gate_gap(v: &mut ValidationResult) {
     v.check_bool(
         "gap:methods_registered",
         present > 0 || missing.is_empty(),
-        &format!("{present}/{} MethodGate methods registered", expected_methods.len()),
+        &format!(
+            "{present}/{} MethodGate methods registered",
+            expected_methods.len()
+        ),
     );
 
     if !missing.is_empty() {

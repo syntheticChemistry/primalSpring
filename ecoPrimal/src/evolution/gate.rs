@@ -178,6 +178,12 @@ static MESH_REGISTRY: std::sync::LazyLock<Vec<MeshEntry>> = std::sync::LazyLock:
         .iter()
         .filter_map(|g| {
             let t = g.as_table()?;
+            if t.get("retired")
+                .and_then(toml::Value::as_bool)
+                .unwrap_or(false)
+            {
+                return None;
+            }
             let name = t.get("name")?.as_str()?.to_owned();
             let address = t
                 .get("address")
@@ -444,7 +450,7 @@ mod tests {
     #[test]
     fn matrix_snapshot_structure() {
         let m = GateMatrix::ecosystem_snapshot();
-        assert_eq!(m.gates.len(), 11);
+        assert_eq!(m.gates.len(), 10);
         assert!(m.gates.iter().any(|g| g.name == "eastGate"));
         assert!(m.gates.iter().any(|g| g.name == "golgi"));
         assert!(m.gates.iter().any(|g| g.name == "ironGate"));
@@ -455,6 +461,6 @@ mod tests {
     fn matrix_summary_format() {
         let m = GateMatrix::ecosystem_snapshot();
         let s = m.summary();
-        assert!(s.contains("11 gates"));
+        assert!(s.contains("10 gates"));
     }
 }

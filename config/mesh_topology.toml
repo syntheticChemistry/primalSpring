@@ -20,7 +20,7 @@ zone = "Wan"
 [[gate]]
 name = "sporeGate"
 address = "10.13.37.2"
-role = "build_authority"
+role = "compute"
 zone = "Backbone"
 
 [[gate]]
@@ -28,6 +28,7 @@ name = "pepti"
 address = "10.13.37.4"
 role = "relay"
 zone = "Wan"
+retired = true
 
 [[gate]]
 name = "eastGate"

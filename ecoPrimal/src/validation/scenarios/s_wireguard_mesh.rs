@@ -33,9 +33,9 @@ const HANDSHAKE_MAX_AGE_SECS: u64 = 300;
 const EXPECTED_PEERS: &[(&str, &str)] = &[
     ("golgi", "10.13.37.1"),
     ("sporeGate", "10.13.37.2"),
-    ("pepti", "10.13.37.4"),
     ("eastGate", "10.13.37.5"),
     ("flockGate", "10.13.37.6"),
+    ("ironGate", "10.13.37.7"),
 ];
 
 /// WireGuard mesh topology validation scenario.

@@ -48,18 +48,18 @@ fn phase_structural(v: &mut ValidationResult) {
 
     v.check_bool(
         "matrix:gate_count",
-        matrix.gates.len() == 11,
-        &format!("{} gates tracked (expect 11)", matrix.gates.len()),
+        matrix.gates.len() == 10,
+        &format!("{} gates tracked (expect 10)", matrix.gates.len()),
     );
 
     let expected_gates = [
         "eastGate",
         "sporeGate",
         "golgi",
-        "pepti",
         "northGate",
         "fieldGate",
         "flockGate",
+        "ironGate",
     ];
     for name in &expected_gates {
         let found = matrix.gates.iter().any(|g| g.name == *name);
@@ -112,7 +112,7 @@ fn phase_structural(v: &mut ValidationResult) {
     let summary = matrix.summary();
     v.check_bool(
         "matrix:summary:contains_gates",
-        summary.contains("11 gates"),
+        summary.contains("10 gates"),
         &format!("summary: {summary}"),
     );
 }

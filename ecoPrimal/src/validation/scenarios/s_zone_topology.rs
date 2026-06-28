@@ -11,7 +11,7 @@
 //! | Backbone | Hub 1 | CRS310 (10G)     | sporeGate, eastGate, northGate, ironGate |
 //! | House2   | Hub 2 | Omada SX3008F    | strandGate, southGate, swiftGate, fieldGate |
 //! | Garage   | Hub 3 | planned          | (future compute + outdoor WiFi)    |
-//! | WAN      | —     | Internet/VPS     | golgi, pepti, flockGate            |
+//! | WAN      | —     | Internet/VPS     | golgi, flockGate                   |
 //!
 //! The target topology forms a triangle:
 //! ```text
@@ -67,7 +67,6 @@ fn validate_zone_assignments(v: &mut ValidationResult) {
         ("swiftGate", CytoplasmZone::House2),
         ("fieldGate", CytoplasmZone::House2),
         ("golgi", CytoplasmZone::Wan),
-        ("pepti", CytoplasmZone::Wan),
         ("flockGate", CytoplasmZone::Wan),
     ];
 
@@ -205,7 +204,7 @@ fn validate_zone_isolation(v: &mut ValidationResult) {
     let cross_zone_pairs = [
         ("sporeGate", "strandGate"),
         ("eastGate", "golgi"),
-        ("southGate", "pepti"),
+        ("southGate", "flockGate"),
     ];
     for (a, b) in &cross_zone_pairs {
         let za = CytoplasmZone::for_gate(a);
@@ -245,7 +244,6 @@ fn validate_mesh_addresses(v: &mut ValidationResult) {
     let expected: &[(&str, &str)] = &[
         ("golgi", "10.13.37.1"),
         ("sporeGate", "10.13.37.2"),
-        ("pepti", "10.13.37.4"),
         ("eastGate", "10.13.37.5"),
         ("flockGate", "10.13.37.6"),
         ("ironGate", "10.13.37.7"),

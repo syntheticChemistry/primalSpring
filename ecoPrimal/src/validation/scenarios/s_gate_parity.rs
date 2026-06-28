@@ -52,7 +52,7 @@ fn detect_local_gate() -> String {
         "eastgate" | "eastGate" => "eastGate".to_owned(),
         "sporegate" | "sporeGate" => "sporeGate".to_owned(),
         "golgi" => "golgi".to_owned(),
-        "pepti" => "pepti".to_owned(),
+        "irongate" | "ironGate" => "ironGate".to_owned(),
         "flockgate" | "flockGate" => "flockGate".to_owned(),
         other => other.to_owned(),
     }
@@ -80,7 +80,7 @@ fn phase_primal_count(v: &mut ValidationResult, gate: &str) {
 
     let min_expected: usize = match gate {
         "eastGate" | "sporeGate" => 10,
-        "golgi" | "pepti" => 5,
+        "golgi" => 5,
         _ => 1,
     };
 
@@ -172,7 +172,7 @@ fn phase_wg_handshakes(v: &mut ValidationResult, gate: &str) {
         return;
     }
 
-    let peers = ["golgi", "sporeGate", "pepti", "eastGate", "flockGate"];
+    let peers = ["golgi", "sporeGate", "eastGate", "flockGate", "ironGate"];
     let mut reachable = 0u32;
     let mut total_probed = 0u32;
 

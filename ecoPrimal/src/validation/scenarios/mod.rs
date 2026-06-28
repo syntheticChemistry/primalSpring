@@ -132,6 +132,7 @@ pub mod s_protocol_escalation;
 pub mod s_provenance_chain_integrity;
 pub mod s_provenance_cross_gate;
 pub mod s_provenance_trio_pipeline;
+pub mod s_relay_forward_transport;
 pub mod s_ribocipher_acceptance;
 pub mod s_routing_consistency;
 pub mod s_schema_standard;
@@ -252,6 +253,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_multigate_composition::SCENARIO);
     r.register(s_petaltongue_viz::SCENARIO);
     r.register(s_skunkbat_method_gate::SCENARIO);
+    r.register(s_relay_forward_transport::SCENARIO);
     r.register(s_songbird_mesh_transport::SCENARIO);
     r.register(s_genetics_compliance::SCENARIO);
     r.register(s_kderm_live_layers::SCENARIO);
@@ -283,7 +285,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 108;
+    const EXPECTED_SCENARIO_COUNT: usize = 109;
 
     #[test]
     fn registry_scenario_count() {
@@ -341,10 +343,9 @@ mod tests {
         // (update the list) or when new failures appear (fail loudly).
         // Wave 109: all upstream blockers resolved. sporePrint cert pipeline
         // shipped. grapheneGate 13/13 alive. Zero known debt.
-        // Wave 120: cascade-drift resolved. mesh-overlay has 3 live-probe
-        // failures (pepti offline, flockGate WAN relay intermittent).
-        // Wave 126: cascade-drift 1 failure — depot stale (awaiting sporeGate rebuild).
-        const KNOWN_DEBT: &[(&str, u32)] = &[("mesh-overlay", 3), ("cascade-drift", 1)];
+        // Wave 128: cascade-drift 1 failure — depot 309h stale (sporeGate rebuild pending).
+        // mesh-overlay removed: Tier::Both (never runs in Rust-tier-only test).
+        const KNOWN_DEBT: &[(&str, u32)] = &[("cascade-drift", 1)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
