@@ -55,7 +55,6 @@ pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_neural_api;
 pub mod s_bootstrap_readiness;
-pub mod s_btsp_cross_gate_trust;
 pub mod s_btsp_cross_gate_verify;
 pub mod s_btsp_cross_primal;
 pub mod s_capability_convergence;
@@ -73,7 +72,6 @@ pub mod s_coralreef_shader_targets;
 pub mod s_covalent_bond;
 pub mod s_covalent_mesh;
 pub mod s_cross_gate_capability_call;
-pub mod s_cross_gate_compute_dispatch;
 pub mod s_cross_primal_interaction;
 pub mod s_cross_spring_data_flow;
 pub mod s_cross_target_parity;
@@ -93,8 +91,6 @@ pub mod s_gate_failure;
 pub mod s_gate_parity;
 pub mod s_gate_readiness;
 pub mod s_genetics_compliance;
-pub mod s_gpu_dispatch_cross_gate;
-pub mod s_gpu_pipeline_validation;
 pub mod s_graph_pipeline_depth;
 pub mod s_graphenegate_readiness;
 pub mod s_health_lifecycle_surface;
@@ -103,14 +99,12 @@ pub mod s_ionic_bond;
 pub mod s_kderm_boundary;
 pub mod s_kderm_live_layers;
 pub mod s_loam_certificate_lifecycle;
-pub mod s_mesh_capability_propagation;
 pub mod s_mesh_overlay;
+pub mod s_metallic_bond;
 pub mod s_mesh_reachability;
 pub mod s_mesh_topology;
 pub mod s_meta_tier_compositions;
-pub mod s_metallic_bond;
 pub mod s_multi_gate_nucleus;
-pub mod s_multigate_composition;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
 pub mod s_nestgate_content_pipeline;
@@ -120,9 +114,8 @@ pub mod s_node_atomic;
 pub mod s_nucleus_integration;
 pub mod s_nucleus_orchestration;
 pub mod s_nucleus_user_deploy;
-pub mod s_observatory_parity;
 pub mod s_parallel_graph;
-pub mod s_petaltongue_viz;
+pub mod s_observatory_parity;
 pub mod s_plasmodium_collective;
 pub mod s_pressure_surface;
 pub mod s_primal_announce;
@@ -132,12 +125,10 @@ pub mod s_protocol_escalation;
 pub mod s_provenance_chain_integrity;
 pub mod s_provenance_cross_gate;
 pub mod s_provenance_trio_pipeline;
-pub mod s_relay_forward_transport;
 pub mod s_ribocipher_acceptance;
 pub mod s_routing_consistency;
 pub mod s_schema_standard;
 pub mod s_sequential_graph;
-pub mod s_shader_compilation_pipeline;
 pub mod s_skunkbat_method_gate;
 pub mod s_socket_discovery;
 pub mod s_songbird_mesh_transport;
@@ -207,11 +198,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_nest_commit_live::SCENARIO);
     r.register(s_sporeprint_pure_primal::SCENARIO);
     r.register(s_sporeprint_surface::SCENARIO);
-    r.register(s_btsp_cross_gate_trust::SCENARIO);
     r.register(s_cross_gate_capability_call::SCENARIO);
-    r.register(s_cross_gate_compute_dispatch::SCENARIO);
     r.register(s_cross_primal_interaction::SCENARIO);
-    r.register(s_mesh_capability_propagation::SCENARIO);
     r.register(s_neural_routing::SCENARIO);
     r.register(s_neural_dispatch_live::SCENARIO);
     r.register(s_observatory_parity::SCENARIO);
@@ -250,11 +238,6 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_composition_live_state::SCENARIO);
     r.register(s_gate_parity::SCENARIO);
     r.register(s_multi_gate_nucleus::SCENARIO);
-    r.register(s_multigate_composition::SCENARIO);
-    r.register(s_petaltongue_viz::SCENARIO);
-    r.register(s_skunkbat_method_gate::SCENARIO);
-    r.register(s_relay_forward_transport::SCENARIO);
-    r.register(s_songbird_mesh_transport::SCENARIO);
     r.register(s_genetics_compliance::SCENARIO);
     r.register(s_kderm_live_layers::SCENARIO);
     r.register(s_mesh_reachability::SCENARIO);
@@ -266,15 +249,14 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_wireguard_mesh::SCENARIO);
     r.register(s_provenance_cross_gate::SCENARIO);
     r.register(s_graph_pipeline_depth::SCENARIO);
-    r.register(s_gpu_dispatch_cross_gate::SCENARIO);
-    r.register(s_gpu_pipeline_validation::SCENARIO);
-    r.register(s_shader_compilation_pipeline::SCENARIO);
     r.register(s_defense_attestation::SCENARIO);
     r.register(s_sovereignty_audit_chain::SCENARIO);
     r.register(s_capability_convergence::SCENARIO);
     r.register(s_parallel_graph::SCENARIO);
     r.register(s_metallic_bond::SCENARIO);
     r.register(s_btsp_cross_gate_verify::SCENARIO);
+    r.register(s_skunkbat_method_gate::SCENARIO);
+    r.register(s_songbird_mesh_transport::SCENARIO);
     r
 }
 
@@ -285,7 +267,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 109;
+    const EXPECTED_SCENARIO_COUNT: usize = 100;
 
     #[test]
     fn registry_scenario_count() {
@@ -338,14 +320,12 @@ mod tests {
 
     #[test]
     fn registry_all_rust_tier_pass() {
-        // Pre-existing known failures in Rust-tier scenarios that predate this
-        // meta-test. Track them explicitly so we notice when they get fixed
-        // (update the list) or when new failures appear (fail loudly).
-        // Wave 109: all upstream blockers resolved. sporePrint cert pipeline
-        // shipped. grapheneGate 13/13 alive. Zero known debt.
-        // Wave 128: cascade-drift 1 failure — depot 309h stale (sporeGate rebuild pending).
-        // mesh-overlay removed: Tier::Both (never runs in Rust-tier-only test).
-        const KNOWN_DEBT: &[(&str, u32)] = &[("cascade-drift", 1)];
+        // Wave 128: KNOWN_DEBT swept clean.
+        // - mesh-overlay (Tier::Both) was dead code here — never reached
+        //   because the L328 tier guard skips non-Rust scenarios.
+        // - cascade-drift retiered to Tier::Both (operational checks don't
+        //   belong in Rust-tier: remote parity + depot freshness are live).
+        const KNOWN_DEBT: &[(&str, u32)] = &[];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();

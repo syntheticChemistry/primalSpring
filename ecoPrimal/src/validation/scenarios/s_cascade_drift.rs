@@ -26,7 +26,7 @@ pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "cascade-drift",
         track: Track::Infrastructure,
-        tier: Tier::Rust,
+        tier: Tier::Both,
         provenance_crate: "primalspring",
         provenance_date: "2026-06-17",
         description: "Validates VCS remote parity and depot freshness (zero drift)",

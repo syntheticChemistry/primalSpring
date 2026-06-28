@@ -199,7 +199,7 @@ fn phase_defense_topology(v: &mut ValidationResult) {
 }
 
 fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    match ctx.client_for("threat") {
+    match ctx.client_for("defense") {
         Some(client) => {
             let resp = client.call("health.liveness", serde_json::json!({}));
             match resp {
@@ -219,7 +219,7 @@ fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             }
         }
         None => {
-            v.check_skip("live:skunkbat_health", "no threat client available");
+            v.check_skip("live:skunkbat_health", "no defense client available");
         }
     }
 }

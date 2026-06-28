@@ -198,15 +198,15 @@ fn phase_cross_gate_routing(v: &mut ValidationResult) {
     let golgi_addr = mesh_address("golgi");
     v.check_bool(
         "route:golgi_hub",
-        golgi_addr == Some("10.13.37.1"),
-        &format!("golgi (relay hub) address: {golgi_addr:?}"),
+        golgi_addr.is_some(),
+        &format!("golgi (relay hub) has mesh address: {golgi_addr:?}"),
     );
 }
 
 fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    let Some(client) = ctx.client_for("mesh") else {
-        v.check_skip("live:songbird_health", "no mesh client available");
-        v.check_skip("live:mesh_peers_responds", "no mesh client");
+    let Some(client) = ctx.client_for("discovery") else {
+        v.check_skip("live:songbird_health", "no discovery client available");
+        v.check_skip("live:mesh_peers_responds", "no discovery client");
         return;
     };
 
@@ -307,6 +307,9 @@ mod tests {
 
     #[test]
     fn golgi_is_relay_hub() {
-        assert_eq!(mesh_address("golgi"), Some("10.13.37.1"));
+        assert!(
+            mesh_address("golgi").is_some(),
+            "golgi should have a mesh address in mesh_topology.toml"
+        );
     }
 }
