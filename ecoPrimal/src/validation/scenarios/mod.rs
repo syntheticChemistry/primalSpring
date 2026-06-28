@@ -53,9 +53,9 @@ pub mod s_atomic_compositions;
 pub mod s_barracuda_precision;
 pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
-pub mod s_biomeos_local_composition;
 pub mod s_biomeos_neural_api;
 pub mod s_bootstrap_readiness;
+pub mod s_btsp_cross_gate_trust;
 pub mod s_btsp_cross_gate_verify;
 pub mod s_btsp_cross_primal;
 pub mod s_capability_convergence;
@@ -73,6 +73,7 @@ pub mod s_coralreef_shader_targets;
 pub mod s_covalent_bond;
 pub mod s_covalent_mesh;
 pub mod s_cross_gate_capability_call;
+pub mod s_cross_gate_compute_dispatch;
 pub mod s_cross_primal_interaction;
 pub mod s_cross_spring_data_flow;
 pub mod s_cross_target_parity;
@@ -92,6 +93,8 @@ pub mod s_gate_failure;
 pub mod s_gate_parity;
 pub mod s_gate_readiness;
 pub mod s_genetics_compliance;
+pub mod s_gpu_dispatch_cross_gate;
+pub mod s_gpu_pipeline_validation;
 pub mod s_graph_pipeline_depth;
 pub mod s_graphenegate_readiness;
 pub mod s_health_lifecycle_surface;
@@ -100,12 +103,14 @@ pub mod s_ionic_bond;
 pub mod s_kderm_boundary;
 pub mod s_kderm_live_layers;
 pub mod s_loam_certificate_lifecycle;
+pub mod s_mesh_capability_propagation;
 pub mod s_mesh_overlay;
 pub mod s_mesh_reachability;
 pub mod s_mesh_topology;
 pub mod s_meta_tier_compositions;
 pub mod s_metallic_bond;
 pub mod s_multi_gate_nucleus;
+pub mod s_multigate_composition;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
 pub mod s_nestgate_content_pipeline;
@@ -117,6 +122,7 @@ pub mod s_nucleus_orchestration;
 pub mod s_nucleus_user_deploy;
 pub mod s_observatory_parity;
 pub mod s_parallel_graph;
+pub mod s_petaltongue_viz;
 pub mod s_plasmodium_collective;
 pub mod s_pressure_surface;
 pub mod s_primal_announce;
@@ -127,11 +133,11 @@ pub mod s_provenance_chain_integrity;
 pub mod s_provenance_cross_gate;
 pub mod s_provenance_trio_pipeline;
 pub mod s_relay_forward;
-pub mod s_relay_forward_transport;
 pub mod s_ribocipher_acceptance;
 pub mod s_routing_consistency;
 pub mod s_schema_standard;
 pub mod s_sequential_graph;
+pub mod s_shader_compilation_pipeline;
 pub mod s_skunkbat_method_gate;
 pub mod s_socket_discovery;
 pub mod s_songbird_mesh_transport;
@@ -260,9 +266,16 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_btsp_cross_gate_verify::SCENARIO);
     r.register(s_skunkbat_method_gate::SCENARIO);
     r.register(s_songbird_mesh_transport::SCENARIO);
-    r.register(s_biomeos_local_composition::SCENARIO);
     r.register(s_relay_forward::SCENARIO);
-    r.register(s_relay_forward_transport::SCENARIO);
+    r.register(s_btsp_cross_gate_trust::SCENARIO);
+    r.register(s_cross_gate_compute_dispatch::SCENARIO);
+    r.register(s_gpu_dispatch_cross_gate::SCENARIO);
+    r.register(s_gpu_pipeline_validation::SCENARIO);
+    r.register(s_mesh_capability_propagation::SCENARIO);
+    r.register(s_multigate_composition::SCENARIO);
+    r.register(s_petaltongue_viz::SCENARIO);
+    r.register(s_shader_compilation_pipeline::SCENARIO);
+    r.register(s_squirrel_ai_pipeline::SCENARIO);
     r
 }
 
@@ -273,7 +286,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 103;
+    const EXPECTED_SCENARIO_COUNT: usize = 110;
 
     #[test]
     fn registry_scenario_count() {
