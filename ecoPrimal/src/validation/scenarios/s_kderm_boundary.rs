@@ -165,14 +165,14 @@ fn phase_cytoplasm_posture(v: &mut ValidationResult) {
 }
 
 fn phase_plasma_membrane(v: &mut ValidationResult) {
-    let port_registry = tolerances::ports::PORT_REGISTRY;
+    let slugs = tolerances::ports::all_primal_slugs();
 
     v.check_bool(
         "membrane:port_registry_exists",
-        !port_registry.is_empty(),
+        !slugs.is_empty(),
         &format!(
             "{} port entries in registry (channel protein slots)",
-            port_registry.len()
+            slugs.len()
         ),
     );
 
@@ -196,8 +196,9 @@ fn phase_plasma_membrane(v: &mut ValidationResult) {
     // Validate that all ports are in valid range and non-conflicting
     let mut ports_seen = std::collections::HashSet::new();
     let mut conflicts = 0u32;
-    for entry in port_registry {
-        if !ports_seen.insert(entry.port) {
+    for slug in &slugs {
+        let port = tolerances::ports::default_port_for(slug);
+        if !ports_seen.insert(port) {
             conflicts += 1;
         }
     }
@@ -212,9 +213,10 @@ fn phase_plasma_membrane(v: &mut ValidationResult) {
     );
 
     // Port range validation: all should be in user/dynamic range (>1024)
-    let all_valid = port_registry
-        .iter()
-        .all(|e| e.port > 1024 && e.port < 65535);
+    let all_valid = slugs.iter().all(|slug| {
+        let port = tolerances::ports::default_port_for(slug);
+        port > 1024 && port < 65535
+    });
     v.check_bool(
         "membrane:ports_valid_range",
         all_valid,

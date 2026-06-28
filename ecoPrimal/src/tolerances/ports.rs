@@ -7,8 +7,6 @@
 //! The TOML-driven registry is the authoritative runtime path; static constants
 //! remain for backward compatibility in contexts requiring `const`.
 
-use crate::primal_names;
-
 /// Per-primal port metadata: slug, TCP fallback, env override key.
 ///
 /// Derived at init time from `config/ports.toml` — adding a new primal
@@ -71,14 +69,20 @@ struct PortEntryOwned {
 /// Static registry is the primary lookup path for callers needing
 /// `&'static PortEntry`. TOML drift is caught by compile-time tests.
 #[must_use]
+#[expect(deprecated)]
 pub fn port_entry_for(primal: &str) -> Option<&'static PortEntry> {
     PORT_REGISTRY.iter().find(|e| e.slug == primal)
+}
+
+#[expect(deprecated)]
+fn slug_list_fallback_from_static_registry() -> Vec<String> {
+    PORT_REGISTRY.iter().map(|e| e.slug.to_owned()).collect()
 }
 
 /// Stable slug list derived once from TOML (no per-call leaking).
 static SLUG_LIST: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::new(|| {
     if TOML_PORT_REGISTRY.is_empty() {
-        PORT_REGISTRY.iter().map(|e| e.slug.to_owned()).collect()
+        slug_list_fallback_from_static_registry()
     } else {
         TOML_PORT_REGISTRY.iter().map(|e| e.slug.clone()).collect()
     }
@@ -125,67 +129,67 @@ fn toml_port_for(primal: &str) -> Option<u16> {
 )]
 pub static PORT_REGISTRY: &[PortEntry] = &[
     PortEntry {
-        slug: primal_names::BEARDOG,
+        slug: "beardog",
         port: 9100,
         env_key: "BEARDOG_PORT",
     },
     PortEntry {
-        slug: primal_names::SONGBIRD,
+        slug: "songbird",
         port: 9200,
         env_key: "SONGBIRD_PORT",
     },
     PortEntry {
-        slug: primal_names::SQUIRREL,
+        slug: "squirrel",
         port: 9300,
         env_key: "SQUIRREL_PORT",
     },
     PortEntry {
-        slug: primal_names::TOADSTOOL,
+        slug: "toadstool",
         port: 9400,
         env_key: "TOADSTOOL_PORT",
     },
     PortEntry {
-        slug: primal_names::NESTGATE,
+        slug: "nestgate",
         port: 9500,
         env_key: "NESTGATE_PORT",
     },
     PortEntry {
-        slug: primal_names::RHIZOCRYPT,
+        slug: "rhizocrypt",
         port: 9601,
         env_key: "RHIZOCRYPT_PORT",
     },
     PortEntry {
-        slug: primal_names::LOAMSPINE,
+        slug: "loamspine",
         port: 9700,
         env_key: "LOAMSPINE_PORT",
     },
     PortEntry {
-        slug: primal_names::CORALREEF,
+        slug: "coralreef",
         port: 9730,
         env_key: "CORALREEF_PORT",
     },
     PortEntry {
-        slug: primal_names::BARRACUDA,
+        slug: "barracuda",
         port: 9740,
         env_key: "BARRACUDA_PORT",
     },
     PortEntry {
-        slug: primal_names::SKUNKBAT,
+        slug: "skunkbat",
         port: 9140,
         env_key: "SKUNKBAT_PORT",
     },
     PortEntry {
-        slug: primal_names::BIOMEOS,
+        slug: "biomeos",
         port: 9800,
         env_key: "BIOMEOS_PORT",
     },
     PortEntry {
-        slug: primal_names::SWEETGRASS,
+        slug: "sweetgrass",
         port: 9850,
         env_key: "SWEETGRASS_PORT",
     },
     PortEntry {
-        slug: primal_names::PETALTONGUE,
+        slug: "petaltongue",
         port: 9900,
         env_key: "PETALTONGUE_PORT",
     },
@@ -247,6 +251,7 @@ mod tests {
     use super::*;
 
     #[test]
+    #[expect(deprecated)]
     fn static_registry_matches_toml() {
         for entry in PORT_REGISTRY {
             let toml_port = toml_port_for(entry.slug);
@@ -262,6 +267,7 @@ mod tests {
     }
 
     #[test]
+    #[expect(deprecated)]
     fn toml_registry_covers_all_primals() {
         assert!(
             !TOML_PORT_REGISTRY.is_empty(),
@@ -276,6 +282,7 @@ mod tests {
     }
 
     #[test]
+    #[expect(deprecated)]
     fn no_port_collisions() {
         let mut seen: std::collections::HashMap<u16, &str> = std::collections::HashMap::new();
         for entry in PORT_REGISTRY {

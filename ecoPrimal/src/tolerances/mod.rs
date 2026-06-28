@@ -116,6 +116,7 @@ mod tests {
     }
 
     #[test]
+    #[expect(deprecated)]
     fn port_registry_entries_are_in_valid_range() {
         for entry in PORT_REGISTRY {
             assert!(
@@ -134,6 +135,7 @@ mod tests {
     }
 
     #[test]
+    #[expect(deprecated)]
     fn port_registry_entries_are_unique() {
         let ports: Vec<u16> = PORT_REGISTRY.iter().map(|e| e.port).collect();
         let mut sorted = ports.clone();

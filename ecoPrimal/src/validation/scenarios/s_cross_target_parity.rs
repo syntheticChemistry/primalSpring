@@ -49,21 +49,21 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 }
 
 fn phase_port_invariance(v: &mut ValidationResult) {
-    let registry = tolerances::ports::PORT_REGISTRY;
+    let slugs = tolerances::ports::all_primal_slugs();
 
-    for entry in registry {
-        let port = entry.port;
+    for slug in &slugs {
+        let port = tolerances::ports::default_port_for(slug);
         v.check_bool(
-            &format!("port-invariance:{}", entry.slug),
+            &format!("port-invariance:{slug}"),
             port > 0 && port < 65535,
-            &format!(
-                "{}: port {} is a valid u16 (no arch-dependent sizing)",
-                entry.slug, port
-            ),
+            &format!("{slug}: port {port} is a valid u16 (no arch-dependent sizing)"),
         );
     }
 
-    let port_values: Vec<u16> = registry.iter().map(|e| e.port).collect();
+    let port_values: Vec<u16> = slugs
+        .iter()
+        .map(|slug| tolerances::ports::default_port_for(slug))
+        .collect();
     let unique_count = port_values
         .iter()
         .collect::<std::collections::HashSet<_>>()

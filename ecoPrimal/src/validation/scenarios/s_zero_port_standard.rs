@@ -41,9 +41,14 @@ fn phase_port_ssot_consistency(v: &mut ValidationResult) {
 
     let table = tcp_fallback_table();
 
-    let expected: Vec<(String, u16)> = tol::PORT_REGISTRY
+    let expected: Vec<(String, u16)> = tol::all_primal_slugs()
         .iter()
-        .map(|e| (e.env_key.to_owned(), e.port))
+        .map(|slug| {
+            (
+                tol::port_env_key_for(slug).to_owned(),
+                tol::default_port_for(slug),
+            )
+        })
         .collect();
 
     for (env_key, expected_port) in &expected {

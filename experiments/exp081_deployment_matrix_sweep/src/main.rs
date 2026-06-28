@@ -33,13 +33,13 @@ struct PrimalProbe {
 }
 
 fn all_primals() -> Vec<PrimalProbe> {
-    tolerances::PORT_REGISTRY
+    tolerances::all_primal_slugs()
         .iter()
-        .map(|e| PrimalProbe {
-            name: e.slug,
-            port_env: e.env_key,
-            default_port: e.port,
-            required_for_tcp: matches!(e.slug, "beardog" | "songbird"),
+        .map(|slug| PrimalProbe {
+            name: slug,
+            port_env: tolerances::port_env_key_for(slug),
+            default_port: tolerances::default_port_for(slug),
+            required_for_tcp: matches!(*slug, "beardog" | "songbird"),
         })
         .collect()
 }

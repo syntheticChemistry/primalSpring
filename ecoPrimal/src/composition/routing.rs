@@ -321,7 +321,8 @@ static PREFIX_ROUTING: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
 
         // Section name is already a discovery domain — routes to itself
         if all_caps_set.contains(section.as_str()) {
-            map.insert(section.clone(), section.clone());
+            let s = section.clone();
+            map.insert(s.clone(), s);
             continue;
         }
 

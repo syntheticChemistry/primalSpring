@@ -174,7 +174,7 @@ fn phase_degradation_paths(v: &mut ValidationResult) {
             }
             PressureCategory::IpcTransport => {
                 // TCP fallback exists
-                !tolerances::ports::PORT_REGISTRY.is_empty()
+                !tolerances::ports::all_primal_slugs().is_empty()
             }
             PressureCategory::SecurityPolicy | PressureCategory::Network => {
                 // SecurityPolicy: capability-based discovery exists

@@ -174,11 +174,11 @@ fn phase_genetics_compliance(v: &mut ValidationResult) {
     // Validate per-primal genetics coverage: every primal in the roster should
     // have a port entry (meaning it can receive the genetics beacon).
     let roster = Primal::ALL_SLUGS;
-    let port_registry = tolerances::ports::PORT_REGISTRY;
+    let port_slugs = tolerances::ports::all_primal_slugs();
 
     let mut covered_count = 0u32;
     for slug in roster {
-        let has_port = port_registry.iter().any(|pe| pe.slug == *slug);
+        let has_port = port_slugs.contains(slug);
         if has_port {
             covered_count += 1;
         }

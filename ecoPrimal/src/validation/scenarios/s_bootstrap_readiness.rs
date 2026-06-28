@@ -154,11 +154,12 @@ fn phase_runtime_dirs(v: &mut ValidationResult) {
 }
 
 fn phase_port_sanity(v: &mut ValidationResult) {
-    let registry = tolerances::PORT_REGISTRY;
+    let slugs = tolerances::ports::all_primal_slugs();
     let mut port_map: std::collections::HashMap<u16, Vec<&str>> = std::collections::HashMap::new();
 
-    for entry in registry {
-        port_map.entry(entry.port).or_default().push(entry.slug);
+    for slug in &slugs {
+        let port = tolerances::ports::default_port_for(slug);
+        port_map.entry(port).or_default().push(slug);
     }
 
     let collisions: Vec<_> = port_map
@@ -172,7 +173,7 @@ fn phase_port_sanity(v: &mut ValidationResult) {
         collisions.is_empty(),
         &format!(
             "port registry: {} entries, {} collisions{}",
-            registry.len(),
+            slugs.len(),
             collisions.len(),
             if collisions.is_empty() {
                 String::new()

@@ -193,10 +193,7 @@ pub fn verify_seed_fingerprints(
         };
 
         let key = name.clone();
-
-        let version = if let Some(v) = versions.get(name.as_str()) {
-            v.clone()
-        } else {
+        let Some(version) = versions.get(name.as_str()).cloned() else {
             results.insert(key, FingerprintStatus::NoPublished);
             continue;
         };
