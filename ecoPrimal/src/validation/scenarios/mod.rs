@@ -53,6 +53,7 @@ pub mod s_atomic_compositions;
 pub mod s_barracuda_precision;
 pub mod s_beardog_fido2;
 pub mod s_bearer_token_auth;
+pub mod s_biomeos_local_composition;
 pub mod s_biomeos_neural_api;
 pub mod s_bootstrap_readiness;
 pub mod s_btsp_cross_gate_verify;
@@ -126,6 +127,7 @@ pub mod s_provenance_chain_integrity;
 pub mod s_provenance_cross_gate;
 pub mod s_provenance_trio_pipeline;
 pub mod s_relay_forward;
+pub mod s_relay_forward_transport;
 pub mod s_ribocipher_acceptance;
 pub mod s_routing_consistency;
 pub mod s_schema_standard;
@@ -258,7 +260,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_btsp_cross_gate_verify::SCENARIO);
     r.register(s_skunkbat_method_gate::SCENARIO);
     r.register(s_songbird_mesh_transport::SCENARIO);
+    r.register(s_biomeos_local_composition::SCENARIO);
     r.register(s_relay_forward::SCENARIO);
+    r.register(s_relay_forward_transport::SCENARIO);
     r
 }
 
@@ -269,7 +273,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 101;
+    const EXPECTED_SCENARIO_COUNT: usize = 103;
 
     #[test]
     fn registry_scenario_count() {

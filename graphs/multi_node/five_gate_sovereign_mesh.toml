@@ -4,7 +4,7 @@
 # Deploys a full 5-gate sovereign NUCLEUS mesh via WireGuard overlay:
 #
 #   golgi       (DO droplet)         — relay hub, Forgejo, cascade timer
-#   sporeGate   (Ryzen 5 6600H)     — build authority, Nest provenance
+#   sporeGate   (Ryzen 5 6600H)     — compute node, CI, Nest (ephemeral)
 #   eastGate    (i7 64GB)            — orchestration, primalSpring, Meta
 #   flockGate   (i9-13900K WAN)     — Tower primals, sporePrint
 #   ironGate    (i9-12900K + RTX 5070) — Node compute, GPU
@@ -28,7 +28,7 @@
 name = "five-gate-sovereign-mesh"
 description = "Full 5-gate sovereign NUCLEUS deployment with role-based composition"
 version = "0.9.33"
-wave = 124
+wave = 128
 resolve = true
 
 [topology]
