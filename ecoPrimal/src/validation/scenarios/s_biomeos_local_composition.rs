@@ -195,7 +195,10 @@ fn phase_primal_uniqueness(v: &mut ValidationResult) {
     v.check_bool(
         "unique:total_coverage",
         all_primals.len() >= 10,
-        &format!("{} primals covered across 3 compute gates", all_primals.len()),
+        &format!(
+            "{} primals covered across 3 compute gates",
+            all_primals.len()
+        ),
     );
 
     let graph_has_btsp = DEPLOY_GRAPH.contains("btsp_enforced = true");
