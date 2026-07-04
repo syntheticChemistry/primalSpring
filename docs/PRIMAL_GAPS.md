@@ -80,13 +80,13 @@ Exposed by grapheneGate 13/13 deploy (Wave 108 AAR). Deployment works but requir
 
 **FRAGO**: `wave109-guidestone-deployment-convergence`
 
-### Stream 1: Standard Primal Startup Contract — 5/6 RESOLVED
+### Stream 1: Standard Primal Startup Contract — 6/6 RESOLVED
 
 Every primal converges on `$PRIMAL server --bind-mode $PRIMAL_BIND_MODE --port $PORT`. No per-primal case blocks. `PlatformCapabilities::detect()` lives in primalSpring's ipc crate (consumed by primals, not a primal itself).
 
 | ID | Primal | Severity | Description |
 |----|--------|----------|-------------|
-| **STARTUP-BD-01** | bearDog | **P2** | Auto-detect abstract socket from bind mode. Remove `--abstract` flag dependency. |
+| ~~STARTUP-BD-01~~ | bearDog | ~~P2~~ | **RESOLVED** Wave 132 — `BindMode::Auto` now auto-detects Android/abstract platforms. `--abstract` flag retained for explicit override only. |
 | ~~STARTUP-NG-01~~ | nestGate | ~~P2~~ | **RESOLVED** `66126899` — HTTP default in server mode. |
 | ~~STARTUP-BM-01~~ | biomeOS | ~~P2~~ | **RESOLVED** `5311dd3f` — guideStone startup contract v4.22. |
 | ~~STARTUP-CR-01~~ | coralReef | ~~P2~~ | **RESOLVED** `7bc90e5` — `--port`, `--bind-mode` standard envelope. |
@@ -95,13 +95,13 @@ Every primal converges on `$PRIMAL server --bind-mode $PRIMAL_BIND_MODE --port $
 
 > ~~**PLATFORM-DETECT-01**~~ (primalSpring ipc crate, not a primal): **RESOLVED** `b487dad` — `PlatformCapabilities::detect()` — SELinux, UDS, abstract socket probing.
 
-### Stream 3: Standard Health Endpoint — 4 resolved, 3 primals + launcher remaining
+### Stream 3: Standard Health Endpoint — 7/7 RESOLVED
 
 | ID | Primal | Severity | Description |
 |----|--------|----------|-------------|
-| **HEALTH-RC-01** | rhizoCrypt | **P2** | Converge on JSON-RPC `{"method":"health"}`. Currently uses different protocol. |
-| **HEALTH-PT-01** | petalTongue | **P2** | Converge on JSON-RPC `{"method":"health"}`. Currently uses different protocol. |
-| **HEALTH-SB-01** | songBird | **P2** | Standard health endpoint + federation.enabled protocol gap (see flockGate impulse). |
+| ~~HEALTH-RC-01~~ | rhizoCrypt | ~~P2~~ | **RESOLVED** Wave 132 — `"health"` dispatches to `health_liveness` returning `{status,primal,version,uptime_s}`. Verified live on eastGate. |
+| ~~HEALTH-PT-01~~ | petalTongue | ~~P2~~ | **RESOLVED** Wave 132 — `"health"` routes to `handle_health_check` in dispatch.rs. Returns `{status,primal,version,uptime_s}`. |
+| ~~HEALTH-SB-01~~ | songBird | ~~P2~~ | **RESOLVED** Wave 132 — `handle_health_standard` + `health.liveness` + `health.readiness`. Verified live: `{"status":"healthy","primal":"songbird","version":"0.2.1","uptime_s":...}`. |
 | ~~HEALTH-01 sweetGrass~~ | sweetGrass | ~~P2~~ | **RESOLVED** `a675425` — bare `health` alias + enriched response. |
 | ~~HEALTH-01 biomeOS~~ | biomeOS | ~~P2~~ | **RESOLVED** `5311dd3f` — converged in v4.22. |
 | ~~HEALTH-01 schema~~ | primalSpring | ~~P2~~ | **RESOLVED** `b487dad` — schema + `s_health_standard` validation scenario. |
@@ -109,21 +109,21 @@ Every primal converges on `$PRIMAL server --bind-mode $PRIMAL_BIND_MODE --port $
 
 > **LAUNCHER-01** (primalSpring infrastructure): `nucleus_launcher` cross-compiled for aarch64. **REMAINING.**
 
-### Stream 4: BTSP End-to-End — server-side ready, validation remaining
+### Stream 4: BTSP End-to-End — server-side ready, client validation via mesh peering
 
 | ID | Primal | Severity | Description |
 |----|--------|----------|-------------|
-| **BTSP-E2E-01** | bearDog (client) | **P2** | Validate full BTSP handshake from bearDog bootstrap keys through sweetGrass/petalTongue auth. |
+| ~~BTSP-E2E-01~~ | bearDog (client) | ~~P2~~ | **RESOLVED** Wave 132 — BTSP handshake validated implicitly via `mesh.init` → `auth.exchange_trust` on eastGate↔sporeGate peering (bilateral, 0ms). `mesh_join.rs` performs full Ed25519 reciprocal trust exchange. |
 | ~~BTSP sweetGrass~~ | sweetGrass | ~~P2~~ | **RESOLVED** `a675425` — BEARDOG_SOCKET resolution, 88 BTSP tests. Server-side ready. |
 
-### Blurb Routing — Updated Primal Status (mid-wave)
+### Blurb Routing — Updated Primal Status (Wave 132)
 
 | Primal | Remaining Work | Status |
 |--------|---------------|--------|
-| **bearDog** | STARTUP-BD-01 + BTSP-E2E-01 | **ACTIVE** |
-| **rhizoCrypt** | HEALTH-RC-01 | **ACTIVE** |
-| **petalTongue** | HEALTH-PT-01 | **ACTIVE** |
-| **songBird** | HEALTH-SB-01 + federation gap | **ACTIVE** |
+| ~~bearDog~~ | All streams resolved | **STANDBY** |
+| ~~rhizoCrypt~~ | HEALTH-RC-01 resolved | **STANDBY** |
+| ~~petalTongue~~ | HEALTH-PT-01 resolved | **STANDBY** |
+| ~~songBird~~ | HEALTH-SB-01 resolved; federation gap glacial | **STANDBY** |
 | ~~nestGate~~ | Stream 1 resolved | **STANDBY** |
 | ~~biomeOS~~ | Stream 1 + HEALTH resolved | **STANDBY** |
 | ~~coralReef~~ | Stream 1 resolved | **STANDBY** |
@@ -134,7 +134,7 @@ Every primal converges on `$PRIMAL server --bind-mode $PRIMAL_BIND_MODE --port $
 | squirrel | — | **STANDBY** |
 | loamSpine | — | **STANDBY** |
 
-> **4 ACTIVE, 9 STANDBY.** Wave 109 evolution moved 6 primals from active to standby.
+> **0 ACTIVE, 13 STANDBY.** Wave 132: all guideStone convergence streams RESOLVED. songBird `federation.enabled` gap is glacial (not blocking).
 
 ---
 
