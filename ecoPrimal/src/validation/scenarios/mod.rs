@@ -142,6 +142,7 @@ pub mod s_sequential_graph;
 pub mod s_shader_compilation_pipeline;
 pub mod s_skunkbat_method_gate;
 pub mod s_socket_discovery;
+pub mod s_songbird_lan_bypass;
 pub mod s_songbird_mesh_transport;
 pub mod s_sovereignty_audit_chain;
 pub mod s_sovereignty_ledger;
@@ -280,6 +281,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_squirrel_ai_pipeline::SCENARIO);
     r.register(s_biomeos_local_composition::SCENARIO);
     r.register(s_relay_forward_transport::SCENARIO);
+    r.register(s_songbird_lan_bypass::SCENARIO);
     r
 }
 
@@ -290,7 +292,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 112;
+    const EXPECTED_SCENARIO_COUNT: usize = 113;
 
     #[test]
     fn registry_scenario_count() {
