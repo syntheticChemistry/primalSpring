@@ -98,7 +98,7 @@ to primalSpring as experiment targets.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 103 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 110 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -120,9 +120,9 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.33 Wave 128 (June 28, 2026) — 103 scenarios (12 tracks, 3 tiers),
+v0.9.33 Wave 132 (July 4, 2026) — 110 scenarios (12 tracks, 3 tiers),
 490+ registered capability methods, 96 experiments (21 tracks), 101 graph TOMLs
-(16 directories). 1014 tests passing. Config-driven topology
+(16 directories). 1060 tests passing. Config-driven topology
 (`config/mesh_topology.toml` — SSOT for gate roster, zones, mesh addresses).
 Evolution module: CytoplasmZone model (backbone/house2/garage/wan), three-hub
 triangle topology, gate enrollment pipeline, convergence monitoring.

@@ -281,7 +281,11 @@ fn validate_repo_entries(
 // ─── Structural: Freshness Schema ───────────────────────────────────────────
 
 fn phase_freshness_schema(v: &mut ValidationResult) {
-    // Validate new wave.toml (primary source of truth).
+    validate_wave_toml(v);
+    validate_legacy_freshness_toml(v);
+}
+
+fn validate_wave_toml(v: &mut ValidationResult) {
     let wave_toml = include_str!("../../../../../../infra/wateringHole/wave.toml");
     match toml::from_str::<toml::Value>(wave_toml) {
         Ok(parsed) => {
@@ -324,8 +328,9 @@ fn phase_freshness_schema(v: &mut ValidationResult) {
             );
         }
     }
+}
 
-    // Validate legacy freshness.toml (backward compat — will be removed).
+fn validate_legacy_freshness_toml(v: &mut ValidationResult) {
     let freshness_toml = include_str!("../../../../../../infra/wateringHole/freshness.toml");
     let parsed: toml::Value = match toml::from_str(freshness_toml) {
         Ok(p) => p,
