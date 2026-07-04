@@ -281,6 +281,51 @@ fn validate_repo_entries(
 // ─── Structural: Freshness Schema ───────────────────────────────────────────
 
 fn phase_freshness_schema(v: &mut ValidationResult) {
+    // Validate new wave.toml (primary source of truth).
+    let wave_toml = include_str!("../../../../../../infra/wateringHole/wave.toml");
+    match toml::from_str::<toml::Value>(wave_toml) {
+        Ok(parsed) => {
+            v.check_bool("schema:wave_toml_parse", true, "wave.toml parses as valid TOML");
+
+            let wave = parsed.get("wave").and_then(|w| w.as_table());
+            v.check_bool(
+                "schema:wave:section",
+                wave.is_some(),
+                "[wave] section present in wave.toml",
+            );
+
+            if let Some(wave) = wave {
+                let id = wave.get("id").and_then(toml::Value::as_integer).unwrap_or(0);
+                v.check_bool("schema:wave:id", id > 0, &format!("wave.id = {id}"));
+
+                let date = wave.get("date").and_then(|v| v.as_str()).unwrap_or("");
+                v.check_bool("schema:wave:date", date.len() == 10, &format!("wave.date = \"{date}\""));
+
+                let publisher = wave.get("publisher").and_then(|v| v.as_str()).unwrap_or("");
+                v.check_bool(
+                    "schema:wave:publisher",
+                    !publisher.is_empty(),
+                    &format!("wave.publisher = \"{publisher}\""),
+                );
+            }
+
+            let gates = parsed.get("gates").and_then(|g| g.as_table());
+            v.check_bool(
+                "schema:wave:gates_section",
+                gates.is_some(),
+                "[gates] section present in wave.toml",
+            );
+        }
+        Err(e) => {
+            v.check_bool(
+                "schema:wave_toml_parse",
+                false,
+                &format!("wave.toml parse error: {e}"),
+            );
+        }
+    }
+
+    // Validate legacy freshness.toml (backward compat — will be removed).
     let freshness_toml = include_str!("../../../../../../infra/wateringHole/freshness.toml");
     let parsed: toml::Value = match toml::from_str(freshness_toml) {
         Ok(p) => p,
@@ -297,7 +342,7 @@ fn phase_freshness_schema(v: &mut ValidationResult) {
     v.check_bool(
         "schema:freshness_parse",
         true,
-        "freshness.toml parses as valid TOML",
+        "freshness.toml parses as valid TOML (deprecated — compat only)",
     );
 
     let wave = parsed.get("wave").and_then(|w| w.as_table());
