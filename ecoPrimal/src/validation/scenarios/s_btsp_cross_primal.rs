@@ -333,3 +333,22 @@ fn phase_live_cross_primal(v: &mut ValidationResult, ctx: &mut CompositionContex
         ),
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::composition::CompositionContext;
+    use crate::validation::ValidationResult;
+
+    #[test]
+    fn btsp_cross_primal_structural() {
+        let mut v = ValidationResult::new("btsp-cross-primal-e2e");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(
+            v.passed > 0,
+            "btsp-cross-primal-e2e must produce checks ({} passed)",
+            v.passed
+        );
+    }
+}

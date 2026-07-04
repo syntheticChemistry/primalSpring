@@ -290,3 +290,22 @@ fn ecoprimals_root() -> Option<std::path::PathBuf> {
         None
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::composition::CompositionContext;
+    use crate::validation::ValidationResult;
+
+    #[test]
+    fn gate_expansion_readiness_structural() {
+        let mut v = ValidationResult::new("gate-expansion-readiness");
+        let mut ctx = CompositionContext::discover();
+        run(&mut v, &mut ctx);
+        assert!(
+            v.passed > 0,
+            "gate-expansion-readiness must produce checks ({} passed)",
+            v.passed
+        );
+    }
+}

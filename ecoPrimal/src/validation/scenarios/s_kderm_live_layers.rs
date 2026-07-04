@@ -165,7 +165,10 @@ fn phase_periplasm(v: &mut ValidationResult) {
             ),
         );
     } else {
-        v.check_skip("periplasm:relay_reachable", "golgi address not in mesh SSOT");
+        v.check_skip(
+            "periplasm:relay_reachable",
+            "golgi address not in mesh SSOT",
+        );
     }
 }
 

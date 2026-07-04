@@ -280,6 +280,10 @@ fn validate_repo_entries(
 
 // ─── Structural: Freshness Schema ───────────────────────────────────────────
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "flat validation checks; splitting adds indirection"
+)]
 fn phase_freshness_schema(v: &mut ValidationResult) {
     validate_wave_toml(v);
     validate_legacy_freshness_toml(v);
@@ -289,7 +293,11 @@ fn validate_wave_toml(v: &mut ValidationResult) {
     let wave_toml = include_str!("../../../../../../infra/wateringHole/wave.toml");
     match toml::from_str::<toml::Value>(wave_toml) {
         Ok(parsed) => {
-            v.check_bool("schema:wave_toml_parse", true, "wave.toml parses as valid TOML");
+            v.check_bool(
+                "schema:wave_toml_parse",
+                true,
+                "wave.toml parses as valid TOML",
+            );
 
             let wave = parsed.get("wave").and_then(|w| w.as_table());
             v.check_bool(
@@ -299,11 +307,18 @@ fn validate_wave_toml(v: &mut ValidationResult) {
             );
 
             if let Some(wave) = wave {
-                let id = wave.get("id").and_then(toml::Value::as_integer).unwrap_or(0);
+                let id = wave
+                    .get("id")
+                    .and_then(toml::Value::as_integer)
+                    .unwrap_or(0);
                 v.check_bool("schema:wave:id", id > 0, &format!("wave.id = {id}"));
 
                 let date = wave.get("date").and_then(|v| v.as_str()).unwrap_or("");
-                v.check_bool("schema:wave:date", date.len() == 10, &format!("wave.date = \"{date}\""));
+                v.check_bool(
+                    "schema:wave:date",
+                    date.len() == 10,
+                    &format!("wave.date = \"{date}\""),
+                );
 
                 let publisher = wave.get("publisher").and_then(|v| v.as_str()).unwrap_or("");
                 v.check_bool(

@@ -285,3 +285,22 @@ fn validate_mesh_addresses(v: &mut ValidationResult) {
         "all mesh addresses in 10.13.37.0/24",
     );
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::composition::CompositionContext;
+    use crate::validation::ValidationResult;
+
+    #[test]
+    fn zone_topology_structural() {
+        let mut v = ValidationResult::new("zone-topology");
+        let mut ctx = CompositionContext::discover();
+        run_zone_topology(&mut v, &mut ctx);
+        assert_eq!(
+            v.failed, 0,
+            "zone-topology: {} failures ({} passed, {} skipped)",
+            v.failed, v.passed, v.skipped
+        );
+    }
+}

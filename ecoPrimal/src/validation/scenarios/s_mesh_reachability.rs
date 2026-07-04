@@ -18,8 +18,8 @@
 //! idle or degraded.
 
 use crate::composition::CompositionContext;
-use crate::evolution::gate::{CytoplasmZone, mesh_address};
 use crate::evolution::all_mesh_gates;
+use crate::evolution::gate::{CytoplasmZone, mesh_address};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 

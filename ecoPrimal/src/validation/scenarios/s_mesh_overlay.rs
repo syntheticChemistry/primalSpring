@@ -14,8 +14,8 @@
 //! 5. Hub (golgi) has lowest latency (direct peer, no relay)
 
 use crate::composition::CompositionContext;
-use crate::evolution::gate::mesh_address;
 use crate::evolution::all_mesh_gates;
+use crate::evolution::gate::mesh_address;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
