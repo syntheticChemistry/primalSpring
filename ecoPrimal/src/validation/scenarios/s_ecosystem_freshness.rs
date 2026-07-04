@@ -280,10 +280,6 @@ fn validate_repo_entries(
 
 // ─── Structural: Freshness Schema ───────────────────────────────────────────
 
-#[expect(
-    clippy::too_many_lines,
-    reason = "flat validation checks; splitting adds indirection"
-)]
 fn phase_freshness_schema(v: &mut ValidationResult) {
     validate_wave_toml(v);
     validate_legacy_freshness_toml(v);

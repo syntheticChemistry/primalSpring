@@ -170,10 +170,10 @@ fn phase_mesh_convergence(v: &mut ValidationResult, ctx: &CompositionContext) {
     v.check_minimum("mesh_reachable_capabilities", reachable.len(), 8);
 
     let gate_count = mesh.gate_count();
-    v.check_count("mesh_gate_count", gate_count, 4);
+    v.check_count("mesh_gate_count", gate_count, gates.len());
 
     let healthy = mesh.healthy_gate_count();
-    v.check_count("mesh_healthy_gates", healthy, 4);
+    v.check_count("mesh_healthy_gates", healthy, gates.len());
 
     let caps = ctx.available_capabilities();
     if caps.is_empty() {

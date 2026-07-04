@@ -198,9 +198,11 @@ methods = [
 
 [http]
 owner = "songbird"
+stability = "evolving"
 methods = [
     "http.get",
     "http.post",
+    "http.proxy",
     "http.request",
 ]
 
@@ -316,7 +318,9 @@ methods = [
 primary = true
 owner = "beardog"
 methods = [
+    "security.advisory",
     "security.authenticate",
+    "security.scan",
 ]
 
 [auth]

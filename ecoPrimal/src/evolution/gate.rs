@@ -206,11 +206,27 @@ static MESH_REGISTRY: std::sync::LazyLock<Vec<MeshEntry>> = std::sync::LazyLock:
                 .and_then(|v| v.as_str())
                 .unwrap_or("")
                 .to_owned();
+            let transport = t
+                .get("transport")
+                .and_then(|v| v.as_str())
+                .unwrap_or("wireguard")
+                .to_owned();
+            let services = t
+                .get("services")
+                .and_then(|v| v.as_array())
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|s| s.as_str().map(String::from))
+                        .collect()
+                })
+                .unwrap_or_default();
             Some(MeshEntry {
                 name,
                 address,
                 role,
                 zone,
+                transport,
+                services,
             })
         })
         .collect()
@@ -227,6 +243,10 @@ pub struct MeshEntry {
     pub role: String,
     /// K-Derm zone (e.g. `"Backbone"`, `"Wan"`).
     pub zone: String,
+    /// Transport type (e.g. `"wireguard"`, `"adb"`, `"wan"`).
+    pub transport: String,
+    /// Services running on this gate (e.g. `["nucleus_tower"]`).
+    pub services: Vec<String>,
 }
 
 /// WireGuard mesh address assignments (10.13.37.0/24 overlay).

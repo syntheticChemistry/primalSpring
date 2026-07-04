@@ -28,8 +28,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave132_songbird_lan_bypass",
         provenance_date: "2026-07-04",
-        description:
-            "songBird LAN bypass — direct-connect routing for same-subnet peers, relay for WAN",
+        description: "songBird LAN bypass — direct-connect routing for same-subnet peers, relay for WAN",
     },
     run,
 };
@@ -60,7 +59,11 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
 fn phase_topology(v: &mut ValidationResult) {
     let Ok(parsed) = toml::from_str::<toml::Value>(TOPOLOGY_TOML) else {
-        v.check_bool("topology:parse_fail", false, "mesh_topology.toml failed to parse");
+        v.check_bool(
+            "topology:parse_fail",
+            false,
+            "mesh_topology.toml failed to parse",
+        );
         return;
     };
     let gates = parsed.get("gate").and_then(|g| g.as_array());
@@ -148,7 +151,10 @@ fn phase_relay_independence(v: &mut ValidationResult) {
 fn phase_live(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let client = ctx.client_for("mesh");
     if client.is_none() {
-        v.check_skip("live:songbird_unreachable", "no songBird mesh client available");
+        v.check_skip(
+            "live:songbird_unreachable",
+            "no songBird mesh client available",
+        );
         return;
     }
 

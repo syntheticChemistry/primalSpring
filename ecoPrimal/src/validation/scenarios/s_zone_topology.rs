@@ -11,7 +11,7 @@
 //! | Backbone | Hub 1 | CRS310 (10G)     | sporeGate, eastGate, northGate, ironGate |
 //! | House2   | Hub 2 | Omada SX3008F    | strandGate, southGate, swiftGate, fieldGate |
 //! | Garage   | Hub 3 | planned          | (future compute + outdoor WiFi)    |
-//! | WAN      | —     | Internet/VPS     | golgi, flockGate                   |
+//! | WAN      | —     | Internet/VPS     | golgi, flockGate, grapheneGate     |
 //!
 //! The target topology forms a triangle:
 //! ```text
@@ -68,6 +68,7 @@ fn validate_zone_assignments(v: &mut ValidationResult) {
         ("fieldGate", CytoplasmZone::House2),
         ("golgi", CytoplasmZone::Wan),
         ("flockGate", CytoplasmZone::Wan),
+        ("grapheneGate", CytoplasmZone::Wan),
     ];
 
     for (gate, expected) in cases {

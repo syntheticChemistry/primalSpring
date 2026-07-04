@@ -7,7 +7,7 @@
 //! This scenario exercises the [`GateMatrix`](crate::evolution::GateMatrix)
 //! readiness model to ensure:
 //!
-//! 1. All known gates are tracked (7 gates in the ecosystem)
+//! 1. All known gates are tracked (11 non-retired gates in the ecosystem)
 //! 2. Readiness levels are properly ordered
 //! 3. Derived readiness matches observed metrics
 //! 4. The local gate (eastGate) is correctly identified

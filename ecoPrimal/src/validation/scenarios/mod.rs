@@ -155,6 +155,7 @@ pub mod s_tier2_science_api;
 pub mod s_token_federation;
 pub mod s_tower_atomic;
 pub mod s_tower_cns;
+pub mod s_tower_http_gateway;
 pub mod s_version_skew_detection;
 pub mod s_wan_ipc_tolerance;
 pub mod s_wireguard_mesh;
@@ -223,6 +224,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_crypto_identity_surface::SCENARIO);
     r.register(s_cephalization::SCENARIO);
     r.register(s_tower_cns::SCENARIO);
+    r.register(s_tower_http_gateway::SCENARIO);
     r.register(s_ecosystem_freshness::SCENARIO);
     r.register(s_deployment_pipeline::SCENARIO);
     r.register(s_tcp_fallback::SCENARIO);
@@ -292,7 +294,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 113;
+    const EXPECTED_SCENARIO_COUNT: usize = 114;
 
     #[test]
     fn registry_scenario_count() {
