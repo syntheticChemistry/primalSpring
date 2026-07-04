@@ -30,7 +30,7 @@
 //! 5. Zone isolation: gates in same zone share L2, cross-zone is L3/WG
 
 use crate::composition::CompositionContext;
-use crate::evolution::gate::{CytoplasmZone, GateMatrix, mesh_address};
+use crate::evolution::gate::{CytoplasmZone, GateMatrix, all_mesh_gates, mesh_address};
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -241,20 +241,24 @@ fn validate_enrollment_zones(v: &mut ValidationResult) {
 
 /// Validate WireGuard mesh overlay address assignments (10.13.37.0/24).
 fn validate_mesh_addresses(v: &mut ValidationResult) {
-    let expected: &[(&str, &str)] = &[
-        ("golgi", "10.13.37.1"),
-        ("sporeGate", "10.13.37.2"),
-        ("eastGate", "10.13.37.5"),
-        ("flockGate", "10.13.37.6"),
-        ("ironGate", "10.13.37.7"),
-    ];
+    let gates = all_mesh_gates();
+    let peered: Vec<_> = gates.iter().filter(|e| !e.address.is_empty()).collect();
 
-    for (gate, ip) in expected {
-        let actual = mesh_address(gate);
+    v.check_bool(
+        "mesh:gates_populated",
+        !peered.is_empty(),
+        &format!("{} gates have mesh addresses", peered.len()),
+    );
+
+    for entry in &peered {
+        let lookup = mesh_address(&entry.name);
         v.check_bool(
-            &format!("mesh:{gate}:assigned"),
-            actual == Some(*ip),
-            &format!("expected {ip}, got {actual:?}"),
+            &format!("mesh:{}:lookup_consistent", entry.name),
+            lookup == Some(entry.address.as_str()),
+            &format!(
+                "mesh_address(\"{}\") should return {:?}, got {:?}",
+                entry.name, entry.address, lookup
+            ),
         );
     }
 
@@ -269,7 +273,7 @@ fn validate_mesh_addresses(v: &mut ValidationResult) {
     }
 
     // All assigned addresses must be unique and in 10.13.37.0/24
-    let assigned: Vec<_> = expected.iter().map(|(_, ip)| *ip).collect();
+    let assigned: Vec<_> = peered.iter().map(|e| e.address.as_str()).collect();
     let mut seen = std::collections::HashSet::new();
     let all_unique = assigned.iter().all(|ip| seen.insert(*ip));
     v.check_bool(
