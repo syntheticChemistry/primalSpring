@@ -456,17 +456,18 @@ mod tests {
     #[test]
     fn matrix_snapshot_structure() {
         let m = GateMatrix::ecosystem_snapshot();
-        assert_eq!(m.gates.len(), 10);
+        assert_eq!(m.gates.len(), 11);
         assert!(m.gates.iter().any(|g| g.name == "eastGate"));
         assert!(m.gates.iter().any(|g| g.name == "golgi"));
         assert!(m.gates.iter().any(|g| g.name == "ironGate"));
         assert!(m.gates.iter().any(|g| g.name == "swiftGate"));
+        assert!(m.gates.iter().any(|g| g.name == "grapheneGate"));
     }
 
     #[test]
     fn matrix_summary_format() {
         let m = GateMatrix::ecosystem_snapshot();
         let s = m.summary();
-        assert!(s.contains("10 gates"));
+        assert!(s.contains("11 gates"));
     }
 }

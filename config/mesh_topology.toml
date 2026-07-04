@@ -74,3 +74,10 @@ zone = "House2"
 name = "fieldGate"
 role = "edge"
 zone = "House2"
+
+[[gate]]
+name = "grapheneGate"
+role = "mobile"
+zone = "Wan"
+transport = "adb"
+services = ["nucleus_tower"]
