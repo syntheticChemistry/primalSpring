@@ -94,3 +94,28 @@ primal = "skunkbat"
 role = "defense"
 port = 9750
 droppable = true
+
+# Gateway / drawbridge ports — external-facing or single-crossing-point roles.
+# These are distinct from federation (mesh coordination) ports.
+
+[gateway.drawbridge]
+primal = "songbird"
+role = "drawbridge"
+port = 7780
+droppable = false
+env_key = "SONGBIRD_DRAWBRIDGE_ADDR"
+description = "songBird HTTP proxy listener — sole crossing point from gatehouse to darkforest"
+
+[gateway.gatehouse_https]
+primal = "beardog"
+role = "gatehouse"
+port = 443
+droppable = false
+description = "bearDog TLS termination — public HTTPS entry (sporeGate only)"
+
+[gateway.gatehouse_http]
+primal = "beardog"
+role = "acme_redirect"
+port = 80
+droppable = false
+description = "bearDog ACME HTTP-01 + HTTPS redirect (sporeGate only)"

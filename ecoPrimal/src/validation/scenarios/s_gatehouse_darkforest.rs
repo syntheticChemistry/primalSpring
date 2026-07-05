@@ -35,8 +35,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave132g_gatehouse_darkforest",
         provenance_date: "2026-07-05",
-        description:
-            "Gatehouse/Darkforest demarcation — bearDog gateway, songBird drawbridge, zero-port mesh",
+        description: "Gatehouse/Darkforest demarcation — bearDog gateway, songBird drawbridge, zero-port mesh",
     },
     run,
 };
@@ -107,10 +106,7 @@ fn phase_gatehouse(v: &mut ValidationResult) {
     }
 
     let gates = all_mesh_gates();
-    let gatehouse_count = gates
-        .iter()
-        .filter(|g| g.name == "sporeGate")
-        .count();
+    let gatehouse_count = gates.iter().filter(|g| g.name == "sporeGate").count();
     v.check_bool(
         "gatehouse:single_gatehouse",
         gatehouse_count == 1,
@@ -143,6 +139,38 @@ fn phase_drawbridge(v: &mut ValidationResult) {
         "http.proxy method registered (the drawbridge crossing)",
     );
 
+    let ports_toml = include_str!("../../../../config/ports.toml");
+    let Ok(ports) = toml::from_str::<toml::Value>(ports_toml) else {
+        v.check_bool("drawbridge:ports_parse", false, "ports.toml parse failed");
+        return;
+    };
+
+    let drawbridge_port = ports
+        .get("gateway")
+        .and_then(|g| g.get("drawbridge"))
+        .and_then(|d| d.get("port"))
+        .and_then(toml::Value::as_integer);
+    let federation_port = ports
+        .get("federation")
+        .and_then(|f| f.get("nucleus01_songbird"))
+        .and_then(|s| s.get("port"))
+        .and_then(toml::Value::as_integer);
+
+    v.check_bool(
+        "drawbridge:port_registered",
+        drawbridge_port.is_some(),
+        &format!("drawbridge port in ports.toml: {drawbridge_port:?}"),
+    );
+    v.check_bool(
+        "drawbridge:port_distinct_from_federation",
+        drawbridge_port.is_some()
+            && federation_port.is_some()
+            && drawbridge_port != federation_port,
+        &format!(
+            "drawbridge {drawbridge_port:?} ≠ federation {federation_port:?} (HTTP proxy vs mesh coordination)"
+        ),
+    );
+
     let mesh_owner = capability_to_primal("mesh");
     v.check_bool(
         "drawbridge:mesh_owner_songbird",
@@ -161,10 +189,7 @@ fn phase_drawbridge(v: &mut ValidationResult) {
 fn phase_darkforest(v: &mut ValidationResult) {
     let gates = all_mesh_gates();
 
-    let darkforest_gates: Vec<_> = gates
-        .iter()
-        .filter(|g| g.name != "sporeGate")
-        .collect();
+    let darkforest_gates: Vec<_> = gates.iter().filter(|g| g.name != "sporeGate").collect();
 
     v.check_bool(
         "darkforest:non_gatehouse_gates",
@@ -245,7 +270,10 @@ fn phase_transport_hierarchy(v: &mut ValidationResult) {
             &format!(
                 "{} ADB-transport gates (use abstract sockets): {:?}",
                 adb_gates.len(),
-                adb_gates.iter().map(|g| g.name.as_str()).collect::<Vec<_>>()
+                adb_gates
+                    .iter()
+                    .map(|g| g.name.as_str())
+                    .collect::<Vec<_>>()
             ),
         );
     }
