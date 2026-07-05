@@ -52,6 +52,7 @@ pub mod s_arch_fitness;
 pub mod s_atomic_compositions;
 pub mod s_barracuda_precision;
 pub mod s_beardog_fido2;
+pub mod s_beardog_startup_contract;
 pub mod s_bearer_token_auth;
 pub mod s_biomeos_local_composition;
 pub mod s_biomeos_neural_api;
@@ -205,6 +206,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_ferment_transcript::SCENARIO);
     r.register(s_loam_certificate_lifecycle::SCENARIO);
     r.register(s_beardog_fido2::SCENARIO);
+    r.register(s_beardog_startup_contract::SCENARIO);
     r.register(s_composition_dispatch_parity::SCENARIO);
     r.register(s_primal_announce::SCENARIO);
     r.register(s_schema_standard::SCENARIO);
@@ -294,7 +296,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 114;
+    const EXPECTED_SCENARIO_COUNT: usize = 115;
 
     #[test]
     fn registry_scenario_count() {

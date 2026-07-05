@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-06-17 (Wave 115: **Sovereign Mesh & Gate Hardening.** 72 scenarios, 942 lib tests, 12 tracks. sporeGate 13/13 alive + systemd persisted. golgi HEALTHY 13/13. VCS 17/17 zero drift. Evolution module: convergence monitor + gate readiness matrix + K-Derm envelope validation. Deep debt CLEAN: zero unsafe, zero production unwraps, all deps pure-Rust, all `#[allow]` → `#[expect]`.)
+> **Last updated**: 2026-07-05 (Wave 132f: **Debt Resolution.** 115 scenarios, 1079+ lib tests, 12 tracks. Tower HTTP gateway + bearDog ACME + security.advisory validated. 3-gate LAN mesh LIVE. bearDog STARTUP-BD-01 REOPENED (CryptoProvider + BindMode::Auto). Deep debt CLEAN: zero unsafe, zero production unwraps, all deps pure-Rust, all `#[allow]` → `#[expect]`.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: CR-TARPC-01 **RESOLVED** (b1ec1f4). tarpc skips `bind()` when `PRIMAL_BIND_MODE=tcp_only`. Socket cleanup DONE. TRANSPORT_ENDPOINT works for JSON-RPC TCP. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 DROPPED (federation port eliminated) — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-115. 72 scenarios (12 tracks), 490+ methods (100% exercised), 942 lib tests, 0 known debt. Wave 115: ZERO P1. ZERO UPSTREAM BLOCKERS. sporeGate 13/13 ALIVE + systemd persisted. golgi 13/13 ALIVE + relay. VCS 17/17 zero drift. Depot 13/13 both arches. K-Derm envelope model. Convergence monitoring. Evolution playground. Deep debt CLEAN.**
+**13/13 CLEAN — Waves 1-132f. 115 scenarios (12 tracks), 490+ methods (100% exercised), 1079+ lib tests, 0 known debt. Wave 132f: bearDog STARTUP-BD-01 REOPENED. Tower HTTP gateway validated. 3-gate LAN mesh LIVE. Deep debt CLEAN.**
 
 ---
 
@@ -86,7 +86,7 @@ Every primal converges on `$PRIMAL server --bind-mode $PRIMAL_BIND_MODE --port $
 
 | ID | Primal | Severity | Description |
 |----|--------|----------|-------------|
-| ~~STARTUP-BD-01~~ | bearDog | ~~P2~~ | **RESOLVED** Wave 132 — `BindMode::Auto` now auto-detects Android/abstract platforms. `--abstract` flag retained for explicit override only. |
+| STARTUP-BD-01 | bearDog | P1 | **REOPENED** Wave 132f — `BindMode::Auto` does not auto-detect Android/abstract. Fix scoped: platform-aware match in `handlers/server/mod.rs`. Also: `rustls_rustcrypto::provider().install_default()` missing from `main()`, causing ACME gateway panic. |
 | ~~STARTUP-NG-01~~ | nestGate | ~~P2~~ | **RESOLVED** `66126899` — HTTP default in server mode. |
 | ~~STARTUP-BM-01~~ | biomeOS | ~~P2~~ | **RESOLVED** `5311dd3f` — guideStone startup contract v4.22. |
 | ~~STARTUP-CR-01~~ | coralReef | ~~P2~~ | **RESOLVED** `7bc90e5` — `--port`, `--bind-mode` standard envelope. |

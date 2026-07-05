@@ -2,7 +2,7 @@
 
 > papers → Python/R → Rust → primals (IPC) → NUCLEUS composition
 
-**Last updated**: June 17, 2026 (Wave 115 — Sovereign Mesh & Gate Hardening). 490+ methods, 942 primalSpring lib tests, 72 scenarios (12 tracks), 114 deploy graphs. sporeGate+golgi 13/13. VCS 17/17 zero drift.
+**Last updated**: July 5, 2026 (Wave 132f — Debt Resolution). 490+ methods, 1079+ primalSpring lib tests, 115 scenarios (12 tracks), 114 deploy graphs. 3-gate LAN mesh LIVE. Tower HTTP gateway validated.
 **Audited by**: primalSpring composition audit + ecosystem postPrimordial compliance sweep
 **Method**: Pulled all 13 primals + sourDough + bingoCube to HEAD, assessed against postPrimordial checklist
 

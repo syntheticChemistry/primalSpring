@@ -1195,6 +1195,17 @@ owner = "skunkbat"
 stability = "stable"
 methods = []
 
+[relay]
+owner = "cellmembrane"
+stability = "evolving"
+methods = [
+    "relay.mediate",
+    "relay.parity",
+    "relay.run",
+    "relay.ship",
+    "relay.status",
+]
+
 [threat]
 btsp_escalation = true
 owner = "skunkbat"

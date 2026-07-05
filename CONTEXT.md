@@ -21,8 +21,8 @@ protocols. The bonding models are the hypotheses.
 
 - **Composition validation library** — `CompositionContext`, routing,
   mesh topology, parity checks, liveness probing
-- **Certification engine** — guideStone L0-L8 (74 scenarios, 9-layer
-  certification), `primalspring certify`
+- **Certification engine** — guideStone L0-L8 (115 scenarios, 12-track
+  validation), `primalspring certify`
 - **Bonding proofs** — multi-gate bonding models, STUN tiers, ionic
   RPC, content distribution federation
 - **Graph authorship** — deploy graph structural validation, fragment
@@ -311,7 +311,7 @@ memoization), wetSpring (data fetch + visualization), neuralSpring
 
 ### Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 490+ method registry (100% exercised), 74 scenarios, 114 deploy graphs
+- 490+ method registry (100% exercised), 115 scenarios, 114 deploy graphs
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs

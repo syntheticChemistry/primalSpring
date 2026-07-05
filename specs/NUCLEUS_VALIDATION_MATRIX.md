@@ -4,11 +4,9 @@
 > Phase 60+ delta appended below. The structural model (particle types,
 > layered validation L0–L3, bonding patterns) remains valid.
 >
-> **Current state (May 29, 2026)**: Phase 60+, 13 primals, guideStone Level 8,
-> genomeBin v5.1+, BTSP Phase 3 converged (13/13 AEAD). primalSpring v0.9.31:
-> 807 lib tests + 17 doc tests, 470+ methods, 57 scenarios. Wave 60: Neural API
-> Coordination Triad (quorumSignal/rootPulse/waterFall), 23 composition graphs across
-> 6 tiers, cross-gate graph executor spec. See `CONTEXT.md`,
+> **Current state (Jul 5, 2026)**: Wave 132f, 13 primals, guideStone Level 8.
+> primalSpring v0.9.33: 1079+ lib tests, 490+ methods, 115 scenarios (12 tracks).
+> Tower HTTP gateway validated. 3-gate LAN mesh LIVE. See `CONTEXT.md`,
 > `docs/PRIMAL_GAPS.md`, and `specs/NEURAL_API_EVOLUTION.md` for live tracking.
 >
 > **Note**: `graphs/sketches/` paths below were archived to

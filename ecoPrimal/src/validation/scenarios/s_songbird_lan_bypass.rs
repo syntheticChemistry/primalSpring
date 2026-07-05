@@ -33,14 +33,23 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
-/// LAN subnet prefix shared by backbone gates (CRS310 fabric).
-const LAN_SUBNET: &str = "192.168.4.";
+/// Backbone-zone gates (physically on CRS310 LAN fabric) — derived from TOML.
+fn lan_gates() -> Vec<&'static str> {
+    all_mesh_gates()
+        .iter()
+        .filter(|e| e.zone == "Backbone" && !e.address.is_empty())
+        .map(|e| e.name.as_str())
+        .collect()
+}
 
-/// Gates known to be on the LAN backbone (physically on CRS310).
-const LAN_GATES: &[&str] = &["sporeGate", "eastGate"];
-
-/// Gates that connect via WAN relay (not on CRS310 backbone).
-const WAN_GATES: &[&str] = &["flockGate"];
+/// WAN-zone gates (route via golgi relay, not on CRS310) — derived from TOML.
+fn wan_gates() -> Vec<&'static str> {
+    all_mesh_gates()
+        .iter()
+        .filter(|e| e.zone == "Wan" && !e.address.is_empty())
+        .map(|e| e.name.as_str())
+        .collect()
+}
 
 /// Run all LAN bypass validation phases.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
@@ -74,8 +83,14 @@ fn phase_topology(v: &mut ValidationResult) {
         "mesh_topology.toml has ≥4 gate entries",
     );
 
-    let mesh_gates = all_mesh_gates();
-    for lan_gate in LAN_GATES {
+    let lan = lan_gates();
+    v.check_bool(
+        "topology:lan_gates_populated",
+        lan.len() >= 2,
+        &format!("{} Backbone-zone gates with addresses: {lan:?}", lan.len()),
+    );
+
+    for lan_gate in &lan {
         let has_address = mesh_address(lan_gate).is_some();
         v.check_bool(
             &format!("topology:{lan_gate}:has_mesh_address"),
@@ -84,7 +99,10 @@ fn phase_topology(v: &mut ValidationResult) {
         );
     }
 
-    let peered_count = mesh_gates.iter().filter(|e| !e.address.is_empty()).count();
+    let peered_count = all_mesh_gates()
+        .iter()
+        .filter(|e| !e.address.is_empty())
+        .count();
     v.check_bool(
         "topology:minimum_peered",
         peered_count >= 4,
@@ -93,25 +111,24 @@ fn phase_topology(v: &mut ValidationResult) {
 }
 
 fn phase_routing_policy(v: &mut ValidationResult) {
-    // Structural: LAN gates share a subnet → should prefer direct connect
-    // This validates the *policy* exists, not the runtime behavior
-    for lan_gate in LAN_GATES {
+    let lan = lan_gates();
+    let wan = wan_gates();
+
+    for lan_gate in &lan {
         v.check_bool(
             &format!("routing:{lan_gate}:lan_eligible"),
             true,
-            &format!("{lan_gate} is on LAN subnet {LAN_SUBNET}* — eligible for direct connect"),
+            &format!("{lan_gate} is Backbone zone — eligible for direct connect"),
         );
     }
 
-    // Validate that LAN and WAN sets are disjoint (no gate in both)
-    let overlap = LAN_GATES.iter().any(|g| WAN_GATES.contains(g));
+    let overlap = lan.iter().any(|g| wan.contains(g));
     v.check_bool(
         "routing:lan_wan_disjoint",
         !overlap,
-        "LAN and WAN gate sets are disjoint",
+        "Backbone and Wan gate sets are disjoint",
     );
 
-    // Validate mesh topology declares zone info for routing decisions
     let mesh_gates = all_mesh_gates();
     let has_zone_data = mesh_gates.iter().all(|e| !e.zone.is_empty());
     v.check_bool(
@@ -122,8 +139,9 @@ fn phase_routing_policy(v: &mut ValidationResult) {
 }
 
 fn phase_relay_independence(v: &mut ValidationResult) {
-    // WAN gates must route via relay (golgi hub) — they can't LAN-direct
-    for wan_gate in WAN_GATES {
+    let wan = wan_gates();
+
+    for wan_gate in &wan {
         let has_address = mesh_address(wan_gate).is_some();
         v.check_bool(
             &format!("relay:{wan_gate}:has_wg_address"),
@@ -132,7 +150,6 @@ fn phase_relay_independence(v: &mut ValidationResult) {
         );
     }
 
-    // golgi must exist as relay hub
     let golgi_addr = mesh_address("golgi");
     v.check_bool(
         "relay:golgi_hub_exists",
@@ -140,11 +157,14 @@ fn phase_relay_independence(v: &mut ValidationResult) {
         "golgi VPS exists as relay hub",
     );
 
-    // Validate golgi is .1 (relay hub convention)
+    let golgi_entry = all_mesh_gates().iter().find(|e| e.name == "golgi");
     v.check_bool(
         "relay:golgi_is_hub",
-        golgi_addr == Some("10.13.37.1"),
-        "golgi is 10.13.37.1 (conventional relay hub address)",
+        golgi_entry.is_some_and(|e| e.role == "hub"),
+        &format!(
+            "golgi role = {} (expect hub)",
+            golgi_entry.map_or("MISSING", |e| e.role.as_str())
+        ),
     );
 }
 
