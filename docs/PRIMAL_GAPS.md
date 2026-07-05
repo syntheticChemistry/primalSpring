@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-07-05 (Wave 132f: **Debt Resolution.** 115 scenarios, 1079+ lib tests, 12 tracks. Tower HTTP gateway + bearDog ACME + security.advisory validated. 3-gate LAN mesh LIVE. bearDog STARTUP-BD-01 REOPENED (CryptoProvider + BindMode::Auto). Deep debt CLEAN: zero unsafe, zero production unwraps, all deps pure-Rust, all `#[allow]` → `#[expect]`.)
+> **Last updated**: 2026-07-05 (Wave 132g: **Mesh Convergence.** 118 scenarios, 1083+ lib tests, 12 tracks. Gatehouse/darkforest demarcation + mesh convergence ops validated. Critical path: operational deploy/peer sequence. graphenegate-readiness known debt = 4 (pepti warehouse + upstream tcp_only adoption pending). Deep debt CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: CR-TARPC-01 **RESOLVED** (b1ec1f4). tarpc skips `bind()` when `PRIMAL_BIND_MODE=tcp_only`. Socket cleanup DONE. TRANSPORT_ENDPOINT works for JSON-RPC TCP. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 DROPPED (federation port eliminated) — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-132f. 115 scenarios (12 tracks), 490+ methods (100% exercised), 1079+ lib tests, 0 known debt. Wave 132f: bearDog STARTUP-BD-01 REOPENED. Tower HTTP gateway validated. 3-gate LAN mesh LIVE. Deep debt CLEAN.**
+**13/13 CLEAN — Waves 1-132g. 118 scenarios (12 tracks), 490+ methods (100% exercised), 1083+ lib tests, 0 known debt (graphenegate-readiness: 4 env/upstream). Wave 132g: gatehouse/darkforest demarcation + mesh convergence ops. Critical path = operational deploy. Deep debt CLEAN.**
 
 ---
 

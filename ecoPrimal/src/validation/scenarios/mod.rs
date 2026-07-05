@@ -109,6 +109,7 @@ pub mod s_kderm_boundary;
 pub mod s_kderm_live_layers;
 pub mod s_loam_certificate_lifecycle;
 pub mod s_mesh_capability_propagation;
+pub mod s_mesh_convergence_ops;
 pub mod s_mesh_overlay;
 pub mod s_mesh_reachability;
 pub mod s_mesh_topology;
@@ -296,6 +297,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_pepti_warehouse_deploy::SCENARIO);
     r.register(s_mobile_mesh_init::SCENARIO);
     r.register(s_drawbridge_http_routing::SCENARIO);
+    r.register(s_mesh_convergence_ops::SCENARIO);
     r
 }
 
@@ -306,7 +308,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 120;
+    const EXPECTED_SCENARIO_COUNT: usize = 121;
 
     #[test]
     fn registry_scenario_count() {
@@ -359,12 +361,14 @@ mod tests {
 
     #[test]
     fn registry_all_rust_tier_pass() {
-        // Wave 128: KNOWN_DEBT swept clean.
-        // - mesh-overlay (Tier::Both) was dead code here — never reached
-        //   because the L328 tier guard skips non-Rust scenarios.
-        // - cascade-drift retiered to Tier::Both (operational checks don't
-        //   belong in Rust-tier: remote parity + depot freshness are live).
-        const KNOWN_DEBT: &[(&str, u32)] = &[];
+        // Wave 132g: graphenegate-readiness has 4 upstream/environmental failures:
+        //   - depot:aarch64_dir_exists (pepti warehouse not yet deployed to eastGate)
+        //   - blocker:cr_tarpc_01 (coralReef tcp_only adoption pending)
+        //   - blocker:bm_uds_01 (biomeOS tcp_only adoption pending)
+        //   - deployment:live_count (11/13, downstream of above 2)
+        // These clear once sporeGate CI publishes cross-arch binaries and
+        // upstream primals absorb PRIMAL_BIND_MODE guards.
+        const KNOWN_DEBT: &[(&str, u32)] = &[("graphenegate-readiness", 4)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
