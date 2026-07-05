@@ -8,7 +8,9 @@
 //! and enclave computing boundaries. All checks are Tier::Rust — no live
 //! primals required.
 //!
-//! See `specs/DARK_FOREST_GLACIAL_GATE.md` for the full standard.
+//! See `specs/DARK_FOREST_GLACIAL_GATE.md` for the five-pillar standard.
+//! See also `s_gatehouse_darkforest` for the Wave 132g demarcation architecture
+//! (gatehouse/drawbridge/darkforest network regime separation).
 
 use crate::composition::{CompositionContext, capability_to_primal, tcp_fallback_table};
 use crate::validation::ValidationResult;

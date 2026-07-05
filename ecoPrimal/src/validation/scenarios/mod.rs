@@ -95,6 +95,7 @@ pub mod s_gate_expansion_readiness;
 pub mod s_gate_failure;
 pub mod s_gate_parity;
 pub mod s_gate_readiness;
+pub mod s_gatehouse_darkforest;
 pub mod s_genetics_compliance;
 pub mod s_gpu_dispatch_cross_gate;
 pub mod s_gpu_pipeline_validation;
@@ -246,6 +247,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_cascade_drift::SCENARIO);
     r.register(s_mesh_topology::SCENARIO);
     r.register(s_gate_readiness::SCENARIO);
+    r.register(s_gatehouse_darkforest::SCENARIO);
     r.register(s_kderm_boundary::SCENARIO);
     r.register(s_nucleus_orchestration::SCENARIO);
     r.register(s_convergence_monitor::SCENARIO);
@@ -298,7 +300,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 116;
+    const EXPECTED_SCENARIO_COUNT: usize = 117;
 
     #[test]
     fn registry_scenario_count() {
