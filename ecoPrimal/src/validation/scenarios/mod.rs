@@ -361,14 +361,7 @@ mod tests {
 
     #[test]
     fn registry_all_rust_tier_pass() {
-        // Wave 132g: graphenegate-readiness has 4 upstream/environmental failures:
-        //   - depot:aarch64_dir_exists (pepti warehouse not yet deployed to eastGate)
-        //   - blocker:cr_tarpc_01 (coralReef tcp_only adoption pending)
-        //   - blocker:bm_uds_01 (biomeOS tcp_only adoption pending)
-        //   - deployment:live_count (11/13, downstream of above 2)
-        // These clear once sporeGate CI publishes cross-arch binaries and
-        // upstream primals absorb PRIMAL_BIND_MODE guards.
-        const KNOWN_DEBT: &[(&str, u32)] = &[("graphenegate-readiness", 4)];
+        const KNOWN_DEBT: &[(&str, u32)] = &[];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
