@@ -68,6 +68,7 @@ pub mod s_composition_dispatch_parity;
 pub mod s_composition_lifecycle;
 pub mod s_composition_live_state;
 pub mod s_composition_parity;
+pub mod s_compute_hosting_contract;
 pub mod s_compute_triangle;
 pub mod s_convergence_monitor;
 pub mod s_coordination_api;
@@ -183,6 +184,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_ionic_bond::SCENARIO);
     r.register(s_gate_failure::SCENARIO);
     r.register(s_cross_spring_data_flow::SCENARIO);
+    r.register(s_compute_hosting_contract::SCENARIO);
     r.register(s_compute_triangle::SCENARIO);
     r.register(s_socket_discovery::SCENARIO);
     r.register(s_bearer_token_auth::SCENARIO);
@@ -296,7 +298,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 115;
+    const EXPECTED_SCENARIO_COUNT: usize = 116;
 
     #[test]
     fn registry_scenario_count() {

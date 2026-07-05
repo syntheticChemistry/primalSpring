@@ -86,7 +86,7 @@ Every primal converges on `$PRIMAL server --bind-mode $PRIMAL_BIND_MODE --port $
 
 | ID | Primal | Severity | Description |
 |----|--------|----------|-------------|
-| STARTUP-BD-01 | bearDog | P1 | **REOPENED** Wave 132f — `BindMode::Auto` does not auto-detect Android/abstract. Fix scoped: platform-aware match in `handlers/server/mod.rs`. Also: `rustls_rustcrypto::provider().install_default()` missing from `main()`, causing ACME gateway panic. |
+| ~~STARTUP-BD-01~~ | bearDog | ~~P1~~ | **RESOLVED** `7e932000f` Wave 132f — `BindMode::Auto` platform-aware detection shipped (ANDROID_ROOT/ANDROID_DATA env + cfg). `rustls_rustcrypto::provider().install_default()` added to `main()`. Both fixes in single commit. Validated by `s_beardog_startup_contract` scenario. |
 | ~~STARTUP-NG-01~~ | nestGate | ~~P2~~ | **RESOLVED** `66126899` — HTTP default in server mode. |
 | ~~STARTUP-BM-01~~ | biomeOS | ~~P2~~ | **RESOLVED** `5311dd3f` — guideStone startup contract v4.22. |
 | ~~STARTUP-CR-01~~ | coralReef | ~~P2~~ | **RESOLVED** `7bc90e5` — `--port`, `--bind-mode` standard envelope. |

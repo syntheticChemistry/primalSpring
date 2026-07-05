@@ -620,6 +620,17 @@ methods = [
     "compute.submit",
 ]
 
+[jupyter]
+owner = "nucleus"
+stability = "evolving"
+gate_affinity = "ironGate"
+methods = [
+    "jupyter.health",
+    "jupyter.kernel.list",
+    "jupyter.kernel.spawn",
+    "jupyter.session.list",
+]
+
 [dispatch]
 owner = "toadstool"
 methods = [
@@ -1199,6 +1210,7 @@ methods = []
 owner = "cellmembrane"
 stability = "evolving"
 methods = [
+    "relay.config",
     "relay.mediate",
     "relay.parity",
     "relay.run",
