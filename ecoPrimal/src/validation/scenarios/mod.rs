@@ -85,6 +85,7 @@ pub mod s_dark_forest_gate;
 pub mod s_defense_attestation;
 pub mod s_deployment_pipeline;
 pub mod s_domain_contract_sweep;
+pub mod s_drawbridge_http_routing;
 pub mod s_ecosystem_freshness;
 pub mod s_feedback_loop;
 pub mod s_ferment_transcript;
@@ -113,6 +114,7 @@ pub mod s_mesh_reachability;
 pub mod s_mesh_topology;
 pub mod s_meta_tier_compositions;
 pub mod s_metallic_bond;
+pub mod s_mobile_mesh_init;
 pub mod s_multi_gate_nucleus;
 pub mod s_multigate_composition;
 pub mod s_nest_atomic;
@@ -126,6 +128,7 @@ pub mod s_nucleus_orchestration;
 pub mod s_nucleus_user_deploy;
 pub mod s_observatory_parity;
 pub mod s_parallel_graph;
+pub mod s_pepti_warehouse_deploy;
 pub mod s_petaltongue_viz;
 pub mod s_plasmodium_collective;
 pub mod s_pressure_surface;
@@ -290,6 +293,9 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_biomeos_local_composition::SCENARIO);
     r.register(s_relay_forward_transport::SCENARIO);
     r.register(s_songbird_lan_bypass::SCENARIO);
+    r.register(s_pepti_warehouse_deploy::SCENARIO);
+    r.register(s_mobile_mesh_init::SCENARIO);
+    r.register(s_drawbridge_http_routing::SCENARIO);
     r
 }
 
@@ -300,7 +306,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 117;
+    const EXPECTED_SCENARIO_COUNT: usize = 120;
 
     #[test]
     fn registry_scenario_count() {
