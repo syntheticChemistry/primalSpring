@@ -34,8 +34,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave132g_mobile_mesh_init",
         provenance_date: "2026-07-05",
-        description:
-            "Mobile mesh init — grapheneGate BindMode::Auto + mesh.init via ADB tether",
+        description: "Mobile mesh init — grapheneGate BindMode::Auto + mesh.init via ADB tether",
     },
     run,
 };
@@ -78,7 +77,10 @@ fn phase_bind_mode(v: &mut ValidationResult) {
     let parsed = BindMode::from_env();
     v.check_bool(
         "bind:from_env_parses",
-        matches!(parsed, BindMode::UdsOnly | BindMode::TcpOnly | BindMode::Fallback),
+        matches!(
+            parsed,
+            BindMode::UdsOnly | BindMode::TcpOnly | BindMode::Fallback
+        ),
         &format!("BindMode::from_env() = {parsed:?} (env: '{env_key}')"),
     );
 
@@ -150,7 +152,9 @@ fn phase_mesh_init_contract(v: &mut ValidationResult) {
         ),
     );
 
-    let has_hub = gates.iter().any(|g| g.role == "hub" && !g.address.is_empty());
+    let has_hub = gates
+        .iter()
+        .any(|g| g.role == "hub" && !g.address.is_empty());
     v.check_bool(
         "mesh:hub_available",
         has_hub,
@@ -196,8 +200,7 @@ fn phase_tether_duality(v: &mut ValidationResult) {
 
     v.check_bool(
         "tether:cellular_relay_possible",
-        TOPOLOGY_TOML.contains("zone = \"Wan\"")
-            && TOPOLOGY_TOML.contains("role = \"mobile\""),
+        TOPOLOGY_TOML.contains("zone = \"Wan\"") && TOPOLOGY_TOML.contains("role = \"mobile\""),
         "grapheneGate topology supports Wan-zone cellular relay maturation",
     );
 }
@@ -210,7 +213,10 @@ fn phase_live_adb(v: &mut ValidationResult) {
         .unwrap_or(false);
 
     if !adb_available {
-        v.check_skip("live:adb_not_connected", "no ADB device connected (expected in CI)");
+        v.check_skip(
+            "live:adb_not_connected",
+            "no ADB device connected (expected in CI)",
+        );
         return;
     }
 
@@ -226,7 +232,11 @@ fn phase_live_adb(v: &mut ValidationResult) {
         &format!("Device architecture: {device_output} (expected aarch64)"),
     );
 
-    for (primal, port) in &[("beardog", 9100u16), ("songbird", 9200u16), ("skunkbat", 9140u16)] {
+    for (primal, port) in &[
+        ("beardog", 9100u16),
+        ("songbird", 9200u16),
+        ("skunkbat", 9140u16),
+    ] {
         let reachable = std::net::TcpStream::connect_timeout(
             &std::net::SocketAddr::from(([127, 0, 0, 1], *port)),
             std::time::Duration::from_secs(2),

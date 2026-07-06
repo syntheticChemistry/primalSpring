@@ -33,8 +33,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave132g_mesh_convergence_ops",
         provenance_date: "2026-07-05",
-        description:
-            "Mesh convergence operations — drawbridge deploy, caddy relay, mesh.init, pepti warehouse, E2E path",
+        description: "Mesh convergence operations — drawbridge deploy, caddy relay, mesh.init, pepti warehouse, E2E path",
     },
     run,
 };
@@ -78,9 +77,7 @@ fn phase_drawbridge_deploy(v: &mut ValidationResult) {
     v.check_bool(
         "drawbridge:port_distinct_from_federation",
         drawbridge_port != federation_port,
-        &format!(
-            "drawbridge port ({drawbridge_port}) ≠ federation port ({federation_port})"
-        ),
+        &format!("drawbridge port ({drawbridge_port}) ≠ federation port ({federation_port})"),
     );
 
     v.check_bool(
@@ -89,10 +86,13 @@ fn phase_drawbridge_deploy(v: &mut ValidationResult) {
         &format!("drawbridge port {drawbridge_port} is unprivileged and valid"),
     );
 
-    let registry_toml =
-        include_str!("../../../../config/capability_registry.toml");
+    let registry_toml = include_str!("../../../../config/capability_registry.toml");
     let Ok(parsed) = toml::from_str::<toml::Value>(registry_toml) else {
-        v.check_bool("drawbridge:registry_parse", false, "capability registry parse failed");
+        v.check_bool(
+            "drawbridge:registry_parse",
+            false,
+            "capability registry parse failed",
+        );
         return;
     };
 
@@ -109,9 +109,9 @@ fn phase_drawbridge_deploy(v: &mut ValidationResult) {
         "http.proxy method exists (drawbridge crossing mechanism)",
     );
 
-    let jupyter_cap = parsed.get("capabilities").and_then(|c| {
-        c.as_table().and_then(|t| t.get("jupyter"))
-    });
+    let jupyter_cap = parsed
+        .get("capabilities")
+        .and_then(|c| c.as_table().and_then(|t| t.get("jupyter")));
     let has_jupyter = jupyter_cap.is_some()
         || parsed
             .get("compositions")
@@ -120,9 +120,7 @@ fn phase_drawbridge_deploy(v: &mut ValidationResult) {
                 t.values().any(|comp| {
                     comp.get("primals")
                         .and_then(|p| p.as_array())
-                        .is_some_and(|arr| {
-                            arr.iter().any(|s| s.as_str() == Some("jupyter"))
-                        })
+                        .is_some_and(|arr| arr.iter().any(|s| s.as_str() == Some("jupyter")))
                 })
             });
     v.check_bool(
@@ -192,7 +190,10 @@ fn phase_mesh_init(v: &mut ValidationResult) {
         &format!(
             "{} backbone gates with addresses (LAN mesh.init targets): {:?}",
             backbone_gates.len(),
-            backbone_gates.iter().map(|g| g.name.as_str()).collect::<Vec<_>>()
+            backbone_gates
+                .iter()
+                .map(|g| g.name.as_str())
+                .collect::<Vec<_>>()
         ),
     );
 
@@ -206,7 +207,10 @@ fn phase_mesh_init(v: &mut ValidationResult) {
         &format!(
             "{} WAN gates with addresses (relay-via-golgi targets): {:?}",
             wan_gates.len(),
-            wan_gates.iter().map(|g| g.name.as_str()).collect::<Vec<_>>()
+            wan_gates
+                .iter()
+                .map(|g| g.name.as_str())
+                .collect::<Vec<_>>()
         ),
     );
 
@@ -214,9 +218,7 @@ fn phase_mesh_init(v: &mut ValidationResult) {
     v.check_bool(
         "mesh_init:federation_port_for_peering",
         federation_port == 7700,
-        &format!(
-            "mesh.init bootstrap_peers use federation port {federation_port} (expected 7700)"
-        ),
+        &format!("mesh.init bootstrap_peers use federation port {federation_port} (expected 7700)"),
     );
 }
 
@@ -236,13 +238,19 @@ fn phase_pepti_warehouse(v: &mut ValidationResult) {
             let target_dir = root.join(target);
             if target_dir.is_dir() {
                 v.check_bool(
-                    &format!("pepti:target_{}", target.replace('-', "_").replace("unknown_", "")),
+                    &format!(
+                        "pepti:target_{}",
+                        target.replace('-', "_").replace("unknown_", "")
+                    ),
                     true,
                     &format!("depot target directory exists: {target}"),
                 );
             } else {
                 v.check_bool(
-                    &format!("pepti:target_{}", target.replace('-', "_").replace("unknown_", "")),
+                    &format!(
+                        "pepti:target_{}",
+                        target.replace('-', "_").replace("unknown_", "")
+                    ),
                     false,
                     &format!("depot target directory MISSING: {target} (awaiting Sovereign CI)"),
                 );
@@ -255,7 +263,10 @@ fn phase_pepti_warehouse(v: &mut ValidationResult) {
         );
         for target in &expected_targets {
             v.check_skip(
-                &format!("pepti:target_{}", target.replace('-', "_").replace("unknown_", "")),
+                &format!(
+                    "pepti:target_{}",
+                    target.replace('-', "_").replace("unknown_", "")
+                ),
                 &format!("skipped — no depot root (target: {target})"),
             );
         }
@@ -296,9 +307,7 @@ fn phase_e2e_path(v: &mut ValidationResult) {
         ),
     );
 
-    let path_complete = golgi_addr.is_some()
-        && sporegate_addr.is_some()
-        && irongate_addr.is_some();
+    let path_complete = golgi_addr.is_some() && sporegate_addr.is_some() && irongate_addr.is_some();
     v.check_bool(
         "e2e:full_path_resolvable",
         path_complete,

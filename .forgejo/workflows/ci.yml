@@ -1,10 +1,11 @@
 # Forgejo Actions CI — primalSpring
 #
 # Sovereign CI on git.primals.eco. First cross-repo Forgejo pipeline.
-# Runs fmt, clippy, test on the main ecoPrimal crate.
+# Runs fmt, clippy, test on x86_64; cross-compiles nucleus_launcher for aarch64.
 # Toolchain pinned via rust-toolchain.toml at workspace root.
 #
 # Wave 74: activated (was template in projectNUCLEUS infra/ci/).
+# Wave 132h: added aarch64 cross-compile job (LAUNCHER-01).
 
 name: CI
 
@@ -37,3 +38,30 @@ jobs:
           cargo fmt -p primalspring --check
           cargo clippy -p primalspring -- -D warnings
           cargo test -p primalspring
+
+  cross-aarch64:
+    runs-on: ubuntu-latest
+    needs: rust-validation
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pinned Rust toolchain + aarch64 target
+        run: |
+          if [ -f rust-toolchain.toml ]; then
+            channel=$(grep 'channel' rust-toolchain.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+            rustup toolchain install "$channel" --profile minimal
+            rustup default "$channel"
+          else
+            rustup default stable
+          fi
+          rustup target add aarch64-unknown-linux-musl
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc-aarch64-linux-gnu
+
+      - name: Cross-compile nucleus_launcher (aarch64-musl)
+        run: cargo build --release --target aarch64-unknown-linux-musl --bin nucleus_launcher
+
+      - name: Verify binary
+        run: |
+          file target/aarch64-unknown-linux-musl/release/nucleus_launcher
+          ls -lh target/aarch64-unknown-linux-musl/release/nucleus_launcher

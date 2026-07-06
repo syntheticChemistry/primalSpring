@@ -30,8 +30,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave132g_pepti_warehouse",
         provenance_date: "2026-07-05",
-        description:
-            "Pepti warehouse cross-arch deploy — sovereign CI → depot → gate deployment pipeline",
+        description: "Pepti warehouse cross-arch deploy — sovereign CI → depot → gate deployment pipeline",
     },
     run,
 };
@@ -40,11 +39,7 @@ const ALL_PRIMALS: &[&str] = Primal::ALL_SLUGS;
 
 const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
 
-const ADB_PORTS: &[(&str, u16)] = &[
-    ("beardog", 9100),
-    ("songbird", 9200),
-    ("skunkbat", 9140),
-];
+const ADB_PORTS: &[(&str, u16)] = &[("beardog", 9100), ("songbird", 9200), ("skunkbat", 9140)];
 
 fn ecoprimals_root() -> Option<std::path::PathBuf> {
     let manifest = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
@@ -64,13 +59,16 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 2: Architecture coverage (aarch64-musl)");
     phase_arch_coverage(v);
 
-    v.section("Phase 3: deploy_pixel.sh contract");
+    v.section("Phase 3: Cross-compile infrastructure");
+    phase_cross_compile(v);
+
+    v.section("Phase 4: deploy_pixel.sh contract");
     phase_deploy_script(v);
 
-    v.section("Phase 4: ADB transport config");
+    v.section("Phase 5: ADB transport config");
     phase_adb_transport(v);
 
-    v.section("Phase 5: Live — depot freshness");
+    v.section("Phase 6: Live — depot freshness");
     phase_live_freshness(v);
 }
 
@@ -142,10 +140,55 @@ fn phase_arch_coverage(v: &mut ValidationResult) {
         );
     }
 
+    let launcher = aarch64_dir.join("nucleus_launcher");
+    let launcher_exists = launcher.is_file();
+    v.check_bool(
+        "arch:aarch64:nucleus_launcher",
+        launcher_exists,
+        &format!(
+            "nucleus_launcher: {}",
+            if launcher_exists { "BUILT" } else { "MISSING" }
+        ),
+    );
+
     v.check_bool(
         "arch:aarch64:full_coverage",
         built_count >= 13,
         &format!("{built_count}/13 aarch64 binaries in depot"),
+    );
+}
+
+fn phase_cross_compile(v: &mut ValidationResult) {
+    let cargo_config = include_str!("../../../../.cargo/config.toml");
+
+    v.check_bool(
+        "cross:aarch64_target_config",
+        cargo_config.contains("[target.aarch64-unknown-linux-musl]"),
+        "aarch64-unknown-linux-musl target configured in .cargo/config.toml",
+    );
+
+    v.check_bool(
+        "cross:linker_specified",
+        cargo_config.contains("linker = \"aarch64-linux-gnu-gcc\""),
+        "aarch64 linker specified (aarch64-linux-gnu-gcc)",
+    );
+
+    v.check_bool(
+        "cross:static_linking",
+        cargo_config.contains("crt-static"),
+        "Static linking enabled for aarch64 target",
+    );
+
+    v.check_bool(
+        "cross:alias_exists",
+        cargo_config.contains("cross-aarch64"),
+        "cross-aarch64 alias defined in .cargo/config.toml",
+    );
+
+    v.check_bool(
+        "cross:alias_targets_launcher",
+        cargo_config.contains("--bin nucleus_launcher"),
+        "cross-aarch64 alias targets nucleus_launcher binary",
     );
 }
 

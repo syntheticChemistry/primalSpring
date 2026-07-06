@@ -34,8 +34,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave132g_drawbridge_http",
         provenance_date: "2026-07-05",
-        description:
-            "Drawbridge HTTP routing — songBird :7780 path-based proxy into darkforest mesh",
+        description: "Drawbridge HTTP routing — songBird :7780 path-based proxy into darkforest mesh",
     },
     run,
 };
@@ -78,8 +77,7 @@ fn phase_registry(v: &mut ValidationResult) {
 
     v.check_bool(
         "registry:capability_call",
-        REGISTRY_TOML.contains("capability.call")
-            || REGISTRY_TOML.contains("capability_call"),
+        REGISTRY_TOML.contains("capability.call") || REGISTRY_TOML.contains("capability_call"),
         "capability.call method registered (drawbridge routes through this)",
     );
 
@@ -126,9 +124,7 @@ fn phase_port_contract(v: &mut ValidationResult) {
 }
 
 fn phase_route_schema(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
-    let routes: &[(&str, &str, &str)] = &[
-        ("/hub", "jupyter", "ironGate"),
-    ];
+    let routes: &[(&str, &str, &str)] = &[("/hub", "jupyter", "ironGate")];
 
     for (path, capability, expected_gate) in routes {
         v.check_bool(
@@ -137,9 +133,7 @@ fn phase_route_schema(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
             &format!("Route path '{path}' is valid URL prefix"),
         );
 
-        let gate_exists = all_mesh_gates()
-            .iter()
-            .any(|g| g.name == *expected_gate);
+        let gate_exists = all_mesh_gates().iter().any(|g| g.name == *expected_gate);
         v.check_bool(
             &format!("route:gate:{capability}"),
             gate_exists,
@@ -206,15 +200,18 @@ fn phase_env_contract(v: &mut ValidationResult) {
 fn phase_live(v: &mut ValidationResult) {
     let sporegate_addr = mesh_address("sporeGate");
     let Some(addr) = sporegate_addr else {
-        v.check_skip("live:sporegate_addr", "sporeGate mesh address not available");
+        v.check_skip(
+            "live:sporegate_addr",
+            "sporeGate mesh address not available",
+        );
         return;
     };
 
     let target = format!("{addr}:{DRAWBRIDGE_PORT}");
     let reachable = std::net::TcpStream::connect_timeout(
-        &target.parse().unwrap_or_else(|_| {
-            std::net::SocketAddr::from(([10, 13, 37, 2], DRAWBRIDGE_PORT))
-        }),
+        &target
+            .parse()
+            .unwrap_or_else(|_| std::net::SocketAddr::from(([10, 13, 37, 2], DRAWBRIDGE_PORT))),
         std::time::Duration::from_secs(3),
     )
     .is_ok();
@@ -222,7 +219,14 @@ fn phase_live(v: &mut ValidationResult) {
     v.check_bool(
         "live:drawbridge_reachable",
         reachable,
-        &format!("songBird drawbridge at {target}: {}", if reachable { "UP" } else { "DOWN (deploy pending)" }),
+        &format!(
+            "songBird drawbridge at {target}: {}",
+            if reachable {
+                "UP"
+            } else {
+                "DOWN (deploy pending)"
+            }
+        ),
     );
 }
 
@@ -249,7 +253,10 @@ mod tests {
     #[test]
     fn sporegate_has_mesh_address() {
         let addr = mesh_address("sporeGate");
-        assert!(addr.is_some(), "sporeGate needs mesh address for drawbridge");
+        assert!(
+            addr.is_some(),
+            "sporeGate needs mesh address for drawbridge"
+        );
     }
 
     #[test]

@@ -148,7 +148,8 @@ impl IonicContractRegistry {
             usage: UsageMetrics::default(),
         };
 
-        self.contracts.insert(id.clone(), contract);
+        self.contracts
+            .insert(contract.contract_id.clone(), contract);
         Ok(id)
     }
 

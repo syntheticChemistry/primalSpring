@@ -9,7 +9,7 @@
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 1060 lib (+ experiment + doc) |
-| **Experiments** | 96 (21 tracks) — 110 validation scenarios (12 tracks, 3 tiers) |
+| **Experiments** | 96 (21 tracks) — 122 validation scenarios (12 tracks, 3 tiers) |
 | **Deploy Graphs** | 101 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 490+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |

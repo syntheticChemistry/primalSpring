@@ -31,8 +31,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave132h_mesh_peer_trust",
         provenance_date: "2026-07-05",
-        description:
-            "Mesh peer trust — dark-forest capability gate, trust zones, BTSP mutual auth",
+        description: "Mesh peer trust — dark-forest capability gate, trust zones, BTSP mutual auth",
     },
     run,
 };
@@ -55,7 +54,11 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 /// Phase 1: Validate trust-related methods are registered in capability registry.
 fn phase_trust_methods(v: &mut ValidationResult) {
     let Ok(parsed) = toml::from_str::<toml::Value>(REGISTRY_TOML) else {
-        v.check_bool("trust:registry_parse", false, "capability registry parse failed");
+        v.check_bool(
+            "trust:registry_parse",
+            false,
+            "capability registry parse failed",
+        );
         return;
     };
 
@@ -67,7 +70,10 @@ fn phase_trust_methods(v: &mut ValidationResult) {
         .unwrap_or_default();
 
     let required_trust_methods = [
-        ("auth.trust_issuer", "register a trusted token issuer (cross-gate trust)"),
+        (
+            "auth.trust_issuer",
+            "register a trusted token issuer (cross-gate trust)",
+        ),
         ("auth.verify_ionic", "verify ionic tokens from remote gates"),
         ("auth.peer_info", "query peer identity for trust decision"),
     ];
@@ -106,8 +112,8 @@ fn phase_trust_methods(v: &mut ValidationResult) {
         .map(|arr| arr.iter().filter_map(|s| s.as_str()).collect())
         .unwrap_or_default();
 
-    let has_btsp_negotiate = btsp_methods.contains(&"btsp.negotiate")
-        || auth_methods.contains(&"btsp.negotiate");
+    let has_btsp_negotiate =
+        btsp_methods.contains(&"btsp.negotiate") || auth_methods.contains(&"btsp.negotiate");
     v.check_bool(
         "trust:btsp_negotiate",
         has_btsp_negotiate,
@@ -124,7 +130,10 @@ fn phase_peer_visibility(v: &mut ValidationResult) {
     v.check_bool(
         "visibility:meshed_gates_exist",
         meshed_gates.len() >= 3,
-        &format!("{} gates with mesh addresses (potential peers)", meshed_gates.len()),
+        &format!(
+            "{} gates with mesh addresses (potential peers)",
+            meshed_gates.len()
+        ),
     );
 
     let backbone_peers: Vec<_> = meshed_gates
@@ -142,7 +151,10 @@ fn phase_peer_visibility(v: &mut ValidationResult) {
         &format!(
             "{} backbone peers (LAN trust zone): {:?}",
             backbone_peers.len(),
-            backbone_peers.iter().map(|g| g.name.as_str()).collect::<Vec<_>>()
+            backbone_peers
+                .iter()
+                .map(|g| g.name.as_str())
+                .collect::<Vec<_>>()
         ),
     );
 
@@ -152,7 +164,10 @@ fn phase_peer_visibility(v: &mut ValidationResult) {
         &format!(
             "{} WAN peers (require BTSP mutual auth): {:?}",
             wan_peers.len(),
-            wan_peers.iter().map(|g| g.name.as_str()).collect::<Vec<_>>()
+            wan_peers
+                .iter()
+                .map(|g| g.name.as_str())
+                .collect::<Vec<_>>()
         ),
     );
 

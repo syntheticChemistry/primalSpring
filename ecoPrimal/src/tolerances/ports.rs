@@ -7,6 +7,8 @@
 //! The TOML-driven registry is the authoritative runtime path; static constants
 //! remain for backward compatibility in contexts requiring `const`.
 
+use crate::primal_names;
+
 /// Per-primal port metadata: slug, TCP fallback, env override key.
 ///
 /// Derived at init time from `config/ports.toml` — adding a new primal
@@ -129,67 +131,67 @@ fn toml_port_for(primal: &str) -> Option<u16> {
 )]
 pub static PORT_REGISTRY: &[PortEntry] = &[
     PortEntry {
-        slug: "beardog",
+        slug: primal_names::BEARDOG,
         port: 9100,
         env_key: "BEARDOG_PORT",
     },
     PortEntry {
-        slug: "songbird",
+        slug: primal_names::SONGBIRD,
         port: 9200,
         env_key: "SONGBIRD_PORT",
     },
     PortEntry {
-        slug: "squirrel",
+        slug: primal_names::SQUIRREL,
         port: 9300,
         env_key: "SQUIRREL_PORT",
     },
     PortEntry {
-        slug: "toadstool",
+        slug: primal_names::TOADSTOOL,
         port: 9400,
         env_key: "TOADSTOOL_PORT",
     },
     PortEntry {
-        slug: "nestgate",
+        slug: primal_names::NESTGATE,
         port: 9500,
         env_key: "NESTGATE_PORT",
     },
     PortEntry {
-        slug: "rhizocrypt",
+        slug: primal_names::RHIZOCRYPT,
         port: 9601,
         env_key: "RHIZOCRYPT_PORT",
     },
     PortEntry {
-        slug: "loamspine",
+        slug: primal_names::LOAMSPINE,
         port: 9700,
         env_key: "LOAMSPINE_PORT",
     },
     PortEntry {
-        slug: "coralreef",
+        slug: primal_names::CORALREEF,
         port: 9730,
         env_key: "CORALREEF_PORT",
     },
     PortEntry {
-        slug: "barracuda",
+        slug: primal_names::BARRACUDA,
         port: 9740,
         env_key: "BARRACUDA_PORT",
     },
     PortEntry {
-        slug: "skunkbat",
+        slug: primal_names::SKUNKBAT,
         port: 9140,
         env_key: "SKUNKBAT_PORT",
     },
     PortEntry {
-        slug: "biomeos",
+        slug: primal_names::BIOMEOS,
         port: 9800,
         env_key: "BIOMEOS_PORT",
     },
     PortEntry {
-        slug: "sweetgrass",
+        slug: primal_names::SWEETGRASS,
         port: 9850,
         env_key: "SWEETGRASS_PORT",
     },
     PortEntry {
-        slug: "petaltongue",
+        slug: primal_names::PETALTONGUE,
         port: 9900,
         env_key: "PETALTONGUE_PORT",
     },
@@ -219,14 +221,14 @@ pub struct FederationPort {
 pub static FEDERATION_PORTS: &[FederationPort] = &[
     FederationPort {
         profile: "nucleus01",
-        primal: "songbird",
+        primal: primal_names::SONGBIRD,
         role: "federation",
         port: 7700,
         droppable: false,
     },
     FederationPort {
         profile: "primalspring01",
-        primal: "songbird",
+        primal: primal_names::SONGBIRD,
         role: "federation",
         port: 7701,
         droppable: false,
