@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-07-05 (Wave 132h: **E2E LIVE + Mesh Peering.** 122 scenarios, 1095+ lib tests, 12 tracks. Mesh peer trust + convergence ops validated. E2E HTTP path live (lab.primals.eco → 200). flockGate WAN peering DONE (2 peers). graphenegate-readiness known debt = 1 (aarch64 depot not local). Deep debt CLEAN.)
+> **Last updated**: 2026-07-05 (Wave 132h: **LAN+WAN MESHED.** 122 scenarios, 1095+ lib tests, 12 tracks. Mesh peer trust + convergence ops validated. E2E HTTP path live (lab.primals.eco → 200). flockGate WAN peering DONE (2 peers). graphenegate-readiness known debt = 0 (pepti LIVE). Deep debt CLEAN.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: CR-TARPC-01 **RESOLVED** (b1ec1f4). tarpc skips `bind()` when `PRIMAL_BIND_MODE=tcp_only`. Socket cleanup DONE. TRANSPORT_ENDPOINT works for JSON-RPC TCP. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 DROPPED (federation port eliminated) — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-132h. 122 scenarios (12 tracks), 490+ methods (100% exercised), 1095+ lib tests, 0 known debt (graphenegate-readiness: 1 env). Wave 132h: E2E LIVE, mesh peer trust + convergence ops. flockGate WAN peered. Deep debt CLEAN.**
+**13/13 CLEAN — Waves 1-132h. 122 scenarios (12 tracks), 490+ methods (100% exercised), 1095+ lib tests, 0 known debt. Wave 132h: LAN+WAN MESHED, mesh peer trust + convergence ops. flockGate WAN peered. graphenegate-readiness CLEARED. Deep debt CLEAN.**
 
 ---
 

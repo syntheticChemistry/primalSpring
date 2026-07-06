@@ -363,10 +363,9 @@ mod tests {
 
     #[test]
     fn registry_all_rust_tier_pass() {
-        // flockGate: graphenegate-readiness has 1 env-specific failure:
-        //   - depot:aarch64_dir_exists (flockGate has no cross-compile depot)
-        // Clears when pepti warehouse pulls aarch64 binaries locally.
-        const KNOWN_DEBT: &[(&str, u32)] = &[("graphenegate-readiness", 1)];
+        // Wave 132h: graphenegate-readiness known debt CLEARED.
+        // Pepti warehouse live — aarch64 binaries available via depot.
+        const KNOWN_DEBT: &[(&str, u32)] = &[];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
