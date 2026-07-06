@@ -63,7 +63,7 @@ primalSpring/
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)
-│   │   ├── validation/scenarios/  # 84 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both)
+│   │   ├── validation/scenarios/  # 122 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both)
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/
@@ -171,9 +171,9 @@ cargo coverage
 
 This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report. Release gate (`primalspring release`) enforces a **70%** floor. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
 
-## Validation Scenarios (110 across 12 tracks)
+## Validation Scenarios (122 across 12 tracks)
 
-primalSpring ships 110 validation scenarios organized into 12 tracks:
+primalSpring ships 122 validation scenarios organized into 12 tracks:
 
 | Track | Scenarios | Tier |
 |-------|-----------|------|
