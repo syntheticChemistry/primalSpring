@@ -2,12 +2,13 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: BearDog FIDO2 — IPC surface validation for UB-2.
 //!
-//! Validates the three FIDO2/CTAP2 methods shipped in BearDog Wave 103:
-//! `beardog.fido2.discover`, `beardog.fido2.register`, `beardog.fido2.authenticate`.
+//! Validates the four FIDO2/CTAP2 methods:
+//! `beardog.fido2.discover`, `beardog.fido2.register`, `beardog.fido2.authenticate`,
+//! `beardog.fido2.entropy` (Wave 138a — Tier 2 hardware entropy harvest).
 //!
 //! Rust tier: verifies the methods are present in the capability registry.
 //! Live tier: probes discover (empty array without hardware is valid),
-//! register/authenticate return proper error shapes without hardware
+//! register/authenticate/entropy return proper error shapes without hardware
 //! (expected: method exists but returns "no device" or empty result).
 //!
 //! The `ctap2` feature gate means builds without the feature will return
@@ -21,6 +22,7 @@ const FIDO2_METHODS: &[&str] = &[
     "beardog.fido2.discover",
     "beardog.fido2.register",
     "beardog.fido2.authenticate",
+    "beardog.fido2.entropy",
 ];
 
 /// Scenario metadata and entry point.
@@ -31,7 +33,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "beardog_wave103_ub2",
         provenance_date: "2026-05-16",
-        description: "BearDog FIDO2/CTAP2: discover + register + authenticate IPC surface",
+        description: "BearDog FIDO2/CTAP2: discover + register + authenticate + entropy IPC surface",
     },
     run,
 };
@@ -49,6 +51,9 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     v.section("Phase 4: beardog.fido2.authenticate error shape (Live tier)");
     phase_authenticate_error(v, ctx);
+
+    v.section("Phase 5: beardog.fido2.entropy error shape (Live tier)");
+    phase_entropy_error(v, ctx);
 }
 
 fn phase_registry(v: &mut ValidationResult, _ctx: &CompositionContext) {
@@ -204,6 +209,53 @@ fn phase_authenticate_error(v: &mut ValidationResult, ctx: &mut CompositionConte
                 "fido2:authenticate:error_shape",
                 is_expected,
                 &format!("authenticate error (expected without hardware): {e}"),
+            );
+        }
+    }
+}
+
+fn phase_entropy_error(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    if !ctx.has_capability("security") {
+        v.check_skip("fido2:entropy:error_shape", "BearDog not discoverable");
+        return;
+    }
+
+    match ctx.call(
+        "security",
+        "beardog.fido2.entropy",
+        serde_json::json!({
+            "rp_id": "primalspring.test",
+            "credential_id": "nonexistent-credential",
+        }),
+    ) {
+        Ok(resp) => {
+            let has_entropy = resp.get("entropy").is_some();
+            let tier = resp.get("tier").and_then(|t| t.as_u64());
+            v.check_bool(
+                "fido2:entropy:error_shape",
+                has_entropy && tier == Some(2),
+                "entropy harvest succeeded (hardware present) — Tier 2",
+            );
+        }
+        Err(e) if e.is_skippable() => {
+            v.check_skip(
+                "fido2:entropy:error_shape",
+                &format!("BearDog not available: {e}"),
+            );
+        }
+        Err(e) => {
+            let msg = e.to_string();
+            let is_expected = msg.contains("no device")
+                || msg.contains("not available")
+                || msg.contains("ctap2")
+                || msg.contains("not enabled")
+                || msg.contains("fido2")
+                || msg.contains("No FIDO2")
+                || msg.contains("credential");
+            v.check_bool(
+                "fido2:entropy:error_shape",
+                is_expected,
+                &format!("entropy error (expected without hardware): {e}"),
             );
         }
     }
