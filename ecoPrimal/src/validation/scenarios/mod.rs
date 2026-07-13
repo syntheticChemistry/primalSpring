@@ -109,6 +109,9 @@ pub mod s_health_standard;
 pub mod s_ionic_bond;
 pub mod s_kderm_boundary;
 pub mod s_kderm_live_layers;
+pub mod s_keygen_interaction_surface;
+pub mod s_lan_wan_meshed_posture;
+pub mod s_live_composition_deploy;
 pub mod s_loam_certificate_lifecycle;
 pub mod s_mesh_capability_propagation;
 pub mod s_mesh_convergence_ops;
@@ -322,6 +325,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_socket_directory_unification::SCENARIO);
     r.register(s_fido2_entropy_ceremony::SCENARIO);
     r.register(s_hardware_trust_pipeline::SCENARIO);
+    r.register(s_keygen_interaction_surface::SCENARIO);
     r.register(s_fp_api_proxy::SCENARIO);
     r.register(s_drawbridge_bonds::SCENARIO);
     r.register(s_depot_trust_verify::SCENARIO);
@@ -335,7 +339,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 146;
+    const EXPECTED_SCENARIO_COUNT: usize = 147;
 
     #[test]
     fn registry_scenario_count() {
