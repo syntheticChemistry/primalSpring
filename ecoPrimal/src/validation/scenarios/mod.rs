@@ -89,6 +89,7 @@ pub mod s_drawbridge_http_routing;
 pub mod s_ecosystem_freshness;
 pub mod s_feedback_loop;
 pub mod s_ferment_transcript;
+pub mod s_fido2_entropy_ceremony;
 pub mod s_flockgate_tower_wan;
 pub mod s_full_nucleus;
 pub mod s_gate_enrollment;
@@ -102,6 +103,7 @@ pub mod s_gpu_dispatch_cross_gate;
 pub mod s_gpu_pipeline_validation;
 pub mod s_graph_pipeline_depth;
 pub mod s_graphenegate_readiness;
+pub mod s_hardware_trust_pipeline;
 pub mod s_health_lifecycle_surface;
 pub mod s_health_standard;
 pub mod s_ionic_bond;
@@ -300,6 +302,29 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_drawbridge_http_routing::SCENARIO);
     r.register(s_mesh_convergence_ops::SCENARIO);
     r.register(s_mesh_peer_trust::SCENARIO);
+    r.register(s_lan_wan_meshed_posture::SCENARIO);
+    r.register(s_wan_dispatch_validation::SCENARIO);
+    r.register(s_composition_subtypes::SCENARIO);
+    r.register(s_sovereign_ci_pipeline::SCENARIO);
+    r.register(s_mesh_auto_distribution::SCENARIO);
+    r.register(s_composition_profiles::SCENARIO);
+    r.register(s_composition_lifecycle::SCENARIO);
+    r.register(s_outer_membrane_posture::SCENARIO);
+    r.register(s_cascade_signing::SCENARIO);
+    r.register(s_cross_membrane_data_flow::SCENARIO);
+    r.register(s_topology_visualization::SCENARIO);
+    r.register(s_federation_wan_readiness::SCENARIO);
+    r.register(s_pure_rust_crypto_audit::SCENARIO);
+    r.register(s_mesh_federation_readiness::SCENARIO);
+    r.register(s_live_composition_deploy::SCENARIO);
+    r.register(s_neural_api_lifecycle::SCENARIO);
+    r.register(s_cross_gate_mesh_deploy::SCENARIO);
+    r.register(s_socket_directory_unification::SCENARIO);
+    r.register(s_fido2_entropy_ceremony::SCENARIO);
+    r.register(s_hardware_trust_pipeline::SCENARIO);
+    r.register(s_fp_api_proxy::SCENARIO);
+    r.register(s_drawbridge_bonds::SCENARIO);
+    r.register(s_depot_trust_verify::SCENARIO);
     r
 }
 
@@ -310,7 +335,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 122;
+    const EXPECTED_SCENARIO_COUNT: usize = 146;
 
     #[test]
     fn registry_scenario_count() {
