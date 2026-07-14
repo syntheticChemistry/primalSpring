@@ -24,6 +24,8 @@ const FIDO2_METHODS: &[&str] = &[
     "beardog.fido2.discover",
     "beardog.fido2.register",
     "beardog.fido2.authenticate",
+    "beardog.fido2.entropy",
+    "beardog.fido2.ceremony",
 ];
 
 const GENETIC_CEREMONY_METHODS: &[&str] = &[

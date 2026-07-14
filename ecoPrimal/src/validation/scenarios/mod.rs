@@ -89,6 +89,7 @@ pub mod s_crypto_identity_surface;
 pub mod s_dark_forest_gate;
 pub mod s_defense_attestation;
 pub mod s_deployment_pipeline;
+pub mod s_depot_binary_standard;
 pub mod s_depot_trust_verify;
 pub mod s_domain_contract_sweep;
 pub mod s_drawbridge_bonds;
@@ -100,6 +101,7 @@ pub mod s_federation_wan_readiness;
 pub mod s_ferment_transcript;
 pub mod s_fido2_authenticate_e2e;
 pub mod s_fido2_ceremony_chain;
+pub mod s_fido2_ceremony_tap_sequence;
 pub mod s_fido2_entropy_ceremony;
 pub mod s_fido2_entropy_mixing;
 pub mod s_fido2_register_e2e;
@@ -268,6 +270,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_tower_http_gateway::SCENARIO);
     r.register(s_ecosystem_freshness::SCENARIO);
     r.register(s_deployment_pipeline::SCENARIO);
+    r.register(s_depot_binary_standard::SCENARIO);
     r.register(s_tcp_fallback::SCENARIO);
     r.register(s_btsp_cross_primal::SCENARIO);
     r.register(s_gate_expansion_readiness::SCENARIO);
@@ -333,6 +336,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_mesh_peer_trust::SCENARIO);
     r.register(s_fido2_authenticate_e2e::SCENARIO);
     r.register(s_fido2_ceremony_chain::SCENARIO);
+    r.register(s_fido2_ceremony_tap_sequence::SCENARIO);
     r.register(s_fido2_entropy_ceremony::SCENARIO);
     r.register(s_fido2_entropy_mixing::SCENARIO);
     r.register(s_fido2_register_e2e::SCENARIO);
@@ -373,7 +377,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 131;
+    const EXPECTED_SCENARIO_COUNT: usize = 133;
 
     #[test]
     fn registry_scenario_count() {
@@ -432,9 +436,12 @@ mod tests {
         // Wave 139a: ironGate deployment context.
         // - cascade-provenance-match: golgi checksums.toml format mismatch (2 xref checks)
         // - bootstrap-readiness: depot path not configured (workspace-only)
+        // Wave 139a: eastGate-specific known debt.
+        // - sporeprint-pure-primal-parity: composition graph not wired (Phase 2)
+        // - graphenegate-readiness: deploy_pixel.sh not present on eastGate (2 checks)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("cascade-provenance-match", 2),
-            ("bootstrap-readiness", 1),
+            ("sporeprint-pure-primal-parity", 1),
+            ("graphenegate-readiness", 2),
         ];
 
         let r = build_registry();
