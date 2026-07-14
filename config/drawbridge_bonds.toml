@@ -1,0 +1,185 @@
+# drawbridge_bonds.toml — Weak bond registry for external data sources
+#
+# Teams declare external data dependencies here. The songBird drawbridge
+# manages the bonds: allowlist enforcement, cache policy, health monitoring.
+# Multiple consumers of the same bond share a single cache.
+#
+# Schema: each [bonds.<name>] entry defines a weak bond.
+# Required: tier, host, methods, consumers, description
+# Optional: paths, cache_days, fragile, rate_limit_rpm, health_endpoint
+#
+# Trust tiers:
+#   scientific  — government/research APIs (USGS, FEMA, NCBI). High trust, long cache.
+#   community   — open-source services (OSM). Medium trust.
+#   commercial  — commercial APIs with ToS (Esri). Variable cache, rate-aware.
+#   municipal   — city/state portals. Low trust, expect fragility.
+#   untrusted   — arbitrary web sources. Ephemeral only.
+#
+# Wave 139a | flockGate overwatch
+
+[meta]
+schema_version = 2
+description = "Ecosystem weak bond registry — external data source connections"
+
+# ═══════════════════════════════════════════════════════════════════
+# Scientific tier — government/research APIs
+# ═══════════════════════════════════════════════════════════════════
+
+[bonds.usgs_elevation]
+tier = "scientific"
+host = "epqs.nationalmap.gov"
+paths = ["/v1/json"]
+methods = ["GET"]
+cache_days = 30
+consumers = ["footPrint"]
+description = "USGS Elevation Point Query Service — DEM-derived spot elevations"
+
+[bonds.fema_flood]
+tier = "scientific"
+host = "hazards.fema.gov"
+paths = ["/gis/nfhl/rest/services/public/NFHL/MapServer"]
+methods = ["GET"]
+cache_days = 1
+consumers = ["footPrint"]
+description = "FEMA National Flood Hazard Layer — flood zone boundaries"
+
+[bonds.nrcs_soils]
+tier = "scientific"
+host = "sdmdataaccess.sc.egov.usda.gov"
+paths = ["/Spatial/SDM.wms"]
+methods = ["GET"]
+cache_days = 90
+consumers = ["footPrint"]
+description = "NRCS Soil Data Mart — SSURGO soil map units via WMS"
+
+[bonds.ncbi_pubchem]
+tier = "scientific"
+host = "pubchem.ncbi.nlm.nih.gov"
+paths = ["/rest/pug/compound/", "/rest/pug/substance/", "/rest/pug_view/"]
+methods = ["GET"]
+cache_days = 30
+consumers = ["squirrel", "protoKarya"]
+description = "NCBI PubChem REST API — compound properties, bioassays, structure search"
+
+[bonds.ncbi_entrez]
+tier = "scientific"
+host = "eutils.ncbi.nlm.nih.gov"
+paths = ["/entrez/eutils/"]
+methods = ["GET"]
+cache_days = 7
+rate_limit_rpm = 3
+consumers = ["squirrel", "protoKarya"]
+description = "NCBI Entrez E-utilities — PubMed, GenBank, protein DB programmatic access"
+
+[bonds.ncbi_datasets]
+tier = "scientific"
+host = "api.ncbi.nlm.nih.gov"
+paths = ["/datasets/v2/"]
+methods = ["GET"]
+cache_days = 7
+consumers = ["squirrel", "protoKarya"]
+description = "NCBI Datasets API v2 — genome, gene, protein bulk data access"
+
+[bonds.uniprot]
+tier = "scientific"
+host = "rest.uniprot.org"
+paths = ["/uniprotkb/", "/uniref/", "/uniparc/"]
+methods = ["GET"]
+cache_days = 30
+consumers = ["squirrel", "protoKarya"]
+description = "UniProt REST API — protein sequences, annotations, cross-references"
+
+[bonds.rcsb_pdb]
+tier = "scientific"
+host = "data.rcsb.org"
+paths = ["/rest/v1/"]
+methods = ["GET"]
+cache_days = 90
+consumers = ["squirrel", "protoKarya"]
+description = "RCSB PDB REST API — macromolecular structure data (AlphaFold provenance)"
+
+[bonds.alphafold_ebi]
+tier = "scientific"
+host = "alphafold.ebi.ac.uk"
+paths = ["/api/"]
+methods = ["GET"]
+cache_days = 90
+consumers = ["squirrel", "protoKarya"]
+description = "AlphaFold Protein Structure Database API — predicted structures"
+
+# ═══════════════════════════════════════════════════════════════════
+# Community tier — open-source community services
+# ═══════════════════════════════════════════════════════════════════
+
+[bonds.osm_overpass]
+tier = "community"
+host = "overpass-api.de"
+paths = ["/api/interpreter"]
+methods = ["GET", "POST"]
+cache_days = 3
+rate_limit_rpm = 10
+consumers = ["footPrint"]
+description = "OSM Overpass API — structured OpenStreetMap queries"
+
+[bonds.osm_nominatim]
+tier = "community"
+host = "nominatim.openstreetmap.org"
+paths = ["/search"]
+methods = ["GET"]
+cache_days = 7
+rate_limit_rpm = 30
+consumers = ["footPrint"]
+description = "OSM Nominatim geocoder — address to coordinates"
+
+# ═══════════════════════════════════════════════════════════════════
+# Commercial tier — APIs with ToS constraints
+# ═══════════════════════════════════════════════════════════════════
+
+[bonds.arcgis_services1]
+tier = "commercial"
+host = "services1.arcgis.com"
+methods = ["GET"]
+cache_days = 7
+consumers = ["footPrint"]
+description = "Esri ArcGIS Online services (hosted feature layers)"
+
+[bonds.arcgis_services2]
+tier = "commercial"
+host = "services2.arcgis.com"
+methods = ["GET"]
+cache_days = 7
+consumers = ["footPrint"]
+description = "Esri ArcGIS Online services (secondary endpoint)"
+
+# ═══════════════════════════════════════════════════════════════════
+# Municipal tier — city/state portals (fragile)
+# ═══════════════════════════════════════════════════════════════════
+
+[bonds.mi_framework]
+tier = "municipal"
+host = "gisagocss.state.mi.us"
+paths = ["/arcgis/rest/services/OpenData/michigan_geographic_framework/MapServer"]
+methods = ["GET"]
+cache_days = 1
+fragile = true
+consumers = ["footPrint"]
+description = "Michigan Geographic Framework — parcel boundaries, road centerlines"
+
+[bonds.mi_gis_portal]
+tier = "municipal"
+host = "gisp.mcgi.state.mi.us"
+methods = ["GET"]
+cache_days = 1
+fragile = true
+consumers = ["footPrint"]
+description = "Michigan GIS portal — state-level geographic data"
+
+[bonds.el_zoning]
+tier = "municipal"
+host = "gis2.cityofeastlansing.com"
+paths = ["/arcgis/rest/services/ZoningDistricts/"]
+methods = ["GET"]
+cache_days = 1
+fragile = true
+consumers = ["footPrint"]
+description = "City of East Lansing zoning districts"

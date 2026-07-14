@@ -91,6 +91,7 @@ pub mod s_defense_attestation;
 pub mod s_deployment_pipeline;
 pub mod s_depot_trust_verify;
 pub mod s_domain_contract_sweep;
+pub mod s_drawbridge_bond_registry;
 pub mod s_drawbridge_bonds;
 pub mod s_drawbridge_weak_bond_ingestion;
 pub mod s_drawbridge_http_routing;
@@ -127,7 +128,7 @@ pub mod s_kderm_boundary;
 pub mod s_kderm_live_layers;
 pub mod s_keygen_interaction_surface;
 // pub mod s_lan_wan_meshed_posture;  // Wave 138+ — pending source from flockGate
-// pub mod s_live_composition_deploy; // Wave 138+ — pending source from flockGate
+pub mod s_live_composition_deploy;
 pub mod s_loam_certificate_lifecycle;
 pub mod s_mesh_auto_distribution;
 pub mod s_mesh_capability_propagation;
@@ -352,17 +353,18 @@ pub fn build_registry() -> ScenarioRegistry {
     // r.register(s_cross_membrane_data_flow::SCENARIO);
     // r.register(s_topology_visualization::SCENARIO);
     // r.register(s_federation_wan_readiness::SCENARIO);
-    // r.register(s_pure_rust_crypto_audit::SCENARIO);
-    // r.register(s_mesh_federation_readiness::SCENARIO);
-    // r.register(s_live_composition_deploy::SCENARIO);
-    // r.register(s_neural_api_lifecycle::SCENARIO);
-    // r.register(s_cross_gate_mesh_deploy::SCENARIO);
-    // r.register(s_socket_directory_unification::SCENARIO);
-    // r.register(s_fp_api_proxy::SCENARIO);
-    // r.register(s_drawbridge_bonds::SCENARIO);
-    // r.register(s_depot_trust_verify::SCENARIO);
-    // r.register(s_protokarya_composition_routing::SCENARIO);
-    // r.register(s_drawbridge_weak_bond_ingestion::SCENARIO);
+    r.register(s_pure_rust_crypto_audit::SCENARIO);
+    r.register(s_mesh_federation_readiness::SCENARIO);
+    r.register(s_live_composition_deploy::SCENARIO);
+    r.register(s_neural_api_lifecycle::SCENARIO);
+    r.register(s_cross_gate_mesh_deploy::SCENARIO);
+    r.register(s_socket_directory_unification::SCENARIO);
+    r.register(s_fp_api_proxy::SCENARIO);
+    r.register(s_drawbridge_bonds::SCENARIO);
+    r.register(s_drawbridge_bond_registry::SCENARIO);
+    r.register(s_depot_trust_verify::SCENARIO);
+    r.register(s_protokarya_composition_routing::SCENARIO);
+    r.register(s_drawbridge_weak_bond_ingestion::SCENARIO);
     r
 }
 
@@ -373,7 +375,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 131;
+    const EXPECTED_SCENARIO_COUNT: usize = 143;
 
     #[test]
     fn registry_scenario_count() {
@@ -430,11 +432,9 @@ mod tests {
         // - sporeprint-pure-primal-parity: composition graph not yet wired (Phase 2)
         // - graphenegate-readiness: depot layout + deploy script (eastGate-local)
         // Wave 139a: ironGate deployment context.
-        // - cascade-provenance-match: golgi checksums.toml format mismatch (2 xref checks)
-        // - bootstrap-readiness: depot path not configured (workspace-only)
+        // - graphenegate-readiness: no aarch64 binaries on x86_64-only gates (14 depot checks)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("cascade-provenance-match", 2),
-            ("bootstrap-readiness", 1),
+            ("graphenegate-readiness", 14),
         ];
 
         let r = build_registry();
