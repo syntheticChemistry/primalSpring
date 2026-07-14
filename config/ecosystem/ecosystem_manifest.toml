@@ -1,0 +1,909 @@
+# SPDX-License-Identifier: CC-BY-SA-4.0
+#
+# ecosystem_manifest.toml — Machine-readable catalog of all ecoPrimals repositories
+#
+# Authority: wateringHole consensus
+# Consumed by: cascade-pull, freshness checks, primalSpring s_ecosystem_freshness
+#
+# Fields:
+#   org            — GitHub org (ecoPrimals, syntheticChemistry, sporeGarden)
+#   local_path     — Path relative to ecoPrimals workspace root
+#   membrane       — "inner-only" | "trailing-mirror" | "outer-only"
+#   sync_source    — "github" (default) | "forgejo" (inner-only repos)
+#   sync_priority  — "high" | "standard" | "low"
+#   category       — "primal" | "spring" | "garden" | "infra" | "root"
+#   description    — Short human description
+#   github_repo    — Full GitHub repo path (org/name)
+#   forgejo_repo   — Forgejo repo path (org/name on git.primals.eco)
+#   default_branch — Git branch name (default: "main")
+
+[meta]
+version = "2.8.0"
+generated = "2026-06-18"
+# DEPRECATED: wave ID now lives in wave.toml (overwatch sole writer).
+# This field is retained at last-known value for backward compat with older binaries.
+wave = 131
+total_repos = 39
+
+# ═══════════════════════════════════════════════════════════════════
+# WaterFall Sync Configuration
+# ═══════════════════════════════════════════════════════════════════
+# K-Derm model: Forgejo sits in the periplasm between gate plasma
+# membranes and the extracellular GitHub outer mirror. WaterFall
+# cascades evolution down from Forgejo to gate cytoplasms; gates
+# push evolution back up through the periplasm.
+#
+# Pattern lineage: WaterFall parallels RootPulse (whitePaper) —
+# both are firstLast biomeOS coordination patterns. RootPulse
+# coordinates primals for single-repo VCS; WaterFall coordinates
+# membranes for multi-repo ecosystem sync.
+
+[sync]
+forgejo_base_url = "https://git.primals.eco"
+forgejo_ssh = "ssh://git@git.primals.eco:2222"
+github_ssh = "git@github.com:"
+forgejo_host = "golgiBody"
+default_source = "temporal"
+default_branch = "main"
+divergence_policy = "merge-ff"
+push_to_followers = true
+# Push target: "forgejo" (sovereign mediator) or "all" (legacy dual-push).
+# When set to "forgejo", temporal.sync pushes only to forgejo remote;
+# the VPS push mirror handles GitHub propagation. Gates still pull from
+# all remotes (GitHub may have external contributions).
+push_target = "all"
+# When true, cascade auto-fires a SYNC impulse on diverge detection.
+# The impulse carries repo, remote HEADs, merge base, and suggested action.
+diverge_impulse = true
+
+[topology]
+model = "diderm"
+inner_membrane = "golgiBody"
+outer_membrane = "golgiBody-ext"
+
+[topology.hosts]
+golgiBody = "157.230.3.183"
+golgiBody-ext = "137.184.197.151"
+
+# K-Derm layer roles — which node handles which function in the
+# waterFall relay chain. Bond types degrade outward:
+# covalent (gate→inner) → ionic (inner→outer) → weak (outer→GitHub)
+[topology.roles]
+push_receiver = "golgiBody"           # cis face: receives gate pushes (Forgejo)
+build_authorities = ["sporeGate", "eastGate"]  # sovereign CI: any gate with Rust + musl-tools can build
+depot_server = "golgiBody"            # WAN depot: serves binaries via Caddy TLS
+sync_mediator = "sporeGate"           # structural: sync hub + impulse cascade
+external_publisher = "golgiBody-ext"  # trans face: ships to GitHub (holds extracellular SSH keys)
+remote_access = "golgiBody"           # RustDesk hbbs+hbbr — sovereign remote desktop relay (remote.primals.eco)
+
+# ═══════════════════════════════════════════════════════════════════
+# Compute Capabilities — GPU/shader/precision metadata
+# ═══════════════════════════════════════════════════════════════════
+
+[capabilities.compute]
+SHADER_F64 = true
+precision_tiers = ["f32", "f64"]
+shader_backends = ["wgsl", "spirv", "glsl"]
+gpu_gates = ["ironGate"]
+notes = "f64 precision via SHADER_F64 feature on RTX 5070 Ti (ironGate). coralReef compiles shaders. barraCuda dispatches compute. Precision routing: barraCuda.precision.route selects f32/f64 path based on device capability."
+
+# ═══════════════════════════════════════════════════════════════════
+# Build Metadata — Sovereign CI Pipeline (plasmid.harvest)
+# ═══════════════════════════════════════════════════════════════════
+#
+# Manifest-driven CI: plasmid.harvest reads these fields instead of
+# hardcoding per-primal workarounds in bash scripts.
+#
+# Fields:
+#   binary_name  — Deployed binary name (as installed in pepti depot)
+#   package      — Cargo package for `--package` flag (workspace primals)
+#   workspace    — Whether the primal uses a Cargo workspace
+#   cargo_config — Whether .cargo/config.toml has custom linker/target config
+#   gpu          — Whether this primal needs a glibc build for GPU/dlopen
+#   targets      — Supported build targets (x86_64-musl, aarch64-musl)
+#   notes        — CI quirks or build context
+#
+# Resolves: CI-DIV-01 (biomeOS), CI-DIV-02 (skunkBat), CI-DIV-03 (nestGate)
+
+[build.beardog]
+binary_name = "beardog"
+package = "beardog"
+workspace = false
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.songbird]
+binary_name = "songbird"
+package = "songbird"
+workspace = false
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.toadstool]
+binary_name = "toadstool"
+package = "toadstool-cli"
+workspace = true
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.barracuda]
+binary_name = "barracuda"
+package = "barracuda-core"
+workspace = true
+cargo_config = false
+gpu = true
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.coralreef]
+binary_name = "coralreef"
+package = "coralreef-core"
+workspace = true
+cargo_config = false
+gpu = true
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.rhizocrypt]
+binary_name = "rhizocrypt"
+package = "rhizocrypt-service"
+workspace = true
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.loamspine]
+binary_name = "loamspine"
+package = "loamspine-service"
+workspace = true
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.sweetgrass]
+binary_name = "sweetgrass"
+package = "sweet-grass-service"
+workspace = true
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.biomeos]
+binary_name = "biomeos"
+package = "biomeos-unibin"
+workspace = true
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+notes = "CI-DIV-01: workspace has multiple binaries — requires --package biomeos-unibin"
+
+[build.squirrel]
+binary_name = "squirrel"
+package = "squirrel"
+workspace = true
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.petaltongue]
+binary_name = "petaltongue"
+package = "petaltongue-workspace"
+workspace = true
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+[build.skunkbat]
+binary_name = "skunkbat"
+package = "skunk-bat-server"
+workspace = true
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+notes = "CI-DIV-02: workspace root is test-only — requires --package skunk-bat-server"
+
+[build.nestgate]
+binary_name = "nestgate"
+package = "nestgate"
+workspace = false
+cargo_config = true
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+notes = "Custom .cargo/config.toml with link-self-contained and relocation-model=static for musl (CI-DIV-03 resolved Wave 133a)"
+
+[build.sourdough]
+binary_name = "sourdough"
+package = "sourdough"
+workspace = true
+cargo_config = false
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+
+# ═══════════════════════════════════════════════════════════════════
+# Repositories
+# ═══════════════════════════════════════════════════════════════════
+
+[repos.nestGate]
+org = "ecoPrimals"
+local_path = "primals/nestGate"
+membrane = "trailing-mirror"
+sync_priority = "standard"
+category = "primal"
+description = "NestGate persistent storage + content-addressed crates"
+github_repo = "ecoPrimals/nestGate"
+forgejo_repo = "ecoPrimals/nestGate"
+# CI-DIV-03: RESOLVED Wave 133a — uses aarch64-linux-gnu-gcc, project .cargo/config.toml handles linker
+
+# ═══════════════════════════════════════════════════════════════════
+# Primals (ecoPrimals org)
+# ═══════════════════════════════════════════════════════════════════
+
+[repos.bearDog]
+org = "ecoPrimals"
+local_path = "primals/bearDog"
+membrane = "trailing-mirror"
+sync_priority = "high"
+category = "primal"
+description = "Security, crypto, BTSP identity"
+github_repo = "ecoPrimals/bearDog"
+forgejo_repo = "ecoPrimals/bearDog"
+
+[repos.songBird]
+org = "ecoPrimals"
+local_path = "primals/songBird"
+membrane = "trailing-mirror"
+sync_priority = "high"
+category = "primal"
+description = "Discovery, routing, federation"
+github_repo = "ecoPrimals/songBird"
+forgejo_repo = "ecoPrimals/songBird"
+
+[repos.toadStool]
+org = "ecoPrimals"
+local_path = "primals/toadStool"
+membrane = "trailing-mirror"
+sync_priority = "high"
+category = "primal"
+description = "Compute dispatch"
+github_repo = "ecoPrimals/toadStool"
+forgejo_repo = "ecoPrimals/toadStool"
+
+[repos.barraCuda]
+org = "ecoPrimals"
+local_path = "primals/barraCuda"
+membrane = "trailing-mirror"
+sync_priority = "standard"
+category = "primal"
+description = "GPU compute dispatch"
+github_repo = "ecoPrimals/barraCuda"
+forgejo_repo = "ecoPrimals/barraCuda"
+gpu = true
+
+[repos.coralReef]
+org = "ecoPrimals"
+local_path = "primals/coralReef"
+membrane = "bidirectional"
+sync_priority = "standard"
+category = "primal"
+description = "Sovereign WGSL/SPIR-V/GLSL shader compiler"
+github_repo = "ecoPrimals/coralReef"
+forgejo_repo = "ecoPrimals/coralReef"
+gpu = true
+
+[repos.rhizoCrypt]
+org = "ecoPrimals"
+local_path = "primals/rhizoCrypt"
+membrane = "trailing-mirror"
+sync_priority = "standard"
+category = "primal"
+description = "Provenance DAG"
+github_repo = "ecoPrimals/rhizoCrypt"
+forgejo_repo = "ecoPrimals/rhizoCrypt"
+
+[repos.loamSpine]
+org = "ecoPrimals"
+local_path = "primals/loamSpine"
+membrane = "trailing-mirror"
+sync_priority = "standard"
+category = "primal"
+description = "Provenance spine"
+github_repo = "ecoPrimals/loamSpine"
+forgejo_repo = "ecoPrimals/loamSpine"
+
+[repos.sweetGrass]
+org = "ecoPrimals"
+local_path = "primals/sweetGrass"
+membrane = "bidirectional"
+sync_priority = "standard"
+category = "primal"
+description = "Provenance braid"
+github_repo = "ecoPrimals/sweetGrass"
+forgejo_repo = "ecoPrimals/sweetGrass"
+
+[repos.biomeOS]
+org = "ecoPrimals"
+local_path = "primals/biomeOS"
+membrane = "bidirectional"
+sync_priority = "high"
+category = "primal"
+description = "Orchestration layer"
+github_repo = "ecoPrimals/biomeOS"
+forgejo_repo = "ecoPrimals/biomeOS"
+# CI-DIV-01: workspace binary crate differs from repo name
+package = "biomeos-unibin"
+
+[repos.squirrel]
+org = "ecoPrimals"
+local_path = "primals/squirrel"
+membrane = "bidirectional"
+sync_priority = "high"
+category = "primal"
+description = "AI/MCP orchestration"
+github_repo = "ecoPrimals/squirrel"
+forgejo_repo = "ecoPrimals/squirrel"
+package = "squirrel"
+
+[repos.petalTongue]
+org = "ecoPrimals"
+local_path = "primals/petalTongue"
+membrane = "trailing-mirror"
+sync_priority = "standard"
+category = "primal"
+description = "Storytelling/UI bridge"
+github_repo = "ecoPrimals/petalTongue"
+forgejo_repo = "ecoPrimals/petalTongue"
+
+[repos.skunkBat]
+org = "ecoPrimals"
+local_path = "primals/skunkBat"
+membrane = "trailing-mirror"
+sync_priority = "standard"
+category = "primal"
+description = "Defense/audit"
+github_repo = "ecoPrimals/skunkBat"
+forgejo_repo = "ecoPrimals/skunkBat"
+# CI-DIV-02: workspace binary crate differs from repo name
+package = "skunk-bat-server"
+
+[repos.sourDough]
+org = "ecoPrimals"
+local_path = "primals/sourDough"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "primal"
+description = "Starter culture/bootstrap"
+github_repo = "ecoPrimals/sourDough"
+forgejo_repo = "ecoPrimals/sourDough"
+
+# ═══════════════════════════════════════════════════════════════════
+# Springs (syntheticChemistry org)
+# ═══════════════════════════════════════════════════════════════════
+
+[repos.primalSpring]
+org = "syntheticChemistry"
+local_path = "springs/primalSpring"
+membrane = "trailing-mirror"
+sync_priority = "high"
+category = "spring"
+description = "Coordination spring, composition validation"
+github_repo = "syntheticChemistry/primalSpring"
+forgejo_repo = "syntheticChemistry/primalSpring"
+
+[repos.wetSpring]
+org = "syntheticChemistry"
+local_path = "springs/wetSpring"
+membrane = "trailing-mirror"
+sync_priority = "high"
+category = "spring"
+description = "Breseq/LTEE science validation"
+github_repo = "syntheticChemistry/wetSpring"
+forgejo_repo = "syntheticChemistry/wetSpring"
+
+[repos.neuralSpring]
+org = "syntheticChemistry"
+local_path = "springs/neuralSpring"
+membrane = "trailing-mirror"
+sync_priority = "high"
+category = "spring"
+description = "Neural/AI validation"
+github_repo = "syntheticChemistry/neuralSpring"
+forgejo_repo = "syntheticChemistry/neuralSpring"
+
+[repos.hotSpring]
+org = "syntheticChemistry"
+local_path = "springs/hotSpring"
+membrane = "trailing-mirror"
+sync_priority = "standard"
+category = "spring"
+description = "GPU compute validation"
+github_repo = "syntheticChemistry/hotSpring"
+forgejo_repo = "syntheticChemistry/hotSpring"
+
+[repos.airSpring]
+org = "syntheticChemistry"
+local_path = "springs/airSpring"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "spring"
+description = "Atmospheric/ADS-B validation"
+github_repo = "syntheticChemistry/airSpring"
+forgejo_repo = "syntheticChemistry/airSpring"
+
+[repos.groundSpring]
+org = "syntheticChemistry"
+local_path = "springs/groundSpring"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "spring"
+description = "Geospatial validation"
+github_repo = "syntheticChemistry/groundSpring"
+forgejo_repo = "syntheticChemistry/groundSpring"
+
+[repos.healthSpring]
+org = "syntheticChemistry"
+local_path = "springs/healthSpring"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "spring"
+description = "Health/clinical validation"
+github_repo = "syntheticChemistry/healthSpring"
+forgejo_repo = "syntheticChemistry/healthSpring"
+
+[repos.ludoSpring]
+org = "syntheticChemistry"
+local_path = "springs/ludoSpring"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "spring"
+description = "Game engine validation"
+github_repo = "syntheticChemistry/ludoSpring"
+forgejo_repo = "syntheticChemistry/ludoSpring"
+
+# ═══════════════════════════════════════════════════════════════════
+# Gardens (sporeGarden org)
+# ═══════════════════════════════════════════════════════════════════
+
+[repos.cellMembrane]
+org = "sporeGarden"
+local_path = "gardens/cellMembrane"
+membrane = "inner-only"
+sync_source = "forgejo"
+sync_priority = "high"
+category = "garden"
+description = "VPS deployment, sovereignty boundary"
+github_repo = "sporeGarden/cellMembrane"
+forgejo_repo = "sporeGarden/cellMembrane"
+
+[repos.lithoSpore]
+org = "sporeGarden"
+local_path = "gardens/lithoSpore"
+membrane = "trailing-mirror"
+sync_priority = "high"
+category = "garden"
+description = "Verification chassis, USB-deployable validation"
+github_repo = "sporeGarden/lithoSpore"
+forgejo_repo = "sporeGarden/lithoSpore"
+
+[repos.projectNUCLEUS]
+org = "sporeGarden"
+local_path = "gardens/projectNUCLEUS"
+membrane = "trailing-mirror"
+sync_priority = "high"
+category = "garden"
+description = "Sovereignty layer, deployment infrastructure"
+github_repo = "sporeGarden/projectNUCLEUS"
+forgejo_repo = "sporeGarden/projectNUCLEUS"
+
+[repos.projectFOUNDATION]
+org = "sporeGarden"
+local_path = "gardens/projectFOUNDATION"
+membrane = "trailing-mirror"
+sync_priority = "standard"
+category = "garden"
+description = "Knowledge layer, thread lineage, validation evidence"
+github_repo = "sporeGarden/projectFOUNDATION"
+forgejo_repo = "sporeGarden/projectFOUNDATION"
+
+[repos.esotericWebb]
+org = "sporeGarden"
+local_path = "gardens/esotericWebb"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "garden"
+description = "UI/agentic interaction layer"
+github_repo = "sporeGarden/esotericWebb"
+forgejo_repo = "sporeGarden/esotericWebb"
+
+[repos.blueFish]
+org = "sporeGarden"
+local_path = "gardens/blueFish"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "garden"
+description = "BlueFish analytical chemistry ETL product"
+github_repo = "sporeGarden/blueFish"
+forgejo_repo = "sporeGarden/blueFish"
+
+[repos.helixVision]
+org = "sporeGarden"
+local_path = "gardens/helixVision"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "garden"
+description = "Sovereign genomics discovery pipeline — 16S/WGS from MinION to taxonomy"
+github_repo = "sporeGarden/helixVision"
+forgejo_repo = "sporeGarden/helixVision"
+
+[repos.initioChem]
+org = "sporeGarden"
+local_path = "gardens/initioChem"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "garden"
+description = "Computational chemistry product — hotSpring science consumer"
+github_repo = "sporeGarden/initioChem"
+forgejo_repo = "sporeGarden/initioChem"
+
+# ═══════════════════════════════════════════════════════════════════
+# Infrastructure (mixed orgs)
+# ═══════════════════════════════════════════════════════════════════
+
+[repos.wateringHole]
+org = "ecoPrimals"
+local_path = "infra/wateringHole"
+membrane = "bidirectional"
+sync_priority = "high"
+category = "infra"
+description = "Ecosystem standards, coordination, cascading pull orchestration"
+github_repo = "ecoPrimals/wateringHole"
+forgejo_repo = "ecoPrimals/wateringHole"
+divergence_policy = "agentic"
+handoff_policy = "merge-ff"
+wave_authority = "eastGate"
+
+[repos.plasmidBin]
+org = "ecoPrimals"
+local_path = "infra/plasmidBin"
+membrane = "trailing-mirror"
+sync_priority = "high"
+category = "infra"
+description = "Binary depot, deploy scripts, release assets"
+github_repo = "ecoPrimals/plasmidBin"
+forgejo_repo = "ecoPrimals/plasmidBin"
+divergence_policy = "merge-ff"  # CI harvest commits are always linear extensions
+
+[repos.whitePaper]
+org = "ecoPrimals"
+local_path = "infra/whitePaper"
+membrane = "trailing-mirror"
+sync_priority = "standard"
+category = "infra"
+description = "Research documentation"
+github_repo = "ecoPrimals/whitePaper"
+forgejo_repo = "ecoPrimals/whitePaper"
+
+[repos.sporePrint]
+org = "ecoPrimals"
+local_path = "infra/sporePrint"
+membrane = "outer-only"
+sync_priority = "low"
+category = "infra"
+description = "GitHub Pages deployment — generated site"
+github_repo = "ecoPrimals/sporePrint"
+forgejo_repo = "ecoPrimals/sporePrint"
+divergence_policy = "impulse-only"  # multi-writer; human review preferred
+
+[repos.benchScale]
+org = "syntheticChemistry"
+local_path = "infra/benchScale"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "infra"
+description = "Lab validation infrastructure"
+github_repo = "syntheticChemistry/benchScale"
+forgejo_repo = "syntheticChemistry/benchScale"
+
+[repos.agentReagents]
+org = "syntheticChemistry"
+local_path = "infra/agentReagents"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "infra"
+description = "Agent configuration reagents"
+github_repo = "syntheticChemistry/agentReagents"
+forgejo_repo = "syntheticChemistry/agentReagents"
+
+[repos.rustChip]
+org = "syntheticChemistry"
+local_path = "infra/rustChip"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "infra"
+description = "Rust toolchain chip"
+github_repo = "syntheticChemistry/rustChip"
+forgejo_repo = "syntheticChemistry/rustChip"
+exclude_remotes = ["upstream"]  # stale Brainchip fork — unrelated history
+
+[repos.bingoCube]
+org = "ecoPrimals"
+local_path = "infra/bingoCube"
+membrane = "trailing-mirror"
+sync_priority = "low"
+category = "infra"
+description = "Validation framework tool"
+github_repo = "ecoPrimals/bingoCube"
+forgejo_repo = "ecoPrimals/bingoCube"
+
+[repos.fossilRecord]
+org = "ecoPrimals"
+local_path = "infra/fossilRecord"
+membrane = "outer-only"
+sync_priority = "low"
+category = "infra"
+description = "Ecosystem archive — fossilized docs, historical artifacts"
+github_repo = "ecoPrimals/fossilRecord"
+forgejo_repo = "ecoPrimals/fossilRecord"
+
+# ═══════════════════════════════════════════════════════════════════
+# Gate Profiles
+# ═══════════════════════════════════════════════════════════════════
+# Which repos each gate cares about. cascade-pull uses these to
+# filter — a gate only pulls repos it needs.
+
+# sporeGate — public entry point, HTTP gateway, 13/13 NUCLEUS, BUILD AUTHORITY
+[gates.sporeGate]
+target = "x86_64-unknown-linux-musl"
+mobility = "fixed"
+bind_mode = "uds"
+composition = "full"
+transport = "lan"
+mesh_peer = "157.230.3.183:7700"
+zone = "backbone"
+hub_port = "ether8"
+wg_ip = "10.13.37.2"
+roles = ["build_hub", "depot", "cascade_hub", "gateway", "http", "mesh_hub"]
+build_authority = true
+link_speed_mbps = 2500
+kderm_role = "cytoplasm"
+site_topology = "triangle_3hub"
+notes = "Ephemeral compute entry NUC (Wave 127+). CRS310 ether8 at 2.5G. Public HTTP gateway (lab.primals.eco via Caddy → Tower). songBird mesh hub. WireGuard overlay spoke. SOVEREIGN CI: builds all 13 primals locally (12-core Ryzen 5 6600H, 27GB RAM). Demoted from edge router Wave 127 — NAT/DHCP/DNS now on Flint H1."
+repos = [
+    "nestGate", "wateringHole", "plasmidBin",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat",
+    "cellMembrane", "projectNUCLEUS",
+]
+
+[gates.eastGate]
+target = "x86_64-unknown-linux-musl"
+mobility = "fixed"
+bind_mode = "uds"
+composition = "full"
+transport = "lan"
+mesh_peer = "157.230.3.183:7700"
+zone = "backbone"
+hub_port = "sfp+2"
+wg_ip = "10.13.37.5"
+roles = ["overwatch", "primalspring_evolution", "meta_atomic", "build_hub"]
+build_authority = true
+link_speed_mbps = 10000
+notes = "Primary development gate. CRS310 sfp+2 at 10G. primalSpring + overwatch. Build-capable (Ryzen 9 7950X, 128GB RAM)."
+repos = [
+    "nestGate", "wateringHole", "plasmidBin", "primalSpring",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat", "bingoCube", "sourDough",
+    "cellMembrane", "projectNUCLEUS", "lithoSpore", "projectFOUNDATION",
+    "esotericWebb", "blueFish", "helixVision", "initioChem",
+    "whitePaper", "benchScale", "agentReagents", "rustChip", "sporePrint",
+    "wetSpring", "neuralSpring", "hotSpring",
+    "airSpring", "groundSpring", "healthSpring", "ludoSpring",
+]
+
+[gates.ironGate]
+target = "x86_64-unknown-linux-musl"
+gpu_target = "x86_64-unknown-linux-gnu"
+mobility = "fixed"
+bind_mode = "uds"
+composition = "full"
+transport = "lan"
+zone = "backbone"
+wg_ip = "10.13.37.7"
+roles = ["node_atomic", "compute", "gpu"]
+notes = "Node atomic (ToadStool, BarraCuda, CoralReef). i9-12900K + RTX 5070 Ti (CUDA). 13/13 NUCLEUS. JupyterHub 5.4.5 LIVE on :8000. Binaries deploy from pepti warehouse (membrane.primals.eco/depot/x86_64-unknown-linux-gnu/). songBird drawbridge target. House 2 mesh anchor."
+repos = [
+    "nestGate", "wateringHole", "plasmidBin", "primalSpring",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat",
+    "cellMembrane", "projectNUCLEUS", "lithoSpore",
+    "esotericWebb",
+    "healthSpring", "ludoSpring",
+]
+
+[gates.southGate]
+repos = [
+    "nestGate", "wateringHole", "plasmidBin", "primalSpring",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat",
+    "cellMembrane", "projectNUCLEUS",
+    "wetSpring", "neuralSpring",
+]
+
+[gates.biomeGate]
+repos = [
+    "nestGate", "wateringHole", "plasmidBin", "primalSpring",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat",
+    "cellMembrane", "projectNUCLEUS",
+    "hotSpring",
+]
+
+# fieldGate — NUC canary, full NUCLEUS 13/13, canary-fieldmouse profile
+[gates.fieldGate]
+target = "x86_64-unknown-linux-musl"
+mobility = "fixed"
+bind_mode = "uds"
+composition = "full"
+transport = "lan"
+mesh_peer = "157.230.3.183:7700"
+profile = "canary-fieldmouse"
+zone = "house2"
+hub_port = "2.5g"
+link_speed_mbps = 2500
+notes = "DDR3 NUC canary. Omada House 2 zone (standalone L2). OFFLINE — dead CMOS, hardware surgery."
+repos = [
+    "nestGate", "wateringHole", "plasmidBin",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat",
+    "cellMembrane", "projectNUCLEUS",
+]
+
+# flockGate — WAN shadow, sporePrint team, Tower atomic, full NUCLEUS
+# SEGMENTATION: external-only. Reaches LAN gates exclusively via golgiBody relay.
+[gates.flockGate]
+target = "x86_64-unknown-linux-musl"
+mobility = "fixed"
+bind_mode = "uds"
+composition = "full"
+transport = "wan"
+mesh_peer = "157.230.3.183:7700"
+segmentation = "external-only"
+wg_ip = "10.13.37.6"
+roles = ["tower_atomic", "sporeprint", "wan_validator"]
+notes = "WAN Tower atomic (BearDog, Songbird, SkunkBat). 13/13 NUCLEUS via user systemd. i9-13900K/62GB. SSH via golgi ProxyJump."
+repos = [
+    "nestGate", "wateringHole", "plasmidBin", "primalSpring",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat", "bingoCube", "sourDough",
+    "cellMembrane", "projectNUCLEUS", "lithoSpore", "projectFOUNDATION",
+    "esotericWebb", "blueFish", "helixVision", "initioChem",
+    "whitePaper", "benchScale", "agentReagents", "rustChip", "sporePrint",
+    "wetSpring", "neuralSpring", "hotSpring",
+    "airSpring", "groundSpring", "healthSpring", "ludoSpring",
+]
+
+# strandGate — ABG science, compChem, genomics, lithoSpore
+[gates.strandGate]
+repos = [
+    "nestGate", "wateringHole", "plasmidBin",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat",
+    "cellMembrane", "projectNUCLEUS", "lithoSpore",
+    "hotSpring", "wetSpring",
+    "helixVision", "initioChem", "blueFish", "esotericWebb",
+]
+
+# grapheneGate — portable trust anchor (Pixel 8a, GrapheneOS)
+# Tower composition LIVE (Wave 132h). Also USB tether for eastGate.
+# Carries beacon/lineage seeds, acts as physical root of trust + internet relay.
+[gates.grapheneGate]
+gate_class = "portable_anchor"
+bond_types = ["covalent"]
+target = "aarch64-unknown-linux-musl"
+mobility = "mobile"
+bind_mode = "tcp_only"
+composition = "tower"
+transport = "adb"
+tether_role = "usb_rndis"
+nucleus_status = "Tower LIVE (bearDog 0.9.0 + songBird 0.2.1 + skunkBat 0.2.9)"
+adb_ports = [9100, 9140, 9200, 9201]
+depot_binaries = "15/15 (14 primals + nucleus_launcher) in pepti warehouse"
+notes = "Pixel 8a — Tower via pepti warehouse, TCP-only, USB tether duality. nucleus_launcher cross-compiled (LAUNCHER-01 complete). Future: mesh.init for WAN relay via cellular backhaul."
+repos = [
+    "wateringHole", "plasmidBin",
+    "bearDog", "songBird", "skunkBat",
+]
+
+# westGate — 76TB ZFS cold storage, Nest Atomic specialization
+[gates.westGate]
+target = "x86_64-unknown-linux-musl"
+mobility = "fixed"
+bind_mode = "uds"
+composition = "nest"
+transport = "lan"
+mesh_peer = "157.230.3.183:7700"
+notes = "i7-4771 + RTX 2070 Super + 76TB ZFS. Nest Atomic 7/7. Cold storage specialization."
+repos = [
+    "nestGate", "wateringHole", "plasmidBin",
+    "bearDog", "songBird", "biomeOS", "squirrel",
+    "sweetGrass", "loamSpine",
+    "cellMembrane",
+]
+
+# northGate — gaming/hobby gate (Windows), family validation LAST
+[gates.northGate]
+target = "x86_64-unknown-linux-musl"
+mobility = "fixed"
+bind_mode = "tcp_only"
+composition = "full"
+transport = "lan"
+mesh_peer = "157.230.3.183:7700"
+zone = "backbone"
+hub_port = "etherX"
+link_speed_mbps = 2500
+notes = "Ryzen 9950X3D + RTX 5090. CRS310 backbone zone. Family validation — spare compute. LAST priority."
+gate_class = "family"
+repos = [
+    "nestGate", "wateringHole", "plasmidBin",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat",
+    "cellMembrane", "projectNUCLEUS",
+]
+
+# blueGate — Windows cross-platform validation target
+[gates.blueGate]
+target = "x86_64-unknown-linux-musl"
+mobility = "fixed"
+bind_mode = "tcp_only"
+composition = "subset"
+transport = "lan"
+notes = "Windows machine. Cross-platform ecoBin validation (WSL2 or native)."
+gate_class = "family"
+repos = [
+    "wateringHole", "plasmidBin",
+    "bearDog", "songBird", "biomeOS",
+    "cellMembrane",
+]
+
+# swiftGate — portable Windows/cross-platform target
+[gates.swiftGate]
+target = "x86_64-unknown-linux-musl"
+mobility = "mobile"
+bind_mode = "tcp_only"
+composition = "subset"
+transport = "lan"
+notes = "Portable Windows target. Cross-platform testing. WiFi (LAN transport)."
+gate_class = "portable_anchor"
+repos = [
+    "wateringHole", "plasmidBin",
+    "bearDog", "songBird", "biomeOS",
+    "cellMembrane",
+]
+
+# golgiBody (sole VPS, inner membrane) — sovereign periplasm, Forgejo, relay, depot
+[gates.golgiBody]
+kderm_layer = "inner_membrane"
+bond_types = ["covalent", "metallic"]
+host = "157.230.3.183"
+target = "x86_64-unknown-linux-musl"
+mobility = "fixed"
+bind_mode = "uds"
+composition = "full"
+transport = "local"
+wg_ip = "10.13.37.1"
+roles = ["forgejo", "relay", "depot", "dns_primary", "wg_hub", "caddy_tls", "remote_access"]
+mesh_peer = "127.0.0.1:7700"
+notes = "VPS inner membrane — 13/13 NUCLEUS, Forgejo, Caddy"
+repos = [
+    "nestGate", "wateringHole", "plasmidBin",
+    "cellMembrane", "projectNUCLEUS",
+    "bearDog", "songBird", "toadStool", "biomeOS", "squirrel",
+    "barraCuda", "coralReef", "rhizoCrypt", "loamSpine", "sweetGrass",
+    "petalTongue", "skunkBat",
+]
+
+# golgiBody-ext (VPS, outer membrane) — public-facing, sporePrint, TURN relay
+[gates.golgiBody-ext]
+kderm_layer = "outer_membrane"
+bond_types = ["ionic", "weak"]
+host = "137.184.197.151"
+repos = [
+    "sporePrint", "wateringHole",
+]

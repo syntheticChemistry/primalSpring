@@ -490,11 +490,18 @@ fn phase_workspace_drift(v: &mut ValidationResult, _ctx: &mut CompositionContext
         let repo_dir = eco_path.join(local_path);
         let git_dir = repo_dir.join(".git");
 
-        v.check_bool(
-            &format!("live:drift:present:{name}"),
-            git_dir.exists(),
-            &format!("{name} ({local_path}) present on disk"),
-        );
+        if git_dir.exists() {
+            v.check_bool(
+                &format!("live:drift:present:{name}"),
+                true,
+                &format!("{name} ({local_path}) present on disk"),
+            );
+        } else {
+            v.check_skip(
+                &format!("live:drift:present:{name}"),
+                &format!("{name} ({local_path}) not cloned on this gate"),
+            );
+        }
     }
 }
 
