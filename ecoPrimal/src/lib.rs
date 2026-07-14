@@ -72,5 +72,6 @@ pub mod harness;
 pub mod ipc;
 pub mod launcher;
 pub mod primal_names;
+pub mod soundstage;
 pub mod tolerances;
 pub mod validation;
