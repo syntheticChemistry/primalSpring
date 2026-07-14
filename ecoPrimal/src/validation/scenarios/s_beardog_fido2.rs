@@ -230,7 +230,7 @@ fn phase_entropy_error(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     ) {
         Ok(resp) => {
             let has_entropy = resp.get("entropy").is_some();
-            let tier = resp.get("tier").and_then(|t| t.as_u64());
+            let tier = resp.get("tier").and_then(serde_json::Value::as_u64);
             v.check_bool(
                 "fido2:entropy:error_shape",
                 has_entropy && tier == Some(2),
