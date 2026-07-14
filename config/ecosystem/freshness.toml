@@ -14,18 +14,18 @@
 # Will be removed once all consumers migrate to wave.toml + heads/*.toml
 
 [wave]
-id = 138
+id = 139
 date = "2026-07-14"
 ssot = "wave.toml + heads/*.toml"
-notes = "DEPRECATED STUB — canonical state in wave.toml. Wave 138b: PUBLIC + SOVEREIGN. 3 items remain. 147 scenarios, 1,133 tests."
+notes = "DEPRECATED STUB — canonical state in wave.toml. Wave 139a: PUBLIC + SOVEREIGN. Zero debt. 16/16 repos at parity. 3 live surfaces."
 publisher = "eastGate-overwatch"
 
 [heads]
-bearDog = "8714e95198393d13e0c552f63b3fc995f5f2419c"
+bearDog = "f3ca8a0a90ae72b59af9329104c46e04732b643c"
 songBird = "624b092591e913da3363fbb380b927cda2ff4c88"
 skunkBat = "b7088728e09caa0a0997ff9b3324fd60d427d343"
-primalSpring = "5a2c2f76028ddbae233a5b2064af01d9ae3aef53"
-wateringHole = "f1b6a7bd3947d4df3073f9c2437a378178cc278a"
+primalSpring = "bfbe30262795f0ca61c8b4dd730cbcbfe95adbcb"
+wateringHole = "e8ca4ddd4dfb344f4996407e6aca44f89229c585"
 cellMembrane = "0704132e077469814313c1e48137538794869df3"
 biomeOS = "1ce2a4c5be7c58b9cb2fa2be12a99329becb6485"
 toadStool = "5903cf66bb2dc01d02b39450879a59baeb63daca"
@@ -42,4 +42,4 @@ sporePrint = "99bfc9e4bf5ba98301f4b273544b495179a67b48"
 projectNUCLEUS = "c043884f54b7ab91d9cfc4daf84c640222edb3e2"
 projectFOUNDATION = "5ea6be80b07b12a434b0cb5905410bd0d8a058d6"
 sourDough = "406a57575265112106b405d897609a0948520927"
-footPrint = "4b36e4c08c0c9fe806418c2c06b64ef93d0d587c"
+footPrint = "52437f1dc59f52f41df75b8facf1d0685f57cd53"
