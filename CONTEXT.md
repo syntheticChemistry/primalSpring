@@ -120,9 +120,9 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.36 Wave 138b (July 14, 2026) — 147 scenarios (12 tracks, 3 tiers),
+v0.9.36 Wave 139a (July 14, 2026) — 153 scenarios (12 tracks, 3 tiers),
 490+ registered capability methods, 96 experiments (21 tracks), 101 graph TOMLs
-(16 directories). 1133 tests passing. Config-driven topology
+(16 directories). 1167 tests passing. Config-driven topology
 (`config/mesh_topology.toml` — SSOT for gate roster, zones, mesh addresses).
 Evolution module: CytoplasmZone model (backbone/house2/garage/wan), three-hub
 triangle topology, gate enrollment pipeline, convergence monitoring.

@@ -429,8 +429,12 @@ mod tests {
         // Wave 138b: known debt items.
         // - sporeprint-pure-primal-parity: composition graph not yet wired (Phase 2)
         // - graphenegate-readiness: depot layout + deploy script (eastGate-local)
+        // Wave 139a: ironGate deployment context.
+        // - cascade-provenance-match: golgi checksums.toml format mismatch (2 xref checks)
+        // - bootstrap-readiness: depot path not configured (workspace-only)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 1),
+            ("cascade-provenance-match", 2),
+            ("bootstrap-readiness", 1),
         ];
 
         let r = build_registry();
