@@ -92,6 +92,7 @@ pub mod s_deployment_pipeline;
 pub mod s_depot_trust_verify;
 pub mod s_domain_contract_sweep;
 pub mod s_drawbridge_bonds;
+pub mod s_drawbridge_weak_bond_ingestion;
 pub mod s_drawbridge_http_routing;
 pub mod s_ecosystem_freshness;
 pub mod s_feedback_loop;
@@ -152,6 +153,7 @@ pub mod s_pepti_warehouse_deploy;
 pub mod s_petaltongue_viz;
 pub mod s_plasmodium_collective;
 pub mod s_pressure_surface;
+pub mod s_protokarya_composition_routing;
 pub mod s_primal_announce;
 pub mod s_primal_debt;
 pub mod s_primal_utilization;
@@ -346,6 +348,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_fp_api_proxy::SCENARIO);
     r.register(s_drawbridge_bonds::SCENARIO);
     r.register(s_depot_trust_verify::SCENARIO);
+    r.register(s_protokarya_composition_routing::SCENARIO);
+    r.register(s_drawbridge_weak_bond_ingestion::SCENARIO);
     r
 }
 
@@ -356,7 +360,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 145;
+    const EXPECTED_SCENARIO_COUNT: usize = 147;
 
     #[test]
     fn registry_scenario_count() {
