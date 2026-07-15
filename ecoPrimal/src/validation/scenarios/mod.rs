@@ -96,6 +96,7 @@ pub mod s_depot_wan_serving;
 pub mod s_domain_contract_sweep;
 pub mod s_drawbridge_bond_registry;
 pub mod s_drawbridge_bonds;
+pub mod s_drawbridge_consumer_parity;
 pub mod s_drawbridge_weak_bond_ingestion;
 pub mod s_drawbridge_http_routing;
 pub mod s_ecosystem_freshness;
@@ -167,6 +168,7 @@ pub mod s_plasmodium_collective;
 pub mod s_platform_type_parity;
 pub mod s_pressure_surface;
 pub mod s_protokarya_composition_routing;
+pub mod s_protokarya_wan_deploy;
 pub mod s_primal_announce;
 pub mod s_primal_debt;
 pub mod s_primal_utilization;
@@ -379,6 +381,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_depot_wan_serving::SCENARIO);
     r.register(s_science_drawbridge_parity::SCENARIO);
     r.register(s_platform_type_parity::SCENARIO);
+    r.register(s_drawbridge_consumer_parity::SCENARIO);
+    r.register(s_protokarya_wan_deploy::SCENARIO);
     r.register(s_soundstage_ceremony_observation::SCENARIO);
     r
 }
@@ -390,7 +394,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 162;
+    const EXPECTED_SCENARIO_COUNT: usize = 164;
 
     #[test]
     fn registry_scenario_count() {
@@ -452,6 +456,9 @@ mod tests {
         const KNOWN_DEBT: &[(&str, u32)] = &[
             ("sporeprint-pure-primal-parity", 1),
             ("graphenegate-readiness", 2),
+            // Wave 140a: OSM tiles host + NCBI Datasets API parity gap between
+            // songBird constants and drawbridge_bonds.toml registry
+            ("drawbridge-consumer-parity", 4),
         ];
 
         let r = build_registry();
