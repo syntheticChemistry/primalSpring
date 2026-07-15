@@ -149,6 +149,7 @@ pub mod s_multigate_composition;
 pub mod s_nest_atomic;
 pub mod s_nest_commit_live;
 pub mod s_nestgate_content_pipeline;
+pub mod s_northgate_mesh_enrollment;
 pub mod s_neural_api_lifecycle;
 pub mod s_neural_dispatch_live;
 pub mod s_neural_routing;
@@ -233,6 +234,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_biomeos_neural_api::SCENARIO);
     r.register(s_composition_parity::SCENARIO);
     r.register(s_nestgate_content_pipeline::SCENARIO);
+    r.register(s_northgate_mesh_enrollment::SCENARIO);
     r.register(s_token_federation::SCENARIO);
     r.register(s_composition_lifecycle::SCENARIO);
     r.register(s_domain_contract_sweep::SCENARIO);
@@ -382,7 +384,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 158;
+    const EXPECTED_SCENARIO_COUNT: usize = 159;
 
     #[test]
     fn registry_scenario_count() {
