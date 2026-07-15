@@ -95,6 +95,7 @@ pub mod s_depot_trust_verify;
 pub mod s_depot_wan_serving;
 pub mod s_domain_contract_sweep;
 pub mod s_drawbridge_bond_registry;
+pub mod s_drawbridge_consumer_parity;
 pub mod s_drawbridge_bonds;
 pub mod s_drawbridge_weak_bond_ingestion;
 pub mod s_drawbridge_http_routing;
@@ -112,6 +113,7 @@ pub mod s_fido2_tap_timing_entropy;
 pub mod s_fido2_timeout_tolerance;
 pub mod s_fp_api_proxy;
 pub mod s_flockgate_tower_wan;
+pub mod s_footprint_drawbridge_live;
 pub mod s_full_nucleus;
 pub mod s_gate_enrollment;
 pub mod s_gate_expansion_readiness;
@@ -167,6 +169,7 @@ pub mod s_plasmodium_collective;
 pub mod s_platform_type_parity;
 pub mod s_pressure_surface;
 pub mod s_protokarya_composition_routing;
+pub mod s_protokarya_cross_feed;
 pub mod s_primal_announce;
 pub mod s_primal_debt;
 pub mod s_primal_utilization;
@@ -197,6 +200,7 @@ pub mod s_sporeprint_surface;
 pub mod s_squirrel_ai_pipeline;
 pub mod s_startup_ordering;
 pub mod s_tcp_fallback;
+pub mod s_tideglass_composition_routing;
 pub mod s_tier2_science_api;
 pub mod s_token_federation;
 pub mod s_tower_atomic;
@@ -380,6 +384,10 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_science_drawbridge_parity::SCENARIO);
     r.register(s_platform_type_parity::SCENARIO);
     r.register(s_soundstage_ceremony_observation::SCENARIO);
+    r.register(s_footprint_drawbridge_live::SCENARIO);
+    r.register(s_tideglass_composition_routing::SCENARIO);
+    r.register(s_protokarya_cross_feed::SCENARIO);
+    r.register(s_drawbridge_consumer_parity::SCENARIO);
     r
 }
 
@@ -390,7 +398,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 162;
+    const EXPECTED_SCENARIO_COUNT: usize = 166;
 
     #[test]
     fn registry_scenario_count() {
@@ -450,8 +458,7 @@ mod tests {
         // - sporeprint-pure-primal-parity: composition graph not wired (Phase 2)
         // - graphenegate-readiness: deploy_pixel.sh not present on eastGate (2 checks)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("sporeprint-pure-primal-parity", 1),
-            ("graphenegate-readiness", 2),
+            ("graphenegate-readiness", 1),
         ];
 
         let r = build_registry();

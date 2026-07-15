@@ -39,7 +39,7 @@ const VALID_MEMBRANES: &[&str] = &[
     "bidirectional",
 ];
 /// Repo taxonomy categories in the ecosystem manifest.
-const VALID_CATEGORIES: &[&str] = &["primal", "spring", "garden", "infra", "root"];
+const VALID_CATEGORIES: &[&str] = &["primal", "spring", "garden", "infra", "root", "protist"];
 /// Sync priority levels for cascade-pull ordering.
 const VALID_PRIORITIES: &[&str] = &["high", "standard", "low"];
 /// Discovers gate names from the manifest's `[gates.*]` section at runtime
@@ -268,10 +268,15 @@ fn validate_repo_entries(
             .get("forgejo_repo")
             .and_then(|v| v.as_str())
             .unwrap_or("");
+        let forgejo_optional = category == "protist"
+            || repo
+                .get("composition_status")
+                .and_then(|v| v.as_str())
+                .is_some_and(|s| s == "planned");
         v.check_bool(
             &format!("schema:repo:{name}:forgejo_repo"),
-            !forgejo_repo.is_empty() && forgejo_repo.contains('/'),
-            &format!("{name}.forgejo_repo = \"{forgejo_repo}\" (expect org/name)"),
+            (!forgejo_repo.is_empty() && forgejo_repo.contains('/')) || forgejo_optional,
+            &format!("{name}.forgejo_repo = \"{forgejo_repo}\" (expect org/name or protist/planned)"),
         );
     }
 
@@ -567,8 +572,13 @@ mod tests {
                 .get("forgejo_repo")
                 .and_then(|v| v.as_str())
                 .unwrap_or("");
+            let category = info
+                .get("category")
+                .and_then(|v| v.as_str())
+                .unwrap_or("");
+            let is_protist = category == "protist";
             assert!(
-                !fj.is_empty() && fj.contains('/'),
+                (!fj.is_empty() && fj.contains('/')) || is_protist,
                 "repo '{name}' missing valid forgejo_repo (got: '{fj}')"
             );
         }
