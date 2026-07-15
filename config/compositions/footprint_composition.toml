@@ -1,0 +1,146 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# footPrint Composition Manifest — protoKarya GIS Home Planner
+#
+# Defines footPrint as a protist composition: an application served *by*
+# primals, not a primal itself. This manifest declares the capabilities
+# footPrint consumes, the primals that provide them, and the deployment
+# surface for primalSpring scenarios to validate.
+#
+# Wave 140a | flockGate
+
+[composition]
+name = "footPrint"
+type = "protist"
+version = "2.0.0"
+description = "GIS-enabled home improvement planner with CAD-like drawing, ECS architecture, and RustScript safety primitives"
+repo = "protists/footPrint"
+license = "AGPL-3.0-or-later"
+
+[composition.runtime]
+language = "typescript"
+engine = "node"
+engine_version = ">=20"
+bundler = "vite"
+framework = "vanilla"
+
+# ═══════════════════════════════════════════════════════════════
+# Deployment surfaces
+# ═══════════════════════════════════════════════════════════════
+
+[surfaces.spa]
+type = "static"
+url = "https://primals.eco/footprint/"
+served_by = "caddy"
+gate = "golgi"
+build_output = "dist/client/"
+status = "LIVE"
+
+[surfaces.api]
+type = "http"
+url = "https://primals.eco/api/"
+served_by = "express"
+gate = "sporeGate"
+port = 3000
+status = "NOT_DEPLOYED"
+
+[surfaces.websocket]
+type = "ws"
+url = "wss://primals.eco/ws"
+served_by = "express"
+gate = "sporeGate"
+path = "/ws"
+status = "NOT_DEPLOYED"
+
+# ═══════════════════════════════════════════════════════════════
+# Capability dependencies — what footPrint consumes from primals
+# ═══════════════════════════════════════════════════════════════
+
+[[capabilities]]
+name = "http.proxy"
+provider = "songbird"
+usage = "GIS data proxy (USGS, FEMA, OSM, Esri, etc.)"
+client_path = "/ext"
+drawbridge_port = 7780
+bond_count = 10
+status = "LIVE_VIA_CADDY"
+
+[[capabilities]]
+name = "storage.put"
+provider = "nestgate"
+usage = "Project persistence (save/load/delete JSON projects)"
+client_path = "/api/projects"
+status = "PLANNED"
+
+[[capabilities]]
+name = "storage.get"
+provider = "nestgate"
+usage = "Project retrieval"
+client_path = "/api/projects"
+status = "PLANNED"
+
+[[capabilities]]
+name = "visualization.render.scene"
+provider = "petaltongue"
+usage = "Static SPA serving + future RustScript UI components"
+status = "LIVE_STATIC"
+
+# ═══════════════════════════════════════════════════════════════
+# Drawbridge bonds — external data sources consumed via songBird
+# ═══════════════════════════════════════════════════════════════
+
+[drawbridge]
+bond_count = 10
+bonds = [
+    "usgs_elevation",
+    "fema_flood",
+    "nrcs_soils",
+    "osm_overpass",
+    "osm_nominatim",
+    "arcgis_services1",
+    "arcgis_services2",
+    "mi_framework",
+    "mi_gis_portal",
+    "el_zoning",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# RustScript — extractable safety primitive library
+# ═══════════════════════════════════════════════════════════════
+
+[rustscript]
+package = "@protoKarya/rustscript"
+version = "0.1.0"
+modules = 11
+tests = 98
+status = "EXTRACTION_READY"
+primitives = [
+    "Result", "Option", "RefCell", "exhaustive", "Brand",
+    "Owned", "Iter", "RustVec", "Cow", "channel",
+]
+
+# ═══════════════════════════════════════════════════════════════
+# Validation scenarios (primalSpring)
+# ═══════════════════════════════════════════════════════════════
+
+[[scenarios]]
+name = "protokarya-composition-routing"
+status = "GREEN"
+what = "Capability routing for footPrint/tideGlass deps"
+
+[[scenarios]]
+name = "fp-api-proxy"
+status = "GREEN"
+what = "Drawbridge port 7780, songBird ownership"
+
+[[scenarios]]
+name = "footprint-drawbridge-live"
+status = "MISSING"
+what = "E2E: USGS/FEMA via drawbridge → NestGate CAS"
+blocked_by = "Express server deployment on sporeGate"
+
+[[scenarios]]
+name = "protokarya-wan-deploy"
+status = "MISSING"
+what = "Caddy route + live composition on *.primals.eco"
+blocked_by = "Express server deployment on sporeGate"
