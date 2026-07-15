@@ -258,6 +258,7 @@ methods = [
 owner = "beardog"
 methods = [
     "beardog.fido2.authenticate",
+    "beardog.fido2.ceremony",
     "beardog.fido2.discover",
     "beardog.fido2.entropy",
     "beardog.fido2.register",
