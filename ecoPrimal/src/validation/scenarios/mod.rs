@@ -382,7 +382,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 157;
+    const EXPECTED_SCENARIO_COUNT: usize = 158;
 
     #[test]
     fn registry_scenario_count() {
