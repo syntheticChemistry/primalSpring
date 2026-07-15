@@ -92,6 +92,7 @@ pub mod s_deployment_pipeline;
 pub mod s_depot_binary_standard;
 pub mod s_depot_layout_compliance;
 pub mod s_depot_trust_verify;
+pub mod s_depot_wan_serving;
 pub mod s_domain_contract_sweep;
 pub mod s_drawbridge_bond_registry;
 pub mod s_drawbridge_bonds;
@@ -178,6 +179,7 @@ pub mod s_relay_forward_transport;
 pub mod s_ribocipher_acceptance;
 pub mod s_routing_consistency;
 pub mod s_schema_standard;
+pub mod s_science_drawbridge_parity;
 pub mod s_sequential_graph;
 pub mod s_shader_compilation_pipeline;
 pub mod s_skunkbat_method_gate;
@@ -373,6 +375,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_protokarya_composition_routing::SCENARIO);
     r.register(s_drawbridge_weak_bond_ingestion::SCENARIO);
     r.register(s_depot_layout_compliance::SCENARIO);
+    r.register(s_depot_wan_serving::SCENARIO);
+    r.register(s_science_drawbridge_parity::SCENARIO);
     r.register(s_soundstage_ceremony_observation::SCENARIO);
     r
 }
@@ -384,7 +388,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 159;
+    const EXPECTED_SCENARIO_COUNT: usize = 161;
 
     #[test]
     fn registry_scenario_count() {

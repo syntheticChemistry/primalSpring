@@ -80,6 +80,16 @@ cache_days = 7
 consumers = ["squirrel", "protoKarya"]
 description = "NCBI Datasets API v2 — genome, gene, protein bulk data access"
 
+[bonds.ncbi_blast]
+tier = "scientific"
+host = "blast.ncbi.nlm.nih.gov"
+paths = ["/Blast.cgi"]
+methods = ["GET", "POST"]
+cache_days = 1
+fragile = true
+consumers = ["squirrel", "protoKarya"]
+description = "NCBI BLAST — sequence similarity searches against nucleotide/protein databases"
+
 [bonds.uniprot]
 tier = "scientific"
 host = "rest.uniprot.org"
