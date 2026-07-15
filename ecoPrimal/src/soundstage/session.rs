@@ -74,7 +74,7 @@ impl CeremonySession {
     pub fn add_channel(&mut self, anchor: Anchor) -> &mut Channel {
         let label = anchor.to_string();
         self.channels
-            .entry(label.clone())
+            .entry(label)
             .or_insert_with(|| Channel::new(anchor))
     }
 
@@ -130,7 +130,7 @@ impl CeremonySession {
         let events: Vec<ChannelEvent> = self
             .channels
             .into_values()
-            .flat_map(|ch| ch.into_events())
+            .flat_map(Channel::into_events)
             .collect();
 
         SessionRecord {

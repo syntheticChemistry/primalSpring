@@ -192,7 +192,7 @@ fn phase_live_probe(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     match discover {
         Ok(resp) => {
-            let count = resp.get("count").and_then(|c| c.as_u64()).unwrap_or(0);
+            let count = resp.get("count").and_then(serde_json::Value::as_u64).unwrap_or(0);
             v.check_bool(
                 "ceremony-tap:live_fido2_available",
                 count > 0,

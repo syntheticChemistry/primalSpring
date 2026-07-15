@@ -137,12 +137,7 @@ fn phase_debt_ratio(v: &mut ValidationResult, discovered: u32, live: u32, total:
         })
         .unwrap_or_else(|_| "unknown".to_owned());
 
-    let max_debt_pct = match gate.as_str() {
-        "eastgate" | "eastGate" => crate::tolerances::DEBT_CAP_REFERENCE_PCT,
-        "sporegate" | "sporeGate" => crate::tolerances::DEBT_CAP_NEST_PCT,
-        "golgi" | "pepti" => crate::tolerances::DEBT_CAP_VPS_PCT,
-        _ => crate::tolerances::DEBT_CAP_DEFAULT_PCT,
-    };
+    let max_debt_pct = debt_cap_for_gate(&gate);
 
     v.check_bool(
         "debt:ratio_acceptable",
@@ -159,6 +154,63 @@ fn phase_debt_ratio(v: &mut ValidationResult, discovered: u32, live: u32, total:
     );
 }
 
+/// Resolve debt cap for a gate by discovering its roles and composition level
+/// from the ecosystem manifest. No hardcoded gate → threshold mapping.
+///
+/// Priority:
+/// - Gates with `build_hub` or `depot` role → tightest (NEST: provenance authority)
+/// - Gates with `composition = "full"` and no special role → standard (REFERENCE)
+/// - Gates with `tower` or `subset` composition → relaxed (VPS)
+/// - Unknown gates → DEFAULT
+fn debt_cap_for_gate(gate_name: &str) -> f64 {
+    const MANIFEST: &str =
+        include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
+
+    let parsed: toml::Value = match toml::from_str(MANIFEST) {
+        Ok(v) => v,
+        Err(_) => return crate::tolerances::DEBT_CAP_DEFAULT_PCT,
+    };
+
+    let gate_info = parsed
+        .get("gates")
+        .and_then(|g| g.as_table())
+        .and_then(|gates| {
+            gates.iter().find_map(|(name, info)| {
+                if name.eq_ignore_ascii_case(gate_name) {
+                    Some(info)
+                } else {
+                    None
+                }
+            })
+        });
+
+    let Some(info) = gate_info else {
+        return crate::tolerances::DEBT_CAP_DEFAULT_PCT;
+    };
+
+    let roles: Vec<&str> = info
+        .get("roles")
+        .and_then(|r| r.as_array())
+        .map(|arr| arr.iter().filter_map(|v| v.as_str()).collect())
+        .unwrap_or_default();
+
+    let is_depot_authority = roles.iter().any(|r| *r == "depot");
+    if is_depot_authority {
+        return crate::tolerances::DEBT_CAP_NEST_PCT;
+    }
+
+    let composition = info
+        .get("composition")
+        .and_then(|c| c.as_str())
+        .unwrap_or("unknown");
+
+    match composition {
+        "full" => crate::tolerances::DEBT_CAP_REFERENCE_PCT,
+        "tower" | "subset" => crate::tolerances::DEBT_CAP_VPS_PCT,
+        _ => crate::tolerances::DEBT_CAP_DEFAULT_PCT,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -172,5 +224,20 @@ mod tests {
             v.passed + v.failed + v.skipped > 0,
             "primal-debt should evaluate at least one check"
         );
+    }
+
+    #[test]
+    fn debt_cap_resolves_from_manifest() {
+        let cap = debt_cap_for_gate("sporeGate");
+        assert_eq!(cap, crate::tolerances::DEBT_CAP_NEST_PCT,
+            "sporeGate has build_hub/depot roles → tightest ceiling");
+
+        let cap = debt_cap_for_gate("eastGate");
+        assert_eq!(cap, crate::tolerances::DEBT_CAP_REFERENCE_PCT,
+            "eastGate has composition=full, no provenance role → reference");
+
+        let cap = debt_cap_for_gate("unknown_gate_xyz");
+        assert_eq!(cap, crate::tolerances::DEBT_CAP_DEFAULT_PCT,
+            "unknown gate → default fallback");
     }
 }

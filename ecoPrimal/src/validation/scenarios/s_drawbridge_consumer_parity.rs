@@ -171,7 +171,7 @@ fn phase_trust_tiers(v: &mut ValidationResult) {
     let bonds = parsed.get("bonds").and_then(|b| b.as_table()).expect("bonds");
 
     let fragile_count = bonds.values().filter(|b| {
-        b.get("fragile").and_then(|f| f.as_bool()).unwrap_or(false)
+        b.get("fragile").and_then(toml::Value::as_bool).unwrap_or(false)
     }).count();
 
     v.check_bool(

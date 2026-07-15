@@ -48,10 +48,10 @@ impl Comparator {
         let (keys_independent, verdict) = match (fp_a, fp_b) {
             (Some(fa), Some(fb)) => {
                 let independent = fa != fb;
-                let verdict = if !independent {
-                    Verdict::Collision
-                } else {
+                let verdict = if independent {
                     Verdict::Independent
+                } else {
+                    Verdict::Collision
                 };
                 (independent, verdict)
             }

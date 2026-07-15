@@ -72,18 +72,17 @@ fn phase_parse(v: &mut ValidationResult) {
         ),
     );
 
-    if parsed.is_err() {
+    let Ok(doc) = parsed else {
         return;
-    }
-    let doc = parsed.unwrap();
+    };
 
     let schema_ver = doc
         .get("meta")
         .and_then(|m| m.get("schema_version"))
-        .and_then(|v| v.as_integer());
+        .and_then(toml::Value::as_integer);
     v.check_bool(
         "registry:schema_version",
-        schema_ver.is_some() && schema_ver.unwrap() >= 2,
+        schema_ver.unwrap_or(0) >= 2,
         &format!("schema_version = {}", schema_ver.unwrap_or(0)),
     );
 
@@ -103,129 +102,138 @@ fn phase_parse(v: &mut ValidationResult) {
     }
 }
 
-fn phase_schema(v: &mut ValidationResult) {
-    v.section("Phase 2: Schema validation");
+struct SchemaAudit {
+    hosts_seen: HashSet<String>,
+    tier_invalid: Vec<String>,
+    missing_fields: Vec<String>,
+    method_invalid: Vec<String>,
+    empty_consumers: Vec<String>,
+    duplicate_hosts: Vec<String>,
+}
 
-    let doc: toml::Value = match toml::from_str(BONDS_TOML) {
-        Ok(d) => d,
-        Err(_) => return,
-    };
+impl SchemaAudit {
+    fn new() -> Self {
+        Self {
+            hosts_seen: HashSet::new(),
+            tier_invalid: Vec::new(),
+            missing_fields: Vec::new(),
+            method_invalid: Vec::new(),
+            empty_consumers: Vec::new(),
+            duplicate_hosts: Vec::new(),
+        }
+    }
 
-    let bonds = match doc.get("bonds").and_then(|b| b.as_table()) {
-        Some(b) => b,
-        None => return,
-    };
-
-    let mut hosts_seen: HashSet<String> = HashSet::new();
-    let mut tier_invalid = Vec::new();
-    let mut missing_fields = Vec::new();
-    let mut method_invalid = Vec::new();
-    let mut empty_consumers = Vec::new();
-    let mut duplicate_hosts = Vec::new();
-
-    for (name, entry) in bonds {
-        let table = match entry.as_table() {
-            Some(t) => t,
-            None => {
-                missing_fields.push(format!("{name}: not a table"));
-                continue;
-            }
-        };
-
+    fn audit_bond(&mut self, name: &str, table: &toml::map::Map<String, toml::Value>) {
         match table.get("tier").and_then(|t| t.as_str()) {
-            Some(tier) => {
-                if !VALID_TIERS.contains(&tier) {
-                    tier_invalid.push(format!("{name}: '{tier}'"));
-                }
+            Some(tier) if !VALID_TIERS.contains(&tier) => {
+                self.tier_invalid.push(format!("{name}: '{tier}'"));
             }
-            None => missing_fields.push(format!("{name}: missing 'tier'")),
+            None => self.missing_fields.push(format!("{name}: missing 'tier'")),
+            _ => {}
         }
 
         match table.get("host").and_then(|h| h.as_str()) {
             Some(host) => {
-                if !hosts_seen.insert(host.to_string()) {
-                    duplicate_hosts.push(host.to_string());
+                if !self.hosts_seen.insert(host.to_string()) {
+                    self.duplicate_hosts.push(host.to_string());
                 }
             }
-            None => missing_fields.push(format!("{name}: missing 'host'")),
+            None => self.missing_fields.push(format!("{name}: missing 'host'")),
         }
 
-        match table.get("methods").and_then(|m| m.as_array()) {
-            Some(methods) => {
-                for m in methods {
-                    if let Some(ms) = m.as_str() {
-                        if !VALID_METHODS.contains(&ms) {
-                            method_invalid.push(format!("{name}: '{ms}'"));
-                        }
+        if let Some(methods) = table.get("methods").and_then(|m| m.as_array()) {
+            for m in methods {
+                if let Some(ms) = m.as_str() {
+                    if !VALID_METHODS.contains(&ms) {
+                        self.method_invalid.push(format!("{name}: '{ms}'"));
                     }
                 }
             }
-            None => missing_fields.push(format!("{name}: missing 'methods'")),
+        } else {
+            self.missing_fields.push(format!("{name}: missing 'methods'"));
         }
 
-        match table.get("consumers").and_then(|c| c.as_array()) {
-            Some(consumers) => {
-                if consumers.is_empty() {
-                    empty_consumers.push(name.clone());
-                }
+        if let Some(consumers) = table.get("consumers").and_then(|c| c.as_array()) {
+            if consumers.is_empty() {
+                self.empty_consumers.push(name.to_owned());
             }
-            None => missing_fields.push(format!("{name}: missing 'consumers'")),
+        } else {
+            self.missing_fields.push(format!("{name}: missing 'consumers'"));
         }
 
         if table.get("description").and_then(|d| d.as_str()).is_none() {
-            missing_fields.push(format!("{name}: missing 'description'"));
+            self.missing_fields.push(format!("{name}: missing 'description'"));
         }
     }
 
-    v.check_bool(
-        "schema:required_fields",
-        missing_fields.is_empty(),
-        &if missing_fields.is_empty() {
-            "all bonds have required fields".to_string()
-        } else {
-            format!("missing: {}", missing_fields.join("; "))
-        },
-    );
+    fn emit(self, v: &mut ValidationResult) {
+        v.check_bool(
+            "schema:required_fields",
+            self.missing_fields.is_empty(),
+            &if self.missing_fields.is_empty() {
+                "all bonds have required fields".to_string()
+            } else {
+                format!("missing: {}", self.missing_fields.join("; "))
+            },
+        );
+        v.check_bool(
+            "schema:valid_tiers",
+            self.tier_invalid.is_empty(),
+            &if self.tier_invalid.is_empty() {
+                "all trust tiers valid".to_string()
+            } else {
+                format!("invalid: {}", self.tier_invalid.join("; "))
+            },
+        );
+        v.check_bool(
+            "schema:valid_methods",
+            self.method_invalid.is_empty(),
+            &if self.method_invalid.is_empty() {
+                "all HTTP methods valid".to_string()
+            } else {
+                format!("invalid: {}", self.method_invalid.join("; "))
+            },
+        );
+        v.check_bool(
+            "schema:no_empty_consumers",
+            self.empty_consumers.is_empty(),
+            &if self.empty_consumers.is_empty() {
+                "every bond has ≥1 consumer".to_string()
+            } else {
+                format!("empty: {}", self.empty_consumers.join(", "))
+            },
+        );
+        v.check_bool(
+            "schema:no_duplicate_hosts",
+            self.duplicate_hosts.is_empty(),
+            &if self.duplicate_hosts.is_empty() {
+                "no duplicate hosts".to_string()
+            } else {
+                format!("dupes: {}", self.duplicate_hosts.join(", "))
+            },
+        );
+    }
+}
 
-    v.check_bool(
-        "schema:valid_tiers",
-        tier_invalid.is_empty(),
-        &if tier_invalid.is_empty() {
-            "all trust tiers valid".to_string()
-        } else {
-            format!("invalid: {}", tier_invalid.join("; "))
-        },
-    );
+fn phase_schema(v: &mut ValidationResult) {
+    v.section("Phase 2: Schema validation");
 
-    v.check_bool(
-        "schema:valid_methods",
-        method_invalid.is_empty(),
-        &if method_invalid.is_empty() {
-            "all HTTP methods valid".to_string()
-        } else {
-            format!("invalid: {}", method_invalid.join("; "))
-        },
-    );
+    let Ok(doc) = toml::from_str::<toml::Value>(BONDS_TOML) else {
+        return;
+    };
+    let Some(bonds) = doc.get("bonds").and_then(|b| b.as_table()) else {
+        return;
+    };
 
-    v.check_bool(
-        "schema:no_empty_consumers",
-        empty_consumers.is_empty(),
-        &if empty_consumers.is_empty() {
-            "every bond has ≥1 consumer".to_string()
-        } else {
-            format!("empty: {}", empty_consumers.join(", "))
-        },
-    );
-
-    v.check_bool(
-        "schema:no_duplicate_hosts",
-        duplicate_hosts.is_empty(),
-        &if duplicate_hosts.is_empty() {
-            "no duplicate hosts".to_string()
-        } else {
-            format!("dupes: {}", duplicate_hosts.join(", "))
-        },
-    );
+    let mut audit = SchemaAudit::new();
+    for (name, entry) in bonds {
+        let Some(table) = entry.as_table() else {
+            audit.missing_fields.push(format!("{name}: not a table"));
+            continue;
+        };
+        audit.audit_bond(name, table);
+    }
+    audit.emit(v);
 }
 
 fn phase_science_coverage(v: &mut ValidationResult) {

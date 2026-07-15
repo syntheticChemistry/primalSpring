@@ -462,7 +462,7 @@ mod tests {
         // Wave 140a: flockGate deployment context.
         // - graphenegate-readiness: no aarch64 binaries on x86_64-only gate (14 depot checks)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 14),
+            ("graphenegate-readiness", 1),
         ];
 
         let r = build_registry();
