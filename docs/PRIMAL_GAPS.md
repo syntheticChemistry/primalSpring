@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-07-15 (Wave 140a: **v0.9.39.** 166 scenarios, 1199 tests (0 failures), 12 tracks. +4 scenarios: footprint-drawbridge-live, tideglass-composition-routing, protokarya-cross-feed, drawbridge-consumer-parity. protoKarya tangibles pivot validated. Deep debt cleared: hardcoding → manifest discovery. clippy zero.)
+> **Last updated**: 2026-07-13 (Wave 138a: **v0.9.36.** 146 scenarios, 1301 tests (0 failures), 12 tracks. +2 scenarios: fido2-entropy-ceremony, hardware-trust-pipeline. Hardware trust activation validated. All deps current. clippy zero.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -44,7 +44,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 |--------|------:|:----:|:-------:|:--------:|-------------|
 | bearDog | 14,987+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 117b: orphan purge (21 files, ~3,500 LOC), `env_keys.rs` (290 constants), HTTP-era config annotated. |
 | songbird | 8,158+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 58: `songbird-process-env` fully adopted (48 sites), 146 `#[expect` migrations, +67 tests. Zero hardcoded env in prod. |
-| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S328+: 112 methods (17 groups), zero-copy dispatch, riboCipher CLEAR+MITO, gRPC/OpenCL deleted (S319), 100% SPDX, zero files >750L, zero hardcoded cross-primal names, `socket_env` SSOT (zero raw env literals), workspace deps unified, reagent module split, Duration dedup, hot-path clone elimination (6 files S327), DH-1 `/tmp` fix resolved (S328: 3-tier `XDG_RUNTIME_DIR` → `/run/membrane/` systemd tier → `temp_dir()` dev-only), timeout+socket_env invariant tests (+16 S327), submit_params test expansion (+11 S327), router decomposition (776→441L S327). 9,175+ lib tests. |
+| toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S329+: **Cross-architecture: `cargo check --target x86_64-pc-windows-gnu` PASSES** (134 files gated). hw-safe/display/cylinder/nvpmu/akida/gpu/secure_enclave/hw-learn/glowplug/ember behind `#[cfg(target_os = "linux")]`, Unix IPC behind `#[cfg(unix)]`. 112 methods (17 groups), zero-copy dispatch, riboCipher CLEAR+MITO, DH-1 resolved (S328), 9,175+ lib tests. |
 | biomeOS | 8,038+ | **ADOPTED** | FULL | consumer | **CLEAN** — v4.20: BM-UDS-01 **RESOLVED** (d35c943e). All server bind paths (Neural API, API server, NUCLEUS) check `PRIMAL_BIND_MODE=tcp_only` before UDS bind, skip entirely on SELinux/Android. Discovery provider decoupled. NUCLEUS timeouts extracted to constants. |
 | nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
 | squirrel | 7,095+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 58: 316 env constants (`env_vars.rs`), self-identity eliminated, 5,417L orphan purge. ~93 files remaining raw `std::env::var`. |
