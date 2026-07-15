@@ -109,7 +109,7 @@ bonds = [
 # ═══════════════════════════════════════════════════════════════
 
 [rustscript]
-package = "@protoKarya/rustscript"
+package = "@protokarya/rustscript"
 version = "0.1.0"
 modules = 11
 tests = 98
