@@ -164,6 +164,7 @@ pub mod s_parallel_graph;
 pub mod s_pepti_warehouse_deploy;
 pub mod s_petaltongue_viz;
 pub mod s_plasmodium_collective;
+pub mod s_platform_type_parity;
 pub mod s_pressure_surface;
 pub mod s_protokarya_composition_routing;
 pub mod s_primal_announce;
@@ -377,6 +378,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_depot_layout_compliance::SCENARIO);
     r.register(s_depot_wan_serving::SCENARIO);
     r.register(s_science_drawbridge_parity::SCENARIO);
+    r.register(s_platform_type_parity::SCENARIO);
     r.register(s_soundstage_ceremony_observation::SCENARIO);
     r
 }
@@ -388,7 +390,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 161;
+    const EXPECTED_SCENARIO_COUNT: usize = 162;
 
     #[test]
     fn registry_scenario_count() {
