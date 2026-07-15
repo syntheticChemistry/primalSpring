@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-07-13 (Wave 138a: **v0.9.36.** 146 scenarios, 1301 tests (0 failures), 12 tracks. +2 scenarios: fido2-entropy-ceremony, hardware-trust-pipeline. Hardware trust activation validated. All deps current. clippy zero.)
+> **Last updated**: 2026-07-15 (Wave 140a: **v0.9.39.** 166 scenarios, 1199 tests (0 failures), 12 tracks. +4 scenarios: footprint-drawbridge-live, tideglass-composition-routing, protokarya-cross-feed, drawbridge-consumer-parity. protoKarya tangibles pivot validated. Deep debt cleared: hardcoding → manifest discovery. clippy zero.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 

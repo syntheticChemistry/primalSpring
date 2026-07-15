@@ -3,6 +3,27 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.39] — Wave 140a: protoKarya Tangibles + Deep Debt Sprint (2026-07-15)
+
+### Wave 140a: protoKarya Tangibles Pivot (July 15)
+- **4 new composition scenarios** — `footprint-drawbridge-live`, `tideglass-composition-routing`,
+  `protokarya-cross-feed`, `drawbridge-consumer-parity`. 166 total scenarios.
+- **1199 lib tests passing** — 0 failures, 1 known debt (graphenegate-readiness).
+- **Protist support** — `"protist"` category in ecosystem_freshness, optional `forgejo_repo`
+  for protists and planned repos. Manifest v3.0 (42 repos) validates clean.
+- **Deep debt: hardcoding → manifest discovery** — `s_primal_debt` no longer hardcodes
+  gate names for thresholds; now resolves composition level + roles from ecosystem manifest.
+- **Clippy modernization** — `SchemaAudit` struct extraction in bond registry, `let...else`
+  patterns, method reference closures, boolean simplification.
+- **Version bump** to 0.9.39.
+
+### Waves 138a–139a (July 13–14)
+- `soundStage` module — transparent observation of ephemeral key generation.
+- `s_fido2_entropy_ceremony`, `s_hardware_trust_pipeline`, `s_keygen_interaction_surface` scenarios.
+- `s_depot_layout_compliance`, `s_soundstage_ceremony_observation` scenarios.
+- P0 HIDRAW-REPORT-ID fix (bearDog `rk` → conditional on PIN).
+- 22 scenarios re-enabled from upstream health-restore.
+
 ## [0.9.33] — Wave 123: Cross-Gate Scenarios + Deep Debt Zero (2026-06-22)
 
 ### Wave 123: Cross-Gate Trust + Deep Debt Resolution (June 22)
