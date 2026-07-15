@@ -462,7 +462,10 @@ mod tests {
         // Wave 140a: flockGate deployment context.
         // - graphenegate-readiness: no aarch64 binaries on x86_64-only gate (14 depot checks)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 1),
+            // eastGate: deploy_pixel.sh absent + depot layout check (2 on eastGate)
+            ("graphenegate-readiness", 2),
+            // eastGate: sporePrint composition graph not wired (Phase 2)
+            ("sporeprint-pure-primal-parity", 1),
         ];
 
         let r = build_registry();
