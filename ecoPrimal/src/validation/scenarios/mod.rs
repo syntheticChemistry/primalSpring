@@ -170,6 +170,7 @@ pub mod s_platform_type_parity;
 pub mod s_pressure_surface;
 pub mod s_protokarya_composition_routing;
 pub mod s_protokarya_cross_feed;
+pub mod s_protokarya_wan_deploy;
 pub mod s_primal_announce;
 pub mod s_primal_debt;
 pub mod s_primal_utilization;
@@ -387,6 +388,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_footprint_drawbridge_live::SCENARIO);
     r.register(s_tideglass_composition_routing::SCENARIO);
     r.register(s_protokarya_cross_feed::SCENARIO);
+    r.register(s_protokarya_wan_deploy::SCENARIO);
     r.register(s_drawbridge_consumer_parity::SCENARIO);
     r
 }
@@ -398,7 +400,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 166;
+    const EXPECTED_SCENARIO_COUNT: usize = 167;
 
     #[test]
     fn registry_scenario_count() {
@@ -457,12 +459,10 @@ mod tests {
         // Wave 139a: ironGate deployment context.
         // - sporeprint-pure-primal-parity: composition graph not wired (Phase 2)
         // - graphenegate-readiness: deploy_pixel.sh not present on eastGate (2 checks)
-        // Wave 140a: ironGate deployment context.
-        // - cascade-provenance-match: golgi checksums.toml format mismatch (2 xref checks)
-        // - bootstrap-readiness: depot path not configured (workspace-only)
+        // Wave 140a: flockGate deployment context.
+        // - graphenegate-readiness: no aarch64 binaries on x86_64-only gate (14 depot checks)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("cascade-provenance-match", 2),
-            ("bootstrap-readiness", 1),
+            ("graphenegate-readiness", 14),
         ];
 
         let r = build_registry();
