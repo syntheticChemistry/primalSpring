@@ -74,8 +74,8 @@ to primalSpring as experiment targets.
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries:
   `primalspring` (eukaryotic UniBin: certify + validate + status + checksums + registry + version),
   `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status with PID tracking + federation)
-- **experiments/** — 93 validation binaries covering 21 tracks
-- **graphs/** — ~80 deploy graph TOMLs + 33 atomic composition graphs using fragment-first
+- **experiments/** — 96 validation binaries covering 21 tracks
+- **graphs/** — ~102 deploy graph TOMLs + 33 atomic composition graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
   2 cross-spring + 1 federation + 1 foundation + 12 cell graphs + `compositions/` tier)
@@ -98,7 +98,7 @@ to primalSpring as experiment targets.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 110 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 169 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -120,9 +120,11 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.39 Wave 142b (July 16, 2026) — 167 scenarios (12 tracks, 3 tiers),
-490+ registered capability methods, 96 experiments (21 tracks), 101 graph TOMLs
-(16 directories). 1200 tests passing. Config-driven topology
+v0.9.40 Wave 145a (July 16, 2026) — 169 scenarios (12 tracks, 3 tiers),
+492+ registered capability methods, 96 experiments (21 tracks), 102 graph TOMLs
+(16 directories). 1284 tests passing. **Silicon Atheism Phase 2 COMPLETE (14/14
+primals shipped transport abstraction). CAC 6/6 COMPLETE. 59 depot binaries
+across 4 architectures (14 per target).** Config-driven topology
 (`config/mesh_topology.toml` — SSOT for gate roster, zones, mesh addresses).
 Evolution module: CytoplasmZone model (backbone/house2/garage/wan), three-hub
 triangle topology, gate enrollment pipeline, convergence monitoring.
@@ -307,12 +309,16 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data fetch + visualization), neuralSpring
 (agentic composition), tideGlass (gen5 drug repurposing via NUCLEUS).
 
-## Glacial Checkpoint — Current and Remaining (June 4, 2026)
+## Glacial Checkpoint — Current and Remaining (July 16, 2026 — Wave 145a)
 
 ### Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
-- 490+ method registry (100% exercised), 115 scenarios, 114 deploy graphs
+- **Silicon Atheism Phase 1** (Wave 142a): 14/14 primals cross-compile for 4 architectures
+- **Silicon Atheism Phase 2** (Wave 145a): 14/14 primals shipped platform-agnostic transport
+- **Content-Addressed Convergence** (Wave 144a): 6/6 layers complete
+- 492+ method registry (100% exercised), 169 scenarios, 102 deploy graphs
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
+- 59 depot binaries (14 per architecture × 4 targets), all BLAKE3 + Ed25519 signed
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs
 - Wave 20-21 detail (per-spring PM items, garden absorption) fossilized to `fossilRecord/`

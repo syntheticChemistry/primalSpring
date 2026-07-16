@@ -9,13 +9,13 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-07-16 (Wave 142b: **v0.9.40.** 169 scenarios, 1202 tests (0 failures), 12 tracks. Silicon Atheism Phase 2 validation: full-cross-compile + depot-architecture-coverage. Deep debt sprint: method references, HashSet O(1) lookups. All deps pure Rust. Zero clippy errors.)
+> **Last updated**: 2026-07-16 (Wave 145a: **v0.9.40.** 169 scenarios, 1284 tests (0 failures), 12 tracks. **Silicon Atheism Phase 2 transport COMPLETE** (14/14 primals shipped platform-agnostic transport). **CAC 6/6 COMPLETE** (all layers: git, depot, heads, impulses, rhizoCrypt DAG, cascade). Depot: 59 binaries across 4 architectures (all at 14). Deep debt sprint: method references, HashSet O(1) lookups. All deps pure Rust. Zero clippy errors.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (June 10, 2026)
+## Ecosystem Status (July 16, 2026 — Wave 145a)
 
 **270+ PASS, 0 FAIL, 0 KNOWN_DEBT** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: **55 scenarios** (10 tracks, 3 tiers), 490+ real methods (100% exercised), **901 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy warnings, zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 107: ZERO P1. ZERO KNOWN DEBT. ALL UPSTREAM BLOCKERS RESOLVED.** grapheneGate **13/13 structurally ready** — all primal bind-mode fixes shipped: CR-TARPC-01 (coralReef b1ec1f4: tarpc skips bind on tcp_only), BM-UDS-01 (biomeOS v4.20 d35c943e: Neural API skips UDS bind on tcp_only), NG-DOWNCAST-01 (nestGate 7c3fe9a6: `is_platform_constraint()` walks full chain). `PRIMAL_BIND_MODE=tcp_only` adopted **13/13**. Zero-port standard CLEAN: droppable federation ports eliminated. Socket cleanup **5/5 VERIFIED**. songBird M1 SHIPPED (ff86204c): topology-aware mesh routing. barraCuda `method.describe` SHIPPED (v0.4.0). biomeOS auto-register SHIPPED (v4.19). NUCLEUS supervision SHIPPED (v4.17). **5-gate ecosystem** (eastGate↔golgiBody↔ironGate+southGate + grapheneGate standalone). S1-S4 GRADUATED. **Wave 108: grapheneGate 13/13 DEPLOYED AND ALIVE.** aarch64 depot rebuilt on eastGate (cross-compile via cargo+musl). coralReef rebuilt locally from b1ec1f4 (build-primal.sh shallow clone was stale). All 13 primals confirmed via ADB: `pgrep` + TCP probe + JSON-RPC health. biomeOS ADB forward on :19800 (local :9800 occupied by FluidSynth — PB-FORWARD-01). **Ecosystem complete.**
 
@@ -42,11 +42,11 @@ Structured inventory of known gaps per primal that block or degrade composable d
 
 | Primal | Tests | JH-0 | BTSP P3 | Wire Std | Debt Status |
 |--------|------:|:----:|:-------:|:--------:|-------------|
-| bearDog | 14,987+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 117b: orphan purge (21 files, ~3,500 LOC), `env_keys.rs` (290 constants), HTTP-era config annotated. |
+| bearDog | 14,987+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 145a: Phase 2 transport — raw UDS → `TransportEndpoint` dispatch. Wave 117b: orphan purge, `env_keys.rs` (290 constants). |
 | songbird | 8,158+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 58: `songbird-process-env` fully adopted (48 sites), 146 `#[expect` migrations, +67 tests. Zero hardcoded env in prod. |
 | toadStool | 23,000+ | **ADOPTED** | FULL | L3 | **CLEAN** — S333: structural debt — test extraction from 7 large files, −2,188 production lines, hardcoded primal names → capability terms (BTSP relay). S332: Phase 2 Silicon Atheism — `WgpuGpuDiscovery`, `PortableSwapExecutor`, `PortableResourceHandle` (+26 tests, 9,232 lib). S331: borrowed-deser sweep. S330: clippy zero. Cross-arch S329. 112 methods, zero-copy dispatch, riboCipher CLEAR+MITO. |
 | biomeOS | 8,038+ | **ADOPTED** | FULL | consumer | **CLEAN** — v4.20: BM-UDS-01 **RESOLVED** (d35c943e). All server bind paths (Neural API, API server, NUCLEUS) check `PRIMAL_BIND_MODE=tcp_only` before UDS bind, skip entirely on SELinux/Android. Discovery provider decoupled. NUCLEUS timeouts extracted to constants. |
-| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — S72 Wave 47: `--socket` CLI added, `health.liveness` → `{"status":"alive"}` all transports, `unix_adapter` refactored (790→440L), `primal_sovereignty` fake-success fixed. 682 RPC tests. |
+| nestgate | 12,393+ | **ADOPTED** | FULL | L3 | **CLEAN** — Wave 145a: Phase 2 transport — `TransportStream` + `TransportListener` (Session 117), deep debt sweep (Session 118: dead code, let-chains, clippy zero). 3,790 tests. |
 | squirrel | 7,095+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 58: 316 env constants (`env_vars.rs`), self-identity eliminated, 5,417L orphan purge. ~93 files remaining raw `std::env::var`. |
 | barraCuda | 4,600+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: `method.describe` SHIPPED (97 methods), socket cleanup DONE (state co-locates with socket path, ProtectSystem=strict compatible), zero debt. |
 | petalTongue | 6,297+ | **ADOPTED** | FULL | L2/L3 | **CLEAN** — WS-4: `petal-tongue-wasm` expanded (8 `wasm_bindgen` functions: `render_dashboard`, `render_binding`, `render_scene`, `validate_grammar`, modality dispatch). Client-side WASM rendering for offline sporePrint. |
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: CR-TARPC-01 **RESOLVED** (b1ec1f4). tarpc skips `bind()` when `PRIMAL_BIND_MODE=tcp_only`. Socket cleanup DONE. TRANSPORT_ENDPOINT works for JSON-RPC TCP. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 DROPPED (federation port eliminated) — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-142b. 169 scenarios (12 tracks), 492+ methods (100% exercised), 1202 lib tests, 1 known debt (graphenegate-readiness: 1 on eastGate). Wave 142b: Silicon Atheism Phase 2 — 14/14 primals × 4 architectures validated. Deep debt CLEAN.**
+**13/13 CLEAN — Waves 1-145a. 169 scenarios (12 tracks), 492+ methods (100% exercised), 1284 lib tests, 1 known debt (graphenegate-readiness: 1 on eastGate). Wave 145a: Silicon Atheism Phase 2 COMPLETE — all 14 primals shipped transport abstraction. CAC 6/6 COMPLETE. Depot: 59 binaries (14 per architecture × 4 targets). Deep debt CLEAN.**
 
 ---
 
