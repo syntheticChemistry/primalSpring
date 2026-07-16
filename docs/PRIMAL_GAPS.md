@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-07-13 (Wave 138a: **v0.9.36.** 146 scenarios, 1301 tests (0 failures), 12 tracks. +2 scenarios: fido2-entropy-ceremony, hardware-trust-pipeline. Hardware trust activation validated. All deps current. clippy zero.)
+> **Last updated**: 2026-07-16 (Wave 142b: **v0.9.40.** 169 scenarios, 1202 tests (0 failures), 12 tracks. Silicon Atheism Phase 2 validation: full-cross-compile + depot-architecture-coverage. Deep debt sprint: method references, HashSet O(1) lookups. All deps pure Rust. Zero clippy errors.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: CR-TARPC-01 **RESOLVED** (b1ec1f4). tarpc skips `bind()` when `PRIMAL_BIND_MODE=tcp_only`. Socket cleanup DONE. TRANSPORT_ENDPOINT works for JSON-RPC TCP. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 DROPPED (federation port eliminated) — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-132h. 122 scenarios (12 tracks), 490+ methods (100% exercised), 1095+ lib tests, 0 known debt. Wave 132h: LAN+WAN MESHED, mesh peer trust + convergence ops. flockGate WAN peered. graphenegate-readiness CLEARED. Deep debt CLEAN.**
+**13/13 CLEAN — Waves 1-142b. 169 scenarios (12 tracks), 492+ methods (100% exercised), 1202 lib tests, 1 known debt (graphenegate-readiness: 1 on eastGate). Wave 142b: Silicon Atheism Phase 2 — 14/14 primals × 4 architectures validated. Deep debt CLEAN.**
 
 ---
 

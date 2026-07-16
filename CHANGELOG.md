@@ -3,6 +3,23 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.40] — Wave 142b: Silicon Atheism Phase 2 + Deep Debt (2026-07-16)
+
+### Wave 142b: Silicon Atheism Phase 2 Validation (July 16)
+- **2 new validation scenarios** — `full-cross-compile` (14 primals × 4 depot
+  architectures structural readiness), `depot-architecture-coverage` (binary
+  count per arch, trust artifacts, exotic targets). 169 total scenarios.
+- **1202 lib tests passing** — 0 failures, 1 known debt (graphenegate-readiness).
+- **Deep debt: modern Rust idioms** — Redundant closures → method references
+  across 8 production files (`toml::Value::as_str`, `serde_json::Value::as_str`).
+  Vec O(n²) linear-search → HashSet O(1) in harness `all_capabilities()` and
+  `compute_spawn_order()`.
+- **Clippy: 5 errors cleared** — `eq_op`, `const_is_empty` ×2, `abs_diff`,
+  `manual_contains`. Zero remaining errors.
+- **KNOWN_DEBT aligned** to eastGate (graphenegate-readiness: 1, removed stale
+  sporeprint-pure-primal-parity entry).
+- **Version bump** to 0.9.40.
+
 ## [0.9.39] — Wave 140a: protoKarya Tangibles + Deep Debt Sprint (2026-07-15)
 
 ### Wave 140a: protoKarya Tangibles Pivot (July 15)
