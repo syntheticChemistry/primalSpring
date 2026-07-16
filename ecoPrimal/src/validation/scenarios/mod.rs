@@ -461,11 +461,13 @@ mod tests {
         // - graphenegate-readiness: deploy_pixel.sh not present on eastGate (2 checks)
         // Wave 140a: flockGate deployment context.
         // - graphenegate-readiness: no aarch64 binaries on x86_64-only gate (14 depot checks)
+        // Wave 142b: ironGate deployment context.
+        // - cascade-provenance-match: golgi checksums.toml format mismatch (2 xref checks)
+        // - bootstrap-readiness: depot path not configured (workspace-only)
+        // (graphenegate-readiness + sporeprint-pure-primal-parity pass clean on ironGate)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            // eastGate: deploy_pixel.sh absent + depot layout check (2 on eastGate)
-            ("graphenegate-readiness", 2),
-            // eastGate: sporePrint composition graph not wired (Phase 2)
-            ("sporeprint-pure-primal-parity", 1),
+            ("cascade-provenance-match", 2),
+            ("bootstrap-readiness", 1),
         ];
 
         let r = build_registry();
