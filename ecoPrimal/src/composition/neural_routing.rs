@@ -189,7 +189,7 @@ fn register_domain_methods(parsed: &toml::Value, composition_methods: &[String])
         }
         let owner_raw = value
             .get("owner")
-            .and_then(|v| v.as_str())
+            .and_then(toml::Value::as_str)
             .unwrap_or("unknown");
         if owner_raw == "none" || owner_raw == "tests" {
             continue;
@@ -197,8 +197,8 @@ fn register_domain_methods(parsed: &toml::Value, composition_methods: &[String])
 
         let methods = value
             .get("methods")
-            .and_then(|v| v.as_array())
-            .map(|arr| arr.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>())
+            .and_then(toml::Value::as_array)
+            .map(|arr| arr.iter().filter_map(toml::Value::as_str).collect::<Vec<_>>())
             .unwrap_or_default();
 
         for method_str in &methods {
@@ -258,13 +258,13 @@ fn collect_composition_patterns(parsed: &toml::Value) -> Vec<CompositionPattern>
     let Some(table) = parsed.as_table() else {
         return patterns;
     };
-    let Some(compositions) = table.get("compositions").and_then(|v| v.as_table()) else {
+    let Some(compositions) = table.get("compositions").and_then(toml::Value::as_table) else {
         return patterns;
     };
     for (group_name, group_val) in compositions {
         let tier_str = group_val
             .get("tier")
-            .and_then(|v| v.as_str())
+            .and_then(toml::Value::as_str)
             .unwrap_or("standalone");
         let tier = match tier_str {
             "electron" => CompositionTier::Tower,
@@ -276,7 +276,7 @@ fn collect_composition_patterns(parsed: &toml::Value) -> Vec<CompositionPattern>
         };
         let primals: Vec<String> = group_val
             .get("primals")
-            .and_then(|v| v.as_array())
+            .and_then(toml::Value::as_array)
             .map(|a| {
                 a.iter()
                     .filter_map(|v| v.as_str().map(String::from))
@@ -286,9 +286,9 @@ fn collect_composition_patterns(parsed: &toml::Value) -> Vec<CompositionPattern>
 
         let arc_primals: Vec<Arc<str>> = primals.iter().map(|s| Arc::from(s.as_str())).collect();
 
-        if let Some(sigs) = group_val.get("compositions").and_then(|v| v.as_array()) {
+        if let Some(sigs) = group_val.get("compositions").and_then(toml::Value::as_array) {
             for sig in sigs {
-                let name = sig.get("name").and_then(|v| v.as_str()).unwrap_or("");
+                let name = sig.get("name").and_then(toml::Value::as_str).unwrap_or("");
                 let full_name: Arc<str> = Arc::from(format!("{group_name}_{name}").as_str());
                 let method: Arc<str> = Arc::from(format!("{group_name}.{name}").as_str());
                 patterns.push(CompositionPattern {

@@ -93,7 +93,7 @@ fn validate_cell_graph_toml(v: &mut ValidationResult, stem: &str, val: &toml::Va
         .get("graph")
         .and_then(|g| g.get("metadata"))
         .and_then(|m| m.get("petaltongue_mode"))
-        .and_then(|v| v.as_str());
+        .and_then(toml::Value::as_str);
     v.check_bool(
         &format!("cellular:{stem}:live_mode"),
         pt_mode == Some("live"),
@@ -103,16 +103,16 @@ fn validate_cell_graph_toml(v: &mut ValidationResult, stem: &str, val: &toml::Va
     let nodes = val
         .get("graph")
         .and_then(|g| g.get("nodes"))
-        .and_then(|n| n.as_array())
-        .or_else(|| val.get("nodes").and_then(|n| n.as_array()));
+        .and_then(toml::Value::as_array)
+        .or_else(|| val.get("nodes").and_then(toml::Value::as_array));
 
     let node_names: Vec<&str> = nodes
         .iter()
         .flat_map(|arr| arr.iter())
         .filter_map(|n| {
             n.get("name")
-                .and_then(|v| v.as_str())
-                .or_else(|| n.get("id").and_then(|v| v.as_str()))
+                .and_then(toml::Value::as_str)
+                .or_else(|| n.get("id").and_then(toml::Value::as_str))
         })
         .collect();
 
@@ -143,7 +143,7 @@ fn validate_cell_graph_toml(v: &mut ValidationResult, stem: &str, val: &toml::Va
     let security_models: Vec<&str> = nodes
         .iter()
         .flat_map(|arr| arr.iter())
-        .filter_map(|n| n.get("security_model").and_then(|v| v.as_str()))
+        .filter_map(|n| n.get("security_model").and_then(toml::Value::as_str))
         .collect();
     let all_btsp = !security_models.is_empty()
         && security_models

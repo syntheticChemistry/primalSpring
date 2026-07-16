@@ -72,12 +72,12 @@ pub fn run_preflight(primals: &[&str], uds_only: bool) -> PreflightResult {
         if let Ok(content) = std::fs::read_to_string(cpath) {
             if let Ok(parsed) = content.parse::<toml::Table>() {
                 let triple = tolerances::current_target_triple();
-                let primals_table = parsed.get("primals").and_then(|v| v.as_table());
+                let primals_table = parsed.get("primals").and_then(toml::Value::as_table);
 
                 for (name, path) in &binary_paths {
                     if let Some(pt) = primals_table {
-                        if let Some(hashes) = pt.get(name).and_then(|v| v.as_table()) {
-                            if let Some(expected) = hashes.get(&triple).and_then(|v| v.as_str()) {
+                        if let Some(hashes) = pt.get(name).and_then(toml::Value::as_table) {
+                            if let Some(expected) = hashes.get(&triple).and_then(toml::Value::as_str) {
                                 if let Ok(data) = std::fs::read(path) {
                                     let actual = blake3::hash(&data).to_hex().to_string();
                                     if actual != expected {

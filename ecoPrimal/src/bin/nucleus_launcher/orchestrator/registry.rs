@@ -63,7 +63,7 @@ pub(super) fn build_capability_map() -> HashMap<String, Vec<String>> {
     if let Ok(content) = std::fs::read_to_string(&registry_path) {
         if let Ok(parsed) = content.parse::<toml::Table>() {
             for (domain, section) in &parsed {
-                if let Some(owner) = section.get("owner").and_then(|v| v.as_str()) {
+                if let Some(owner) = section.get("owner").and_then(toml::Value::as_str) {
                     if owner != "all" && owner != "none" && owner != "tests" {
                         map.entry(owner.to_owned())
                             .or_default()

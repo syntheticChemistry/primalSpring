@@ -177,7 +177,7 @@ pub fn verify_seed_fingerprints(
         return results;
     };
 
-    let Some(fingerprints) = table.get("fingerprints").and_then(|f| f.as_table()) else {
+    let Some(fingerprints) = table.get("fingerprints").and_then(toml::Value::as_table) else {
         return results;
     };
 
@@ -264,9 +264,9 @@ fn read_primal_versions(manifest_path: &Path) -> HashMap<String, String> {
         return versions;
     };
 
-    if let Some(primals) = table.get("primals").and_then(|p| p.as_table()) {
+    if let Some(primals) = table.get("primals").and_then(toml::Value::as_table) {
         for (name, entry) in primals {
-            if let Some(ver) = entry.get("latest").and_then(|v| v.as_str()) {
+            if let Some(ver) = entry.get("latest").and_then(toml::Value::as_str) {
                 versions.insert(name.clone(), ver.to_owned());
             }
         }

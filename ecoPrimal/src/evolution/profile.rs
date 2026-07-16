@@ -52,12 +52,12 @@ impl ProfileConstraints {
         let gate = parsed.get("gate")?.as_table()?;
         let name = gate
             .get("name")
-            .and_then(|v| v.as_str())
+            .and_then(toml::Value::as_str)
             .unwrap_or("")
             .to_owned();
         let target_triple = gate
             .get("target_triple")
-            .and_then(|v| v.as_str())
+            .and_then(toml::Value::as_str)
             .filter(|s| !s.is_empty())
             .map(str::to_owned);
 

@@ -86,7 +86,7 @@ pub fn validate_storage_roundtrip(ctx: &mut CompositionContext, v: &mut Validati
                 Ok(retrieved) => {
                     let val = retrieved
                         .get("value")
-                        .and_then(|v| v.as_str())
+                        .and_then(serde_json::Value::as_str)
                         .unwrap_or("");
                     v.check_bool(
                         "parity:storage_roundtrip",
@@ -129,15 +129,15 @@ pub fn validate_shader_capabilities(ctx: &mut CompositionContext, v: &mut Valida
         Ok(result) => {
             let has_archs = result
                 .get("supported_archs")
-                .and_then(|c| c.as_array())
+                .and_then(serde_json::Value::as_array)
                 .is_some_and(|c| !c.is_empty());
             let has_legacy = result
                 .get("capabilities")
-                .and_then(|c| c.as_array())
+                .and_then(serde_json::Value::as_array)
                 .is_some_and(|c| !c.is_empty());
             let arch_count = result
                 .get("supported_archs")
-                .and_then(|c| c.as_array())
+                .and_then(serde_json::Value::as_array)
                 .map_or(0, Vec::len);
             v.check_bool(
                 "parity:shader_capabilities",
@@ -189,7 +189,7 @@ pub fn validate_cross_atomic_pipeline(ctx: &mut CompositionContext, v: &mut Vali
                         Ok(retrieved) => {
                             let val = retrieved
                                 .get("value")
-                                .and_then(|v| v.as_str())
+                                .and_then(serde_json::Value::as_str)
                                 .unwrap_or("");
                             v.check_bool(
                                 "pipeline:nest_roundtrip",

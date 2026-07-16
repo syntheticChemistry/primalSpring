@@ -281,14 +281,16 @@ impl RunningAtomic {
     /// All capability names available in this composition (base tier + overlay).
     #[must_use]
     pub fn all_capabilities(&self) -> Vec<String> {
+        let mut seen = HashSet::new();
         let mut caps: Vec<String> = self
             .atomic
             .required_capabilities()
             .iter()
+            .filter(|&&s| seen.insert(s))
             .map(|&s| s.to_owned())
             .collect();
         for key in self.overlay_capabilities.keys() {
-            if !caps.contains(key) {
+            if seen.insert(key.as_str()) {
                 caps.push(key.clone());
             }
         }
@@ -573,10 +575,12 @@ impl AtomicHarness {
             .filter(|name| spawnable.contains(name))
             .collect();
 
-        for &r in &required {
-            if !ordered.iter().any(|o| o == r) {
-                ordered.push(r.to_owned());
-            }
+        let missing: Vec<&str> = {
+            let ordered_set: HashSet<&str> = ordered.iter().map(String::as_str).collect();
+            required.iter().copied().filter(|r| !ordered_set.contains(r)).collect()
+        };
+        for r in missing {
+            ordered.push(r.to_owned());
         }
 
         let required_set: HashSet<&str> = required.iter().copied().collect();

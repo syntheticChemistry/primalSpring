@@ -203,7 +203,7 @@ pub fn port_env_key(slug: &str) -> &'static str {
                 if let Some(key) = section
                     .as_table()
                     .and_then(|t| t.get("env_key"))
-                    .and_then(|v| v.as_str())
+                    .and_then(toml::Value::as_str)
                 {
                     map.insert(slug.clone(), &*Box::leak(key.to_owned().into_boxed_str()));
                 }

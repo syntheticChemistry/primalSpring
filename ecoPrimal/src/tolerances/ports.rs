@@ -46,7 +46,7 @@ static TOML_PORT_REGISTRY: std::sync::LazyLock<Vec<PortEntryOwned>> =
             else {
                 continue;
             };
-            let Some(env_key) = table.get("env_key").and_then(|v| v.as_str()) else {
+            let Some(env_key) = table.get("env_key").and_then(toml::Value::as_str) else {
                 continue;
             };
             entries.push(PortEntryOwned {
