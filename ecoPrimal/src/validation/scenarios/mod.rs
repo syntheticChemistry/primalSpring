@@ -89,6 +89,7 @@ pub mod s_crypto_identity_surface;
 pub mod s_dark_forest_gate;
 pub mod s_defense_attestation;
 pub mod s_deployment_pipeline;
+pub mod s_depot_architecture_coverage;
 pub mod s_depot_binary_standard;
 pub mod s_depot_layout_compliance;
 pub mod s_depot_trust_verify;
@@ -114,6 +115,7 @@ pub mod s_fido2_timeout_tolerance;
 pub mod s_fp_api_proxy;
 pub mod s_flockgate_tower_wan;
 pub mod s_footprint_drawbridge_live;
+pub mod s_full_cross_compile;
 pub mod s_full_nucleus;
 pub mod s_gate_enrollment;
 pub mod s_gate_expansion_readiness;
@@ -381,6 +383,8 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_protokarya_composition_routing::SCENARIO);
     r.register(s_drawbridge_weak_bond_ingestion::SCENARIO);
     r.register(s_depot_layout_compliance::SCENARIO);
+    r.register(s_depot_architecture_coverage::SCENARIO);
+    r.register(s_full_cross_compile::SCENARIO);
     r.register(s_depot_wan_serving::SCENARIO);
     r.register(s_science_drawbridge_parity::SCENARIO);
     r.register(s_platform_type_parity::SCENARIO);
@@ -400,7 +404,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 167;
+    const EXPECTED_SCENARIO_COUNT: usize = 169;
 
     #[test]
     fn registry_scenario_count() {
@@ -459,15 +463,12 @@ mod tests {
         // Wave 139a: ironGate deployment context.
         // - sporeprint-pure-primal-parity: composition graph not wired (Phase 2)
         // - graphenegate-readiness: deploy_pixel.sh not present on eastGate (2 checks)
-        // Wave 140a: flockGate deployment context.
+        // Wave 142b: flockGate deployment context.
         // - graphenegate-readiness: no aarch64 binaries on x86_64-only gate (14 depot checks)
-        // Wave 142b: ironGate deployment context.
-        // - cascade-provenance-match: golgi checksums.toml format mismatch (2 xref checks)
-        // - bootstrap-readiness: depot path not configured (workspace-only)
-        // (graphenegate-readiness + sporeprint-pure-primal-parity pass clean on ironGate)
+        // - full-cross-compile: pre-harvest gaps (android 11/14, windows 11/14, parity fail)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("cascade-provenance-match", 2),
-            ("bootstrap-readiness", 1),
+            ("graphenegate-readiness", 14),
+            ("full-cross-compile", 3),
         ];
 
         let r = build_registry();
