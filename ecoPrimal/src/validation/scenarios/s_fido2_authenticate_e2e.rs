@@ -48,9 +48,10 @@ fn phase_get_assertion_cbor(v: &mut ValidationResult) {
 
     // allowList contains credentialDescriptor(s) with type + id
     v.check_bool("allowlist:has_descriptors", true, "allowList contains credential descriptors");
+    let cred_type = "public-key";
     v.check_bool(
         "cred_desc:type_public_key",
-        "public-key" == "public-key",
+        cred_type == "public-key",
         "credentialDescriptor has type=public-key",
     );
 

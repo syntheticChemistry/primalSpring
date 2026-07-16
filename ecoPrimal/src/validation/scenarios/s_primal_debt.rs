@@ -194,7 +194,7 @@ fn debt_cap_for_gate(gate_name: &str) -> f64 {
         .map(|arr| arr.iter().filter_map(|v| v.as_str()).collect())
         .unwrap_or_default();
 
-    let is_depot_authority = roles.iter().any(|r| *r == "depot");
+    let is_depot_authority = roles.contains(&"depot");
     if is_depot_authority {
         return crate::tolerances::DEBT_CAP_NEST_PCT;
     }

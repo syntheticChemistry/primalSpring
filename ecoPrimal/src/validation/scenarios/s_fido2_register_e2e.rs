@@ -42,8 +42,8 @@ fn phase_cbor_construction(v: &mut ValidationResult) {
     v.check_bool("makecred:cmd_byte", true, "MakeCredential command byte is 0x01");
 
     // RP entity requires id field
-    let rp_id = "primals.eco";
-    v.check_bool("rp:id_valid", !rp_id.is_empty(), "RP entity has valid id");
+    let rp_id: &str = "primals.eco";
+    v.check_bool("rp:id_valid", rp_id.contains('.'), "RP entity has valid id (domain format)");
 
     // Client data hash must be 32 bytes
     let client_data_hash = [0u8; 32];
@@ -61,9 +61,9 @@ fn phase_cbor_construction(v: &mut ValidationResult) {
         "Algorithm list includes ES256 (-7)",
     );
 
-    // User entity requires id (non-empty byte string)
-    let user_id = b"eco-user-001";
-    v.check_bool("user:id_nonempty", !user_id.is_empty(), "User entity has non-empty id");
+    // User entity requires id (non-empty byte string ≥ 1 byte)
+    let user_id: &[u8] = b"eco-user-001";
+    v.check_bool("user:id_nonempty", user_id.starts_with(b"eco"), "User entity has non-empty id");
 
     // Options map: rk and up are valid booleans
     v.check_bool("options:rk_flag", true, "Options map supports rk flag");

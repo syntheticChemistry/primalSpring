@@ -462,13 +462,9 @@ mod tests {
         // - graphenegate-readiness: depot layout + deploy script (eastGate-local)
         // Wave 139a: ironGate deployment context.
         // - sporeprint-pure-primal-parity: composition graph not wired (Phase 2)
-        // - graphenegate-readiness: deploy_pixel.sh not present on eastGate (2 checks)
-        // Wave 142b: flockGate deployment context.
-        // - graphenegate-readiness: no aarch64 binaries on x86_64-only gate (14 depot checks)
-        // - full-cross-compile: pre-harvest gaps (android 11/14, windows 11/14, parity fail)
+        // eastGate: graphenegate-readiness produces 1 failure (deploy_pixel.sh absent)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 14),
-            ("full-cross-compile", 3),
+            ("graphenegate-readiness", 1),
         ];
 
         let r = build_registry();

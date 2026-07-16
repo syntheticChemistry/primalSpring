@@ -113,8 +113,8 @@ fn phase_jitter_analysis(v: &mut ValidationResult) {
     let variance: u64 = mock_timings_ns
         .iter()
         .map(|&t| {
-            let diff = if t > mean { t - mean } else { mean - t };
-            diff * diff / 1_000_000 // scale to avoid overflow
+            let diff = t.abs_diff(mean);
+            diff * diff / 1_000_000
         })
         .sum::<u64>()
         / mock_timings_ns.len() as u64;
