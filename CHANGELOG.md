@@ -3,6 +3,19 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.41] — Wave 147b: gate.enroll Pipeline + 6-Gate Mesh (2026-07-17)
+
+### Wave 147b: Automated Mesh Enrollment (July 17)
+- **1 new validation scenario** — `gate-enroll-pipeline` (5-phase automated
+  enrollment: manifest.resolve → wg.keygen → wg.config → mesh.verify →
+  forgejo.verify → git.remotes). 170 total scenarios.
+- **1203 lib tests passing** — 0 failures, 1 known debt (graphenegate-readiness).
+- **Mesh topology updated** — northGate enrolled at 10.13.37.8 (6th node).
+  `zone-topology` scenario updated to reflect northGate's peered status.
+- **KNOWN_DEBT aligned** — removed stale `sporeprint-pure-primal-parity` entry
+  (now passes on eastGate), corrected `graphenegate-readiness` to 1.
+- **Clippy: 1 lint fixed** — `map_or` → `is_some_and` in new scenario.
+
 ## [0.9.40] — Wave 142b: Silicon Atheism Phase 2 + Deep Debt (2026-07-16)
 
 ### Wave 142b: Silicon Atheism Phase 2 Validation (July 16)

@@ -117,6 +117,7 @@ pub mod s_flockgate_tower_wan;
 pub mod s_footprint_drawbridge_live;
 pub mod s_full_cross_compile;
 pub mod s_full_nucleus;
+pub mod s_gate_enroll_pipeline;
 pub mod s_gate_enrollment;
 pub mod s_gate_expansion_readiness;
 pub mod s_gate_failure;
@@ -394,6 +395,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_protokarya_cross_feed::SCENARIO);
     r.register(s_protokarya_wan_deploy::SCENARIO);
     r.register(s_drawbridge_consumer_parity::SCENARIO);
+    r.register(s_gate_enroll_pipeline::SCENARIO);
     r
 }
 
@@ -404,7 +406,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 169;
+    const EXPECTED_SCENARIO_COUNT: usize = 170;
 
     #[test]
     fn registry_scenario_count() {
@@ -461,13 +463,9 @@ mod tests {
         // - sporeprint-pure-primal-parity: composition graph not yet wired (Phase 2)
         // - graphenegate-readiness: depot layout + deploy script (eastGate-local)
         // Wave 139a: ironGate deployment context.
-        // - sporeprint-pure-primal-parity: composition graph not wired (Phase 2)
-        // eastGate: graphenegate-readiness produces 1 failure (deploy_pixel.sh absent)
+        // eastGate: aarch64 depot directory absent locally (1 check)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            // eastGate: deploy_pixel.sh + aarch64 depot absent locally
-            ("graphenegate-readiness", 2),
-            // eastGate: sporePrint composition graph not wired (Phase 2)
-            ("sporeprint-pure-primal-parity", 1),
+            ("graphenegate-readiness", 1),
         ];
 
         let r = build_registry();

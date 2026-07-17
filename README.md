@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml/badge.svg)](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-1202_pass-brightgreen.svg)](#validation-scenarios-169-across-12-tracks)
+[![Tests](https://img.shields.io/badge/tests-1203_pass-brightgreen.svg)](#validation-scenarios-170-across-12-tracks)
 [![Rust](https://img.shields.io/badge/rust-1.87%2B-orange.svg)](https://www.rust-lang.org)
 [![Unsafe: forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance)
 
@@ -11,15 +11,15 @@
 | | |
 |-|-|
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
-| **Version** | 0.9.40 |
+| **Version** | 0.9.41 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 1202 lib + 17 doc + experiment (1221 workspace total) |
-| **Experiments** | 96 (21 tracks) — 169 validation scenarios (12 tracks, 3 tiers) |
+| **Tests** | 1203 lib + 17 doc + experiment (1222 workspace total) |
+| **Experiments** | 96 (21 tracks) — 170 validation scenarios (12 tracks, 3 tiers) |
 | **Deploy Graphs** | 102 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 492+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
-| **Mesh** | 5-node sovereign relay (golgi ↔ sporeGate ↔ eastGate ↔ flockGate ↔ ironGate). WG overlay 10.13.37.0/24. TOML-driven topology (`config/mesh_topology.toml`). K-Derm cytoplasm zones: backbone/house2/garage/wan. Three-hub triangle topology. Live overlay validation (s_mesh_overlay). |
+| **Mesh** | 6-node sovereign relay (golgi ↔ sporeGate ↔ eastGate ↔ flockGate ↔ ironGate ↔ northGate). WG overlay 10.13.37.0/24. TOML-driven topology (`config/mesh_topology.toml`). K-Derm cytoplasm zones: backbone/house2/garage/wan. Three-hub triangle topology. Live overlay validation (s_mesh_overlay). `gate.enroll` automated enrollment pipeline. |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`). `#![warn(missing_docs)]` enforced. |
