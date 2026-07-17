@@ -9,7 +9,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-07-16 (Wave 145a: **v0.9.40.** 169 scenarios, 1284 tests (0 failures), 12 tracks. **Silicon Atheism Phase 2 transport COMPLETE** (14/14 primals shipped platform-agnostic transport). **CAC 6/6 COMPLETE** (all layers: git, depot, heads, impulses, rhizoCrypt DAG, cascade). Depot: 59 binaries across 4 architectures (all at 14). Deep debt sprint: method references, HashSet O(1) lookups. All deps pure Rust. Zero clippy errors.)
+> **Last updated**: 2026-07-17 (Wave 145a: **v0.9.40.** 169 scenarios, 1202 lib tests (0 failures, 2 ignored), 12 tracks. **Silicon Atheism Phase 2 transport COMPLETE** (14/14 primals shipped platform-agnostic transport). **CAC 6/6 COMPLETE** (all layers: git, depot, heads, impulses, rhizoCrypt DAG, cascade). Depot: 59 binaries across 4 architectures (16+16+13+14). protoKarya manifest gaps RESOLVED — tideGlass registered. All deps pure Rust.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: CR-TARPC-01 **RESOLVED** (b1ec1f4). tarpc skips `bind()` when `PRIMAL_BIND_MODE=tcp_only`. Socket cleanup DONE. TRANSPORT_ENDPOINT works for JSON-RPC TCP. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 DROPPED (federation port eliminated) — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-145a. 169 scenarios (12 tracks), 492+ methods (100% exercised), 1284 lib tests, 1 known debt (graphenegate-readiness: 1 on eastGate). Wave 145a: Silicon Atheism Phase 2 COMPLETE — all 14 primals shipped transport abstraction. CAC 6/6 COMPLETE. Depot: 59 binaries (14 per architecture × 4 targets). Deep debt CLEAN.**
+**13/13 CLEAN — Waves 1-145a. 169 scenarios (12 tracks), 492+ methods (100% exercised), 1202 lib tests (0 failures, 2 ignored), 1 known debt (graphenegate-readiness: 1 on eastGate). Wave 145a: Silicon Atheism Phase 2 COMPLETE — all 14 primals shipped transport abstraction. CAC 6/6 COMPLETE. Depot: 59 binaries (16+16+13+14). Deep debt CLEAN.**
 
 ---
 
@@ -1041,279 +1041,17 @@ Gaps propagate **upward** (springs expose primal gaps → primalSpring gates the
 
 ---
 
-## Wave 6: Targeted GuideStone (LTEE) — May 11, 2026
-
-The ecosystem's first **deployable subsystem**: a self-contained, USB-portable
-artifact that leaves ecosystem possession. The LTEE guideStone reproduces
-Barrick/Lenski LTEE papers and generates new predictions via the Anderson
-disorder framework. This is a **projectNUCLEUS subsystem**.
-
-Standard: `infra/wateringHole/TARGETED_GUIDESTONE_STANDARD.md`
-Handoff: `infra/wateringHole/handoffs/LTEE_GUIDESTONE_SUBSYSTEM_HANDOFF_MAY11_2026.md`
-
-### Wave 6 Ownership
-
-| Layer | Responsibility | Status |
-|-------|---------------|--------|
-| L2 (primalSpring) | Targeted GuideStone standard, scope graph schema, validation harness pattern | **DONE** — standard defined |
-| L3 (springs) | LTEE paper queue items (36 assignments across 6 springs), binary builds, scenario implementations | **SEEDED** — queues populated, reproduction work begins |
-| L4 (projectNUCLEUS) | Integration as subsystem, workload TOMLs, deployment testing, USB packaging | **ARCHITECTURE** — handoff created, phases 2-5 pending |
-| L5 (projectFOUNDATION) | Thread 04 (enviro genomics) + Thread 02 (plasma physics) data anchoring for LTEE datasets | **ACTIVE** — Thread 04 active with expression + data sources |
-
-### Wave 6 Paper-Spring Assignments
-
-| Spring | Papers | Count |
-|--------|--------|------:|
-| wetSpring | B1–B8, E1, E5 | 10 |
-| neuralSpring | B1–B4, B6–B9, E2–E5 | 12 |
-| groundSpring | B1–B4, B6–B9 | 8 |
-| hotSpring | B2, B9 | 2 |
-| healthSpring | B5, E2, E4 | 3 |
-| airSpring | E3 | 1 |
-| **Total** | | **36** |
-
-### Wave 6 Milestones
-
-- [x] Phase 1: Architecture + queue seeding (THIS UPDATE)
-- [ ] Phase 2: Spring reproductions (L3) — **INTERSTADIAL**
-- [ ] Phase 3: Binary bundle + data assembly (L2 + L4) — **INTERSTADIAL**
-- [ ] Phase 4: Integration + deployment testing (L4) — **STADIAL**
-- [ ] Phase 5: External deployment to Barrick Lab (L4) — **STADIAL**
-
----
-
-## Wave 7: Contract Testing — Semantic Gate Evolution (May 11, 2026)
-
-**Owner**: primalSpring team
-**Priority**: HIGH — exposed by NestGate transport parity gap (now **RESOLVED**)
-**Target**: Before stadial (prevents this class of gap from recurring)
-**Status**: **7/7 items DONE** — all Wave 7 items closed (May 11)
-
-The NestGate `content.put` transport parity gap reached projectNUCLEUS because
-primalSpring's gate validates **structural** consistency (methods registered, health
-alive, graphs coherent) but not **semantic** correctness (methods actually serve
-correct responses across all transports). This wave evolves the gate from structural
-to contract-level validation.
-
-### Wave 7 Items
-
-| ID | What | Owner | Status |
-|----|------|-------|--------|
-| W7-01 | Add `content` to `ALL_CAPS` in `composition/routing.rs` and wire `capability_to_primal("content") → "nestgate"` | primalSpring | **DONE** (May 11) |
-| W7-02 | New scenario `s_nestgate_content_pipeline`: `content.put` → `content.get` round-trip (BLAKE3 hash match), `content.list`, `content.exists`, `content.resolve`. SKIP when NestGate unreachable, FAIL when methods error. | primalSpring | **DONE** (May 11) |
-| W7-03 | Extend `server_ecosystem_compose.rs` Gate tests: `content.put` stores bytes returns hash, `content.get` retrieves by hash matches original, `content.list` includes stored hash (Content Gate 1-3) | primalSpring | **DONE** (May 11) |
-| W7-04 | Deploy graph `content_pipeline_smoke.toml`: `content.put` + `content.get` + `content.list` round-trip via `by_capability = "content"` | primalSpring | **DONE** (May 11) |
-| W7-05 | Validate `content.resolve` for petalTongue backend: ensure NestGate path resolution returns correct content + MIME type (petalTongue `backend=nestgate` depends on this) | primalSpring | **DONE** (May 11) — NestGate Session 60 shipped transport parity; gate scenario covers `content.resolve` |
-| W7-06 | Inverse drift detection: `tools/check_method_coverage.sh` flags methods registered in 418-registry but **never referenced** in any scenario, test, or graph. Currently shows 125/418 uncovered. CI-gatable. | primalSpring | **DONE** (May 11) |
-| W7-07 | NestGate transport parity: verify `content.*` methods are reachable on SemanticRouter, isomorphic IPC adapter, and HTTP API — not just primary unix_socket_server dispatch | primalSpring + NestGate | **DONE** (May 11) — NestGate Session 60 wired all 8 `content.*` methods on all 4 transport surfaces |
-
-### Lesson: Structural vs Semantic Gates
-
-The primalSpring gate currently validates:
-- **Structural**: methods enumerated in registry, deploy graphs reference correct capabilities, health checks pass, `storage.*` round-trips work
-- **NEW (Wave 7)**: `content.*` contract tests (scenario, gate tests, deploy graph), inverse drift detection (125/418 methods uncovered — CI-gatable tool shipped)
-- **Wave 9** (domain contract sweep): `secrets.*`, `bonding.*`, `defense.*`, `discovery.*`, `provenance.*`, `spine.*`, `network.*` all exercised via `s_domain_contract_sweep` scenario + `domain_contract_sweep.toml` graph. Coverage 288/418 → 302/418 (72%). Remaining 116 are test fixtures, domain-specific (game/nautilus/ml), or require external infrastructure
-- **Resolved**: W7-07 transport parity verification (NestGate Session 60 shipped all surfaces)
-
-The sentinel-stadial model correctly surfaced this gap — downstream composition
-pressure (projectNUCLEUS trying to publish content) exposed that the upstream
-sentinel (NestGate) had implemented the capability on one transport path but not
-wired it on all paths, and the gate (primalSpring) was not testing the capability
-semantically. **This gap is now fully resolved** — NestGate Session 60 shipped
-transport parity, and Wave 7 added the semantic contract tests.
-
-**Wave 7 closes this gap class permanently.** After Wave 7, any method registered
-in the 418-method registry that lacks a contract test or is unreachable on any
-transport will be flagged by primalSpring's gate.
-
----
-
-## Wave 8: Compute Trio Composition — Node Atomic Evolution (May 11, 2026)
-
-**Owner**: primalSpring team + upstream compute trio teams
-**Priority**: HIGH — extends Node atomic from structural to semantic validation
-**Target**: Before stadial (enables sovereign compute E2E in compositions)
-
-The compute trio (coralReef + toadStool + barraCuda) forms the Node atomic's
-compute layer. hotSpring's sovereign compute breakthrough (3 GPUs, warm-catch
-pipeline, pure Rust) and the wateringHole handoff define a clear domain split:
-coralReef (HOW — compiler), toadStool (WHERE — hardware), barraCuda (WHAT — math).
-
-Wave 8 sketches the architecture locally and hands upstream to primal teams.
-
-### Wave 8 Items
-
-| ID | What | Owner | Status |
-|----|------|-------|--------|
-| W8-01 | Architecture document `docs/COMPUTE_TRIO_EVOLUTION.md` — HOW/WHERE/WHAT domain split, IPC contracts (`shader.compile.wgsl`, `compute.dispatch.submit`), 6-phase ember/glowplug absorption path, degradation tiers, upstream handoff matrix | primalSpring | **DONE** (May 11) |
-| W8-02 | Evolve `s_compute_triangle` scenario — 5-phase validation: discovery, coralReef capabilities, toadStool capabilities, barraCuda math round-trip, sovereign dispatch E2E contract (compile → dispatch response shapes) | primalSpring | **DONE** (May 11) |
-| W8-03 | Inverse drift audit — compute/tensor/shader domains: 5 compute-related methods uncovered (aliases/admin), critical dispatch path exercised | primalSpring | **DONE** (May 11) |
-| W8-04 | Compute trio gate tests in `server_ecosystem_compose.rs` — Gate 1: coralReef `shader.compile.capabilities`, Gate 2: toadStool `compute.capabilities`, Gate 3: barraCuda `stats.mean` round-trip, Gate 4: sovereign E2E compile+dispatch | primalSpring | **DONE** (May 11) |
-| W8-05 | Deploy graph `compute_trio_smoke.toml` — 6-phase health + capabilities + math round-trip for all three primals | primalSpring | **DONE** (May 11) |
-| W8-06 | gen4 sketch `SOVEREIGN_COMPUTE_TRIO_SKETCH.md` — HOW/WHERE/WHAT as gen4 composition pattern, warm-catch as sovereignty pattern, era-agnostic compute, budding/absorption model | primalSpring | **DONE** (May 11) |
-| W8-07 | toadStool ember/glowplug absorption (Phases 1-6) — absorb coral-ember + coral-glowplug + coral-driver hardware | toadStool | **DONE** — Phase C **COMPLETE** (S245-S250, batches 1-7, 520 cylinder tests, 8,809 workspace). Phase D plumbing in (local dispatch path, factory abstraction). `toadstool.validate` **IMPLEMENTED** (S250). `toadstool.list_workloads` **WIRED** (S245+). E2E sovereign dispatch awaits factory hook-up (stadial work). |
-| W8-08 | coralReef domain boundary cleanup — extract hardware code to toadStool, retain compiler domain only (`shader.compile.*`) | coralReef | **DONE** — coral-ember/glowplug soft-deprecated. RDNA2 atomics fix shipped. Phase C/D transition markers in place. Sprint 7: FECS **STABILITY PROOF SHIPPED** (`boot_gr_falcons_with_recovery`, 3× retry + PMC GR reset, `GrBootOutcome` enum, 4790 tests). All sentinel blockers resolved. |
-| W8-09 | barraCuda sovereign dispatch E2E wiring — wire `SovereignDevice` through trio IPC (compile + dispatch) | barraCuda | **DONE** (v0.4.0) — 15-tier PrecisionTier, sovereign dispatch wire extracted, IPC coverage sweep (71/71 methods), bearDog crypto audit confirmed non-redundant. Stadial gate release. |
-
-### Upstream Handoff
-
-primalSpring provides: architecture doc, IPC contracts, gate tests, deploy graphs, gen4 sketch.
-Upstream teams implement: absorption (toadStool), domain cleanup (coralReef), E2E wiring (barraCuda).
-
-See `docs/COMPUTE_TRIO_EVOLUTION.md` for full architecture and handoff matrix.
-
----
-
-## Wave 10: Phase 32 Atomic Model Evolution + Temporal Review (May 12, 2026)
-
-**Owner**: primalSpring team
-**Priority**: HIGH — structural model alignment before stadial
-**Status**: **DONE** (May 12)
-
-The temporal ecosystem review identified structural drift between the Rust
-`AtomicType` model and the graph fragment definitions. Phase 32 resolves this:
-
-| Change | Before | After |
-|--------|--------|-------|
-| **Tower** | bearDog + songbird (2) | bearDog + songbird + **skunkBat** (3) |
-| **Tower capabilities** | security, discovery | security, discovery, **defense** |
-| **Node** | Tower(2) + compute trio (5) | Tower(3) + compute trio (**6**) |
-| **Nest primals** | bearDog, songbird, nestGate, **squirrel** (4) | bearDog, songbird, **skunkBat**, nestGate, **rhizoCrypt, loamSpine, sweetGrass** (7) |
-| **Nest capabilities** | security, discovery, storage, **ai** | security, discovery, **defense**, storage, **dag, ledger, attribution** |
-| **NUCLEUS core** | 9 primals | **10** primals |
-| **Fragment versions** | 2.0.0 | **3.0.0** |
-
-### Artifacts
-
-- ~~`docs/TEMPORAL_ECOSYSTEM_REVIEW_MAY12_2026.md`~~ — fossilized to `fossilRecord/springs/primalSpring/docs_wave35_may2026/`
-- `docs/LIVE_SCIENCE_API.md` — Tier 2 wire contract (toadstool.validate, list_workloads)
-- Updated: `config/deployment_matrix.toml`, all `graphs/fragments/*.toml`
-- Updated: `ecoPrimal/src/coordination/mod.rs` (AtomicType + 689+ tests pass)
-
----
-
-## Wave 12: Deep Debt Sweep — Safety, Idiom, Discovery (May 14, 2026)
-
-**Owner**: primalSpring team
-**Priority**: HIGH — zero-panic production, modern idiomatic Rust, capability-first
-**Status**: **DONE** (May 14)
-
-Comprehensive audit found zero unsafe blocks, zero production mocks, zero `todo!()`/
-`unimplemented!()`, zero `Box<dyn Error>`, all files under 800 lines, and pure Rust
-dependencies (no C/FFI crates; BLAKE3 uses `pure` feature).
-
-### Panic/Expect Elimination
-
-| Site | Was | Now |
-|------|-----|-----|
-| `certification/entropy.rs:generate_machine_seed` | `panic!("OS entropy unavailable")` | `Option<String>`, caller handles gracefully |
-| ~~`bin/primalspring_guidestone/entropy.rs`~~ | ~~Same panic~~ | **REMOVED** — binary deleted Wave 32; logic in `certification/` |
-| `ipc/transport.rs:call_encrypted` | `.expect("Phase 3 keys required")` ×2 | `.ok_or(IpcError::ProtocolError { .. })?` |
-| `harness/mod.rs:generate_harness_mito_seed` | `.expect("HKDF expand")` | Graceful fallback (empty vec) |
-| `harness/mod.rs:generate_harness_nuclear` | `.expect("HKDF expand")` | Silent `let _ =` (zeroed OKM accepted) |
-
-### Hardcoding → Discovery
-
-| Site | Was | Now |
-|------|-----|-----|
-| `certification/entropy.rs` | Hardcoded `"/tmp/ecoprimals"` | `ipc::discover::resolve_socket_dir()` (env-first) |
-| `bin/.../entropy.rs` | Same hardcoded path | Same fix |
-| `certification/entropy.rs` | Hardcoded `"x86_64-unknown-linux-musl"` arch | `current_target_triple()` compile-time dispatch |
-| `ipc/method_gate.rs:BearDogVerifier` | Direct socket path + literal `"beardog"` | `discover_by_capability("security")` fallback chain + `primal_names::BEARDOG` constant |
-
-### Idiomatic Rust Modernization
-
-| Pattern | Was | Now |
-|---------|-----|-----|
-| `Vec<&String>` | `certification/btsp.rs` cleartext caps | `Vec<&str>` with `.as_str()` |
-| Manual `Display + Error` | `JsonRpcError` (protocol.rs) | `#[derive(thiserror::Error)]` |
-| Manual `Display + Error` | `UnknownPrimal` (primal_names.rs) | `#[derive(thiserror::Error)]` |
-| `DeployError::Parse(String)` | String-erased TOML errors | `Parse { context, source: toml::de::Error }` — preserves error chain |
-
-### Deprecated Production Path Cleanup
-
-`composition/btsp.rs:upgrade_btsp_clients` — replaced `#[expect(deprecated)]`
-bridge to `family_seed_from_env()` with `mito_beacon_from_env().key_bytes()`,
-the genetics-aware non-deprecated path.
-
-### New Discovery Infrastructure
-
-Added `ipc::discover::resolve_socket_dir()` — canonical function for resolving the
-ecoPrimals runtime socket directory. Priority: `$ECOPRIMALS_SOCKET_DIR` →
-`$XDG_RUNTIME_DIR/ecoprimals` → `<temp_dir>/ecoprimals`. Replaces all inline
-hardcoded `/tmp/ecoprimals` fallback patterns.
-
----
-
-## Wave 11: Local Debt Resolution + Compute Trio Depth (May 14, 2026)
-
-**Owner**: primalSpring team
-**Priority**: HIGH — interstadial exit gate items
-**Status**: **DONE** (May 14)
-
-### CompositionContext Migration
-
-Migrated all active validation and RPC paths from deprecated `probe_primal` to
-`CompositionContext`-based probing. The deprecated functions remain for backward
-compatibility but are no longer called by any handler or live validation path.
-
-| File | Change |
-|------|--------|
-| `deploy/validation.rs` | `probe_graph_node` → `probe_graph_node_with_context`, new `validate_live_with_context` |
-| `coordination/mod.rs` | new `validate_composition_ctx` (capability-keyed, context-aware) |
-| `bin/primalspring_primal/handlers.rs` | All 4 handlers migrated to context-aware paths |
-
-### btsp.capabilities Method
-
-Registry method 419: `btsp.capabilities` (owner: bearDog). `upgrade_btsp_clients`
-now probes this method before attempting BTSP handshake, preventing connection
-failures in mixed deployments where some primals lack BTSP server listeners.
-
-### New Scenarios (24 → 27)
-
-| Scenario | What | Methods Exercised |
-|----------|------|-------------------|
-| `s_tier2_science_api` | Tier 2 wire contract exemplar | `toadstool.validate`, `toadstool.list_workloads`, `barracuda.precision.route`, `biomeos.spring_status` |
-| `s_barracuda_precision` | Deep precision routing + TensorSession | `barracuda.precision.route` (multi-op), `tensor.create`, `stats.variance`, `stats.std` |
-| `s_coralreef_shader_targets` | Dual-vendor GPU compilation | `shader.compile.capabilities`, `shader.compile.wgsl`, `shader.compile.module` (naga) |
-
-### Method Coverage
-
-307/419 (73.3%), up from 302/418 (72.2%). 112 uncovered remain — mostly test
-fixtures, domain-specific (`game.*`, `nautilus.*`, `ml.*`), and external infra.
-
-### Foundation Thread 10 Seeded
-
-Thread 10 (Provenance/Economics) elevated from EMPTY → SEEDED. Expression:
-provenance trio pipeline (skunkBat → rhizoCrypt → sweetGrass) as the economic
-substrate for NFT/attestation models. Sources: BLAKE3 CAS hashes, ionic bond
-contracts, attribution braids. Targets: content-addressed artifact lifecycle,
-cross-family attestation chain, provenance-anchored economic exchange.
-
----
-
-## Interstadial Exit Criteria (May 12, 2026)
-
-The interstadial ends when sovereignty capabilities are structurally wired and
-shadow runs can begin. Five pillars define the exit gate. Full details:
-`infra/wateringHole/INTERSTADIAL_EXIT_CRITERIA.md`
-
-### Interstadial Targets by Layer
-
-| Layer | Interstadial Target | Gate Condition |
-|-------|-------------------|----------------|
-| **L1 (Primals)** | MethodGate parity 13/13 | MethodGate shipped for all primals |
-| **L2 (primalSpring)** | CompositionContext coordination pass, lithoSpore standard | 2+ lithoSpore modules PASS Tier 1 |
-| **L3 (Springs)** | 4+ springs `optional=true`, gS convergence (air/neural → L4), LTEE reproductions begin | wetSpring < 5 PG gaps, 2+ foundation threads seeded |
-| **L4 (Products)** | H2 shadow runs (TLS/NAT/NestGate/BTSP auth), ABG WCM compositions | H2-2b/3a/3b/3c in shadow-run state |
-| **L5 (Foundation)** | Threads 3, 5, 8, 10 sources/targets, LTEE data anchoring | 7+/10 threads with sources |
-
-### Stadial Targets by Layer
-
-| Layer | Stadial Target | External Driver |
-|-------|---------------|-----------------|
-| **L1 (Primals)** | Upstream crate extraction (wgsl-precision, proc-sysinfo) | crates.io community |
-| **L2 (primalSpring)** | Framework parity benchmarks | Kokkos, LAMMPS, SciPy |
-| **L3 (Springs)** | lithoSpore Phases 4-5, all springs Tier 4 | Barrick Lab USB, peer validation |
-| **L4 (Products)** | H2 cutover (Cloudflare → sovereign), H3 begin | Cloudflare baselines, GitHub → Forgejo |
-| **L5 (Foundation)** | All threads with validated targets, ABG in production | ABG users, faculty network |
+## Fossilized Waves (6-12, May 2026) — ALL DONE
+
+Waves 6-12 and Interstadial Exit Criteria have been fossilized.
+All items were completed during May 2026. See `fossilRecord/` for full detail.
+
+| Wave | Topic | Status |
+|------|-------|--------|
+| 6 | Targeted GuideStone (LTEE) | DONE — architecture + queue seeding |
+| 7 | Contract Testing (semantic gates) | DONE — 7/7 items, NestGate transport parity |
+| 8 | Compute Trio Composition (Node atomic) | DONE — 9/9 items, trio E2E |
+| 10 | Phase 32 Atomic Model + Temporal Review | DONE — AtomicType alignment |
+| 11 | Local Debt + Compute Trio Depth | DONE — CompositionContext migration |
+| 12 | Deep Debt Sweep (safety, idiom, discovery) | DONE — zero panics, modern Rust |
+| — | Interstadial Exit Criteria | CLEARED — April 16, 2026 |

@@ -120,11 +120,11 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.40 Wave 145a (July 16, 2026) — 169 scenarios (12 tracks, 3 tiers),
-492+ registered capability methods, 96 experiments (21 tracks), 102 graph TOMLs
-(16 directories). 1284 tests passing. **Silicon Atheism Phase 2 COMPLETE (14/14
-primals shipped transport abstraction). CAC 6/6 COMPLETE. 59 depot binaries
-across 4 architectures (14 per target).** Config-driven topology
+v0.9.40 Wave 145a (July 17, 2026) — 169 scenarios (12 tracks, 3 tiers),
+492+ registered capability methods, 93 experiments (21 tracks), 102 graph TOMLs
+(16 directories). 1202 lib tests (0 failures, 2 ignored). **Silicon Atheism Phase 2
+COMPLETE (14/14 primals shipped transport abstraction). CAC 6/6 COMPLETE. 59 depot
+binaries across 4 architectures (16+16+13+14).** Config-driven topology
 (`config/mesh_topology.toml` — SSOT for gate roster, zones, mesh addresses).
 Evolution module: CytoplasmZone model (backbone/house2/garage/wan), three-hub
 triangle topology, gate enrollment pipeline, convergence monitoring.
@@ -316,7 +316,7 @@ memoization), wetSpring (data fetch + visualization), neuralSpring
 - **Silicon Atheism Phase 1** (Wave 142a): 14/14 primals cross-compile for 4 architectures
 - **Silicon Atheism Phase 2** (Wave 145a): 14/14 primals shipped platform-agnostic transport
 - **Content-Addressed Convergence** (Wave 144a): 6/6 layers complete
-- 492+ method registry (100% exercised), 169 scenarios, 102 deploy graphs
+- 492+ method registry (100% exercised), 169 scenarios, 102 deploy graphs, 1202 lib tests
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - 59 depot binaries (14 per architecture × 4 targets), all BLAKE3 + Ed25519 signed
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
