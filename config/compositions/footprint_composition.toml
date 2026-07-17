@@ -112,7 +112,7 @@ bonds = [
 package = "@protokarya/rustscript"
 version = "0.1.0"
 modules = 11
-tests = 98
+tests = 57
 status = "EXTRACTION_READY"
 primitives = [
     "Result", "Option", "RefCell", "exhaustive", "Brand",
