@@ -459,11 +459,8 @@ mod tests {
 
     #[test]
     fn registry_all_rust_tier_pass() {
-        // Wave 138b: known debt items.
-        // - sporeprint-pure-primal-parity: composition graph not yet wired (Phase 2)
-        // - graphenegate-readiness: depot layout + deploy script (eastGate-local)
-        // Wave 139a: ironGate deployment context.
-        // eastGate: aarch64 depot directory absent locally (1 check)
+        // Wave 147c: sporeprint-pure-primal-parity resolved (Wave 147b).
+        // graphenegate-readiness: aarch64 depot directory absent locally (1 check)
         const KNOWN_DEBT: &[(&str, u32)] = &[
             ("graphenegate-readiness", 1),
         ];
