@@ -62,10 +62,12 @@ fn phase_structural(v: &mut ValidationResult) {
         "footPrint SPA surface declared LIVE",
     );
 
+    let has_url = FP_COMP_TOML.contains("footprint.primals.eco")
+        || FP_COMP_TOML.contains("primals.eco/footprint/");
     v.check_bool(
         "wan:fp_spa_url",
-        FP_COMP_TOML.contains("primals.eco/footprint/"),
-        "SPA URL = primals.eco/footprint/",
+        has_url,
+        "SPA URL references footprint.primals.eco or primals.eco/footprint/",
     );
 
     v.check_bool(
@@ -137,7 +139,32 @@ fn phase_live(v: &mut ValidationResult) {
 
     v.check_bool("wan:live:golgi_tls", true, "golgi:443 TCP reachable");
 
+    // Wave 150d: subdomain standard — compositions use prefix.primals.eco
     let fp_ok = std::process::Command::new("curl")
+        .args([
+            "-s",
+            "-o",
+            "/dev/null",
+            "-w",
+            "%{http_code}",
+            "--max-time",
+            "5",
+            "https://footprint.primals.eco/",
+        ])
+        .output()
+        .is_ok_and(|o| String::from_utf8_lossy(&o.stdout).trim() == "200");
+
+    v.check_bool(
+        "wan:live:footprint_200",
+        fp_ok,
+        &format!(
+            "footprint.primals.eco → {}",
+            if fp_ok { "200 OK" } else { "NOT 200" }
+        ),
+    );
+
+    // Verify old path-based URL redirects (subdomain migration)
+    let fp_redirect = std::process::Command::new("curl")
         .args([
             "-s",
             "-o",
@@ -149,14 +176,17 @@ fn phase_live(v: &mut ValidationResult) {
             "https://primals.eco/footprint/",
         ])
         .output()
-        .is_ok_and(|o| String::from_utf8_lossy(&o.stdout).trim() == "200");
+        .is_ok_and(|o| {
+            let code = String::from_utf8_lossy(&o.stdout).trim().to_string();
+            code == "301" || code == "302"
+        });
 
     v.check_bool(
-        "wan:live:footprint_200",
-        fp_ok,
+        "wan:live:footprint_redirect",
+        fp_redirect,
         &format!(
             "primals.eco/footprint/ → {}",
-            if fp_ok { "200 OK" } else { "NOT 200" }
+            if fp_redirect { "301 redirect (subdomain migration)" } else { "NOT redirecting" }
         ),
     );
 }
