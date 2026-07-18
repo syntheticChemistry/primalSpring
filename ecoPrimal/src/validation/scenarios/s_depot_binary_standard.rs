@@ -205,7 +205,7 @@ fn phase_static_linkage(v: &mut ValidationResult, depot: Option<&PathBuf>) {
         v.check_bool(
             "depot-std:static_linkage",
             statically_linked == checked,
-            &format!("{statically_linked}/{checked} binaries are statically linked",),
+            &format!("{statically_linked}/{checked} binaries are statically linked"),
         );
     } else {
         v.check_skip("depot-std:static_linkage", "no binaries found to check");

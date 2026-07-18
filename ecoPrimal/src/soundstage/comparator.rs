@@ -186,8 +186,8 @@ mod tests {
 
     #[test]
     fn batch_independence() {
-        let sessions: Vec<SessionRecord> = (0..5)
-            .map(|i| make_session(&format!("s{i}"), "user", (i * 31 + 7) as u8))
+        let sessions: Vec<SessionRecord> = (0..5_u8)
+            .map(|i| make_session(&format!("s{i}"), "user", i * 31 + 7))
             .collect();
 
         assert!(Comparator::all_independent(&sessions));

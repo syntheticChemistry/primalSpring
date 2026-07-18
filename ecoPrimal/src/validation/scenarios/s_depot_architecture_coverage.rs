@@ -87,8 +87,7 @@ fn phase_live(v: &mut ValidationResult) {
             &format!("{DEPOT_BASE}/x86_64-unknown-linux-musl/songbird"),
         ])
         .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).contains("200"))
-        .unwrap_or(false);
+        .is_ok_and(|o| String::from_utf8_lossy(&o.stdout).contains("200"));
 
     if !depot_reachable {
         v.check_skip(
@@ -115,8 +114,7 @@ fn phase_live(v: &mut ValidationResult) {
         let exists = std::process::Command::new("curl")
             .args(["-sI", "--max-time", "5", &url])
             .output()
-            .map(|o| String::from_utf8_lossy(&o.stdout).contains("200"))
-            .unwrap_or(false);
+            .is_ok_and(|o| String::from_utf8_lossy(&o.stdout).contains("200"));
 
         v.check_bool(
             &format!("depot:live:{}", arch.split('-').next().unwrap_or("unknown")),
@@ -135,8 +133,7 @@ fn phase_live(v: &mut ValidationResult) {
                 let bin_exists = std::process::Command::new("curl")
                     .args(["-sI", "--max-time", "3", &bin_url])
                     .output()
-                    .map(|o| String::from_utf8_lossy(&o.stdout).contains("200"))
-                    .unwrap_or(false);
+                    .is_ok_and(|o| String::from_utf8_lossy(&o.stdout).contains("200"));
                 if bin_exists {
                     found += 1;
                 } else {

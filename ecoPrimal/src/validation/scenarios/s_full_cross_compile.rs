@@ -173,11 +173,9 @@ fn phase_live_checksums(v: &mut ValidationResult) {
     );
 
     // Threshold: 85% allows pre-harvest state; raises to 100% post-harvest
-    let coverage_pct = if total_expected > 0 {
-        (total_present * 100) / total_expected
-    } else {
-        0
-    };
+    let coverage_pct = (total_present * 100)
+        .checked_div(total_expected)
+        .unwrap_or(0);
     v.check_bool(
         "xcompile:live:coverage_threshold",
         coverage_pct >= 85,

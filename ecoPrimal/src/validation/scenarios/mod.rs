@@ -459,9 +459,10 @@ mod tests {
 
     #[test]
     fn registry_all_rust_tier_pass() {
-        // Wave 148b: sporeprint-pure-primal-parity passes (composition graph present).
-        // graphenegate-readiness: aarch64 depot directory absent on eastGate
-        const KNOWN_DEBT: &[(&str, u32)] = &[("graphenegate-readiness", 1)];
+        // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
+        // On non-depot gates (eastGate), the binaries are absent → 14 failures
+        // (13 individual binary checks + 1 aggregate "all_13_present").
+        const KNOWN_DEBT: &[(&str, u32)] = &[("graphenegate-readiness", 14)];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();

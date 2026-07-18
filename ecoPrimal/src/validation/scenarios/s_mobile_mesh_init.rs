@@ -209,8 +209,7 @@ fn phase_live_adb(v: &mut ValidationResult) {
     let adb_available = std::process::Command::new("adb")
         .arg("devices")
         .output()
-        .map(|o| o.status.success() && String::from_utf8_lossy(&o.stdout).contains("device"))
-        .unwrap_or(false);
+        .is_ok_and(|o| o.status.success() && String::from_utf8_lossy(&o.stdout).contains("device"));
 
     if !adb_available {
         v.check_skip(

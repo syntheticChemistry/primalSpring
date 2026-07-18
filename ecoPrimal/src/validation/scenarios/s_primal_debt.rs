@@ -227,6 +227,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::float_cmp)]
     fn debt_cap_resolves_from_manifest() {
         let cap = debt_cap_for_gate("sporeGate");
         assert_eq!(

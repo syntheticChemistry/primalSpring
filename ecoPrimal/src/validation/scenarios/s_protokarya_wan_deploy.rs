@@ -149,8 +149,7 @@ fn phase_live(v: &mut ValidationResult) {
             "https://primals.eco/footprint/",
         ])
         .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim() == "200")
-        .unwrap_or(false);
+        .is_ok_and(|o| String::from_utf8_lossy(&o.stdout).trim() == "200");
 
     v.check_bool(
         "wan:live:footprint_200",
