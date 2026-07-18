@@ -4,7 +4,7 @@
 //! Scenario: Provenance Cross-Gate Verification — validates the Nest
 //! provenance pipeline over the WAN mesh.
 //!
-//! RhizoCrypt DAG → LoamSpine ledger → SweetGrass attribution witness must
+//! `RhizoCrypt` DAG → `LoamSpine` ledger → `SweetGrass` attribution witness must
 //! be verifiable from a remote gate. Phase 1 (Structural): provenance trio
 //! model. Phase 2 (Structural): cross-gate model. Phase 3 (Live): remote probes.
 

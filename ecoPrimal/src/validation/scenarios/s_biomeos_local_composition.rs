@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: BiomeOS Local Composition — local deploy graph validation.
+//! Scenario: `BiomeOS` Local Composition — local deploy graph validation.
 //!
-//! Validates BiomeOS composition from the local gate (eastGate):
+//! Validates `BiomeOS` composition from the local gate (eastGate):
 //! 1. Local primals declared in the deploy graph match deployable set
 //! 2. Ephemeral compute model: topology valid if sporeGate unplugs
 //! 3. Cross-gate dispatch: requests route correctly from local gate
@@ -20,7 +20,7 @@ const DEPLOY_GRAPH: &str =
     include_str!("../../../../graphs/multi_node/five_gate_sovereign_mesh.toml");
 const TOPOLOGY_TOML: &str = include_str!("../../../../config/mesh_topology.toml");
 
-/// BiomeOS local composition scenario metadata.
+/// `BiomeOS` local composition scenario metadata.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "biomeos-local-composition",
@@ -52,7 +52,7 @@ const IRONGATE_PRIMALS: &[&str] = &[
     primal_names::CORALREEF,
 ];
 
-/// Run all BiomeOS local composition phases.
+/// Run all `BiomeOS` local composition phases.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Phase 1: Local gate primal binding");
     phase_local_binding(v);

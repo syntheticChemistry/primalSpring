@@ -12,7 +12,7 @@ use crate::composition::{CompositionContext, capability_to_primal, method_to_cap
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-/// Routing consistency scenario — Tier::Rust structural check.
+/// Routing consistency scenario — `Tier::Rust` structural check.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "routing-consistency",

@@ -4,9 +4,9 @@
 //! Scenario: Observatory Parity — validates that biomeOS observatory RPCs return
 //! data consistent with primalSpring's local routing model.
 //!
-//! Exercises the Layer 4 observatory surface: routing_weights, route_explain,
-//! composition_patterns, plan_tier. Cross-references against the local
-//! NeuralRoutingTable to verify parity.
+//! Exercises the Layer 4 observatory surface: `routing_weights`, `route_explain`,
+//! `composition_patterns`, `plan_tier`. Cross-references against the local
+//! `NeuralRoutingTable` to verify parity.
 
 use crate::composition::CompositionContext;
 use crate::composition::neural_routing::{CompositionTier, canonical_routing_table};
@@ -14,7 +14,7 @@ use crate::ipc::neural_bridge::NeuralBridge;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-/// Observatory parity scenario — Tier::Live, validates biomeOS observatory RPCs.
+/// Observatory parity scenario — `Tier::Live`, validates biomeOS observatory RPCs.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "observatory-parity",

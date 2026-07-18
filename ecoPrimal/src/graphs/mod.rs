@@ -19,11 +19,11 @@ pub enum CoordinationDomain {
     /// 4 particle tiers (Tower/Node/Nest/Meta). `signal.dispatch` collapses
     /// N-squared primal calls to one semantic invocation.
     Signal,
-    /// ACTION — create, mutate, prove. Emergent VCS (RootPulse) over the
+    /// ACTION — create, mutate, prove. Emergent VCS (`RootPulse`) over the
     /// provenance trio. commit/branch/merge/diff/federate composed from
-    /// rhizoCrypt + loamSpine + sweetGrass + BearDog + NestGate + Songbird.
+    /// rhizoCrypt + loamSpine + sweetGrass + `BearDog` + `NestGate` + Songbird.
     Pulse,
-    /// SYNC — maintain ecosystem coherence across gates. WaterFall cascade
+    /// SYNC — maintain ecosystem coherence across gates. `WaterFall` cascade
     /// sync through the VPS periplasm. Evolving from bash to Neural API
     /// `ecosystem` signal tier.
     Fall,

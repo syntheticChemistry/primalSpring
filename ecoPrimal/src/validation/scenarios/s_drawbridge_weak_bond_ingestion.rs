@@ -2,12 +2,12 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Drawbridge Weak Bond Ingestion — validates the data ingestion
-//! pipeline from external sources through drawbridge weak bonds into NestGate CAS.
+//! pipeline from external sources through drawbridge weak bonds into `NestGate` CAS.
 //!
 //! Wave 138a architecture:
-//! - External data (USGS, ArcGIS, NF Portal, Pluto.bio, LINCS) enters via
+//! - External data (USGS, `ArcGIS`, NF Portal, Pluto.bio, LINCS) enters via
 //!   drawbridge weak bonds — minimal trust, maximum provenance
-//! - Data lands in NestGate CAS with BLAKE3 content-addressing + Loam Certificates
+//! - Data lands in `NestGate` CAS with BLAKE3 content-addressing + Loam Certificates
 //! - Downstream primals consume data via capability.call (zero trust, full lineage)
 //! - Weak bonds are the universal data ingestion point for all protoKarya projects
 //!
@@ -17,8 +17,8 @@
 //! 3. Provenance chain: certificate → anchor → proof → attribution
 //! 4. Cross-project availability: data ingested once, consumed many
 
-use crate::composition::neural_routing::canonical_routing_table;
 use crate::composition::CompositionContext;
+use crate::composition::neural_routing::canonical_routing_table;
 use crate::primal_names;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -33,8 +33,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "wave138a_weak_bond_ingestion",
         provenance_date: "2026-07-14",
-        description:
-            "Drawbridge weak bond ingestion — external data → drawbridge → NestGate CAS → mesh capabilities",
+        description: "Drawbridge weak bond ingestion — external data → drawbridge → NestGate CAS → mesh capabilities",
     },
     run,
 };
@@ -167,8 +166,7 @@ fn phase_multi_consume(v: &mut ValidationResult) {
     let content_get = table.route("content.get");
     let storage_fetch = table.route("storage.fetch");
 
-    let both_nestgate = content_get
-        .is_some_and(|r| r.owner.as_ref() == primal_names::NESTGATE)
+    let both_nestgate = content_get.is_some_and(|r| r.owner.as_ref() == primal_names::NESTGATE)
         && storage_fetch.is_some_and(|r| r.owner.as_ref() == primal_names::NESTGATE);
 
     v.check_bool(

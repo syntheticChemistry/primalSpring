@@ -8,11 +8,26 @@ use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
 const PROFILE_PATHS: &[(&str, &str)] = &[
-    ("tower_atomic", include_str!("../../../../config/profiles/tower_atomic.toml")),
-    ("nest_atomic", include_str!("../../../../config/profiles/nest_atomic.toml")),
-    ("full_nucleus", include_str!("../../../../config/profiles/full_nucleus.toml")),
-    ("compute_heavy", include_str!("../../../../config/profiles/compute_heavy.toml")),
-    ("edge_light", include_str!("../../../../config/profiles/edge_light.toml")),
+    (
+        "tower_atomic",
+        include_str!("../../../../config/profiles/tower_atomic.toml"),
+    ),
+    (
+        "nest_atomic",
+        include_str!("../../../../config/profiles/nest_atomic.toml"),
+    ),
+    (
+        "full_nucleus",
+        include_str!("../../../../config/profiles/full_nucleus.toml"),
+    ),
+    (
+        "compute_heavy",
+        include_str!("../../../../config/profiles/compute_heavy.toml"),
+    ),
+    (
+        "edge_light",
+        include_str!("../../../../config/profiles/edge_light.toml"),
+    ),
 ];
 
 /// Composition profiles scenario.
@@ -70,7 +85,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "profiles:all_parse",
         parsed_count == PROFILE_PATHS.len(),
-        &format!("{parsed_count}/{} profiles parse successfully", PROFILE_PATHS.len()),
+        &format!(
+            "{parsed_count}/{} profiles parse successfully",
+            PROFILE_PATHS.len()
+        ),
     );
 }
 

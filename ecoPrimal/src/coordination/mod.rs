@@ -59,7 +59,7 @@ impl FromStr for AtomicType {
     type Err = UnknownAtomicType;
 
     /// Accepts both lowercase CLI form (`tower`, `nucleus`, `full`) and
-    /// PascalCase JSON-RPC form (`Tower`, `FullNucleus`, `Full`).
+    /// `PascalCase` JSON-RPC form (`Tower`, `FullNucleus`, `Full`).
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "micro" | "Micro" => Ok(Self::Micro),

@@ -62,7 +62,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "crypto:breadth",
         crypto_registered >= 6,
-        &format!("{crypto_registered}/{} crypto methods present", CRYPTO_METHODS.len()),
+        &format!(
+            "{crypto_registered}/{} crypto methods present",
+            CRYPTO_METHODS.len()
+        ),
     );
 
     v.section("Phase 2: Key infrastructure methods");

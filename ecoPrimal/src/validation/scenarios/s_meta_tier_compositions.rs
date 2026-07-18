@@ -8,7 +8,7 @@
 //! capability routing for AI/visualization/orchestration domains, and
 //! the intent->plan->dispatch->render cycle.
 //!
-//! All checks are Tier::Rust — no live primals required.
+//! All checks are `Tier::Rust` — no live primals required.
 
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;

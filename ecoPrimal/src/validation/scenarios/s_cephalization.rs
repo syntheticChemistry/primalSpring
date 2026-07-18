@@ -6,7 +6,7 @@
 //! Validates readiness for migrating flat domain sockets into primal-scoped
 //! directories (`biomeos/beardog/crypto.sock` instead of `biomeos/crypto.sock`).
 //!
-//! Tier::Both — structural ownership mapping always runs; live socket census
+//! `Tier::Both` — structural ownership mapping always runs; live socket census
 //! requires deployed primals.
 
 use crate::composition::CompositionContext;

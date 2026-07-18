@@ -24,9 +24,9 @@ use crate::tolerances;
 /// Classified transport signal tier from connection prefix.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SignalTier {
-    /// `[0xEC, 0x01]` — MitoBeacon clear tier. Proceed with plaintext JSON-RPC.
+    /// `[0xEC, 0x01]` — `MitoBeacon` clear tier. Proceed with plaintext JSON-RPC.
     Clear,
-    /// `[0xED, version]` — MitoBeacon obfuscated. Tunnel negotiation required.
+    /// `[0xED, version]` — `MitoBeacon` obfuscated. Tunnel negotiation required.
     MitoObfuscated,
     /// `[0xEE, version]` — Nuclear sealed. Per-session key exchange required.
     NuclearSealed,

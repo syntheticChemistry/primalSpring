@@ -2,7 +2,7 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Primal Debt — detects missing modules from the composition by
-//! comparing the FullNucleus capability roster against what is actually
+//! comparing the `FullNucleus` capability roster against what is actually
 //! discoverable on the local gate.
 //!
 //! "Debt" here means: a capability that the NUCLEUS composition *requires*
@@ -10,7 +10,7 @@
 //! running, or health probe fails).
 //!
 //! This scenario:
-//! 1. Enumerates the full 13-capability roster from AtomicType::FullNucleus
+//! 1. Enumerates the full 13-capability roster from `AtomicType::FullNucleus`
 //! 2. Probes each capability's discovery status
 //! 3. For discovered capabilities, performs a health.liveness check
 //! 4. Tracks debt ratio: (total - live) / total
@@ -21,7 +21,7 @@ use crate::coordination::AtomicType;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-/// Primal debt: missing capabilities from FullNucleus composition.
+/// Primal debt: missing capabilities from `FullNucleus` composition.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "primal-debt",
@@ -229,15 +229,24 @@ mod tests {
     #[test]
     fn debt_cap_resolves_from_manifest() {
         let cap = debt_cap_for_gate("sporeGate");
-        assert_eq!(cap, crate::tolerances::DEBT_CAP_NEST_PCT,
-            "sporeGate has build_hub/depot roles → tightest ceiling");
+        assert_eq!(
+            cap,
+            crate::tolerances::DEBT_CAP_NEST_PCT,
+            "sporeGate has build_hub/depot roles → tightest ceiling"
+        );
 
         let cap = debt_cap_for_gate("eastGate");
-        assert_eq!(cap, crate::tolerances::DEBT_CAP_REFERENCE_PCT,
-            "eastGate has composition=full, no provenance role → reference");
+        assert_eq!(
+            cap,
+            crate::tolerances::DEBT_CAP_REFERENCE_PCT,
+            "eastGate has composition=full, no provenance role → reference"
+        );
 
         let cap = debt_cap_for_gate("unknown_gate_xyz");
-        assert_eq!(cap, crate::tolerances::DEBT_CAP_DEFAULT_PCT,
-            "unknown gate → default fallback");
+        assert_eq!(
+            cap,
+            crate::tolerances::DEBT_CAP_DEFAULT_PCT,
+            "unknown gate → default fallback"
+        );
     }
 }

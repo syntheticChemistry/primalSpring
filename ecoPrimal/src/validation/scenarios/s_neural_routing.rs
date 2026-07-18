@@ -14,7 +14,7 @@ use crate::composition::neural_routing::{CompositionTier, canonical_routing_tabl
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-/// Neural routing surface scenario — Tier::Rust structural check.
+/// Neural routing surface scenario — `Tier::Rust` structural check.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "neural-routing-surface",

@@ -12,7 +12,7 @@ use crate::composition::neural_routing::CompositionTier;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-/// Neural dispatch live scenario — Tier::Live, validates dispatch through biomeOS.
+/// Neural dispatch live scenario — `Tier::Live`, validates dispatch through biomeOS.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "neural-dispatch-live",

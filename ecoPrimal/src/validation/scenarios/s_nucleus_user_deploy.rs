@@ -6,7 +6,7 @@
 //!
 //! The user systemd pattern (`membrane-nucleus@.service` template) is the
 //! standard for gate enrollment. It avoids sudo for NUCLEUS lifecycle while
-//! keeping WireGuard and nftables as root-level infrastructure.
+//! keeping `WireGuard` and nftables as root-level infrastructure.
 //!
 //! This scenario validates:
 //! 1. User systemd units are loaded and active

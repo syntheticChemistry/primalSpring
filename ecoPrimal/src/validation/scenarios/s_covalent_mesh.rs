@@ -9,10 +9,10 @@
 //! 2. Discovery: `discovery.peers` via Songbird TCP :7700
 //! 3. Cross-gate dispatch: `capability.call` transparent routing
 //! 4. Security: bearDog BTSP cross-gate token validation
-//! 5. Content integrity: NestGate federation BLAKE3 end-to-end
+//! 5. Content integrity: `NestGate` federation BLAKE3 end-to-end
 //! 6. Dark Forest invariants: isolation + reversibility
 //!
-//! Tier::Both — structural checks pass without primals, live checks
+//! `Tier::Both` — structural checks pass without primals, live checks
 //! gracefully skip when federation is unavailable.
 
 use crate::composition::CompositionContext;

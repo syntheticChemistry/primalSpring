@@ -11,7 +11,7 @@
 //! Phases:
 //! 1. Manifest: `gpu_target` declared for GPU gates, dual-target model
 //! 2. Capability coverage: tensor/ml/nautilus/shader/compute methods breadth
-//! 3. Precision model: f64 native support, SHADER_F64, precision tiers
+//! 3. Precision model: f64 native support, `SHADER_F64`, precision tiers
 //! 4. Pipeline routing: eastGate → ironGate dispatch path validated
 //! 5. Live: GPU primal health + tensor create + ml dispatch readiness
 

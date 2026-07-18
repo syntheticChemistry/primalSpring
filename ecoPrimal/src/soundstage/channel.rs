@@ -62,6 +62,7 @@ pub struct Channel {
 }
 
 impl Channel {
+    #[must_use]
     pub fn new(anchor: Anchor) -> Self {
         Self {
             anchor,
@@ -126,16 +127,19 @@ impl Channel {
     }
 
     /// All events captured on this channel.
+    #[must_use]
     pub fn events(&self) -> &[ChannelEvent] {
         &self.events
     }
 
     /// Consume the channel and return its events.
+    #[must_use]
     pub fn into_events(self) -> Vec<ChannelEvent> {
         self.events
     }
 
     /// Total data bytes observed on this channel.
+    #[must_use]
     pub fn total_bytes(&self) -> usize {
         self.events
             .iter()
@@ -145,6 +149,7 @@ impl Channel {
     }
 
     /// Number of contributions (entropy flowing to mix bus).
+    #[must_use]
     pub fn contribution_count(&self) -> usize {
         self.events
             .iter()
@@ -154,6 +159,7 @@ impl Channel {
 }
 
 /// Shannon entropy (public for use by session module).
+#[must_use]
 pub fn shannon_entropy_pub(data: &[u8]) -> f64 {
     shannon_entropy(data)
 }
@@ -212,14 +218,20 @@ mod tests {
     fn shannon_entropy_uniform() {
         let data: Vec<u8> = (0..=255).collect();
         let e = shannon_entropy(&data);
-        assert!((e - 8.0).abs() < 0.001, "uniform data should have ~8.0 bits/byte, got {e}");
+        assert!(
+            (e - 8.0).abs() < 0.001,
+            "uniform data should have ~8.0 bits/byte, got {e}"
+        );
     }
 
     #[test]
     fn shannon_entropy_constant() {
         let data = vec![0x42; 100];
         let e = shannon_entropy(&data);
-        assert!(e < 0.001, "constant data should have ~0.0 bits/byte, got {e}");
+        assert!(
+            e < 0.001,
+            "constant data should have ~0.0 bits/byte, got {e}"
+        );
     }
 
     #[test]

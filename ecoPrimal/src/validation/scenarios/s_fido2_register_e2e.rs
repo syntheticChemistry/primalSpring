@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: FIDO2 Register E2E — MakeCredential → valid credential_id + COSE key.
+//! Scenario: FIDO2 Register E2E — `MakeCredential` → valid `credential_id` + COSE key.
 //!
 //! Validates the full FIDO2 credential registration flow:
 //! - Phase 1 (Structural): CBOR command construction matches CTAP2 spec
-//! - Phase 2 (Structural): Response parsing extracts credential_id and public key
-//! - Phase 3 (Live): Physical SoloKey MakeCredential when `/dev/hidraw*` present
+//! - Phase 2 (Structural): Response parsing extracts `credential_id` and public key
+//! - Phase 3 (Live): Physical `SoloKey` `MakeCredential` when `/dev/hidraw*` present
 //!
-//! Dual-mode: runs structural phases always, live phase only on gates with SoloKey.
+//! Dual-mode: runs structural phases always, live phase only on gates with `SoloKey`.
 
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
@@ -39,11 +39,19 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 
 fn phase_cbor_construction(v: &mut ValidationResult) {
     // CTAP2 MakeCredential command byte is 0x01
-    v.check_bool("makecred:cmd_byte", true, "MakeCredential command byte is 0x01");
+    v.check_bool(
+        "makecred:cmd_byte",
+        true,
+        "MakeCredential command byte is 0x01",
+    );
 
     // RP entity requires id field
     let rp_id: &str = "primals.eco";
-    v.check_bool("rp:id_valid", rp_id.contains('.'), "RP entity has valid id (domain format)");
+    v.check_bool(
+        "rp:id_valid",
+        rp_id.contains('.'),
+        "RP entity has valid id (domain format)",
+    );
 
     // Client data hash must be 32 bytes
     let client_data_hash = [0u8; 32];
@@ -63,7 +71,11 @@ fn phase_cbor_construction(v: &mut ValidationResult) {
 
     // User entity requires id (non-empty byte string ≥ 1 byte)
     let user_id: &[u8] = b"eco-user-001";
-    v.check_bool("user:id_nonempty", user_id.starts_with(b"eco"), "User entity has non-empty id");
+    v.check_bool(
+        "user:id_nonempty",
+        user_id.starts_with(b"eco"),
+        "User entity has non-empty id",
+    );
 
     // Options map: rk and up are valid booleans
     v.check_bool("options:rk_flag", true, "Options map supports rk flag");
@@ -115,13 +127,20 @@ fn phase_live_register(v: &mut ValidationResult) {
         || std::path::Path::new("/dev/hidraw0").exists();
 
     if !has_hidraw {
-        v.check_skip("live:skipped", "No /dev/hidraw device — skipping live MakeCredential");
+        v.check_skip(
+            "live:skipped",
+            "No /dev/hidraw device — skipping live MakeCredential",
+        );
         return;
     }
 
     // Live phase would call beardog.fido2.register via IPC
     // For now, validate that the device path is accessible
-    v.check_bool("live:hidraw_exists", has_hidraw, "HID device path exists for live test");
+    v.check_bool(
+        "live:hidraw_exists",
+        has_hidraw,
+        "HID device path exists for live test",
+    );
     v.check_bool(
         "live:deferred",
         true,

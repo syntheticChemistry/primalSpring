@@ -14,7 +14,7 @@
 //!   methods through Nest signal graphs, etc. Standalone methods dispatch
 //!   directly.
 //!
-//! - **Composition dispatch**: named patterns like "rootpulse_commit" can be
+//! - **Composition dispatch**: named patterns like "`rootpulse_commit`" can be
 //!   executed as a single `graph.execute` call, composing multiple primals.
 //!
 //! - **Metrics**: each dispatch records latency and outcome for future
@@ -88,13 +88,13 @@ pub enum RoutePath {
     GraphExecute,
     /// Method not found in routing table.
     Unresolved,
-    /// NeuralBridge not available (biomeOS not running).
+    /// `NeuralBridge` not available (biomeOS not running).
     Offline,
 }
 
 /// High-level neural dispatch surface.
 ///
-/// Wraps the routing table and optional NeuralBridge to provide method
+/// Wraps the routing table and optional `NeuralBridge` to provide method
 /// dispatch across the full capability method surface. When biomeOS is running,
 /// dispatches go through `capability.call`. When offline, returns structured
 /// errors that downstream can handle gracefully.
@@ -155,7 +155,7 @@ impl NeuralDispatcher {
     ///
     /// Resolution order:
     /// 1. Look up method in routing table → get owner, domain, tier
-    /// 2. If NeuralBridge available, dispatch via `capability.call`
+    /// 2. If `NeuralBridge` available, dispatch via `capability.call`
     /// 3. Record metrics for adaptive routing
     pub fn dispatch(&mut self, method: &str, params: &serde_json::Value) -> DispatchOutcome {
         let start = Instant::now();

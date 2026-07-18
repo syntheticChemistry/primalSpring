@@ -2,7 +2,7 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: FIDO2 Tap-Sequence Entropy Ceremony — validates the multi-tap
-//! entropy harvest pipeline from SoloKey through bearDog's `beardog.fido2.ceremony`
+//! entropy harvest pipeline from `SoloKey` through bearDog's `beardog.fido2.ceremony`
 //! IPC method.
 //!
 //! Wave 138b: bearDog now exposes `beardog.fido2.ceremony` which loops N
@@ -10,18 +10,18 @@
 //!
 //! - Tier 1: fresh OS-RNG challenge per tap (32 bytes)
 //! - Tier 2: ES256 signature with hardware RNG nonce (~64 bytes)
-//! - Tier 3: human motor timing jitter (reaction_ns, inter-tap intervals)
+//! - Tier 3: human motor timing jitter (`reaction_ns`, inter-tap intervals)
 //!
 //! All mixed via BLAKE3 keyed hash into 32 bytes of multi-source entropy.
 //!
 //! This scenario validates:
 //! 1. `beardog.fido2.ceremony` method is registered and routed
-//! 2. Ceremony IPC response schema conforms (entropy, timing_summary, tier)
-//! 3. Entropy mixing sources are declared (os_rng, fido2_hardware, human_temporal)
+//! 2. Ceremony IPC response schema conforms (entropy, `timing_summary`, tier)
+//! 3. Entropy mixing sources are declared (`os_rng`, `fido2_hardware`, `human_temporal`)
 //! 4. Live probe: if bearDog is reachable, call ceremony with mock params
 
-use crate::composition::neural_routing::canonical_routing_table;
 use crate::composition::CompositionContext;
+use crate::composition::neural_routing::canonical_routing_table;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -90,10 +90,7 @@ fn phase_ceremony_routing(v: &mut ValidationResult) {
 
     let ceremony_route = table.route("beardog.fido2.ceremony");
     let routed = ceremony_route.is_some();
-    let owner = ceremony_route.map_or_else(
-        || "UNROUTED".to_string(),
-        |r| r.owner.to_string(),
-    );
+    let owner = ceremony_route.map_or_else(|| "UNROUTED".to_string(), |r| r.owner.to_string());
     v.check_bool(
         "ceremony-tap:routed",
         routed,
@@ -184,15 +181,14 @@ fn phase_live_probe(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         return;
     }
 
-    let discover = ctx.call(
-        "crypto",
-        "beardog.fido2.discover",
-        serde_json::json!({}),
-    );
+    let discover = ctx.call("crypto", "beardog.fido2.discover", serde_json::json!({}));
 
     match discover {
         Ok(resp) => {
-            let count = resp.get("count").and_then(serde_json::Value::as_u64).unwrap_or(0);
+            let count = resp
+                .get("count")
+                .and_then(serde_json::Value::as_u64)
+                .unwrap_or(0);
             v.check_bool(
                 "ceremony-tap:live_fido2_available",
                 count > 0,
@@ -262,7 +258,8 @@ mod tests {
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
         assert_eq!(
-            v.failed, 0,
+            v.failed,
+            0,
             "fido2-ceremony-tap-sequence failed {}/{} checks",
             v.failed,
             v.passed + v.failed + v.skipped

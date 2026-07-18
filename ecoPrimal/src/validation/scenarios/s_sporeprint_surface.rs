@@ -10,8 +10,8 @@
 //! every primal and spring tracked by primalSpring.
 //!
 //! Three phases:
-//!   1. Entity Coverage — config.toml entity_registry covers all primals + springs
-//!   2. Source Consistency — sources.toml entries match entity_registry
+//!   1. Entity Coverage — config.toml `entity_registry` covers all primals + springs
+//!   2. Source Consistency — sources.toml entries match `entity_registry`
 //!   3. Content Contribution — springs with content="true" contribute to the surface
 
 use crate::composition::CompositionContext;

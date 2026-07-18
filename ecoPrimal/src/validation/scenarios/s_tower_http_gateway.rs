@@ -8,7 +8,7 @@
 //! `HotReloadAcceptor`. This scenario validates the structural contract:
 //!
 //! Phases:
-//! 1. Registry: `http.proxy` exists in capability_registry and routes to songBird
+//! 1. Registry: `http.proxy` exists in `capability_registry` and routes to songBird
 //! 2. Security: `security.advisory` + `security.scan` route to skunkBat (bearDog→skunkBat advisory)
 //! 3. Gateway contract: bearDog owns TLS termination (`:443`) and forwards to songBird
 //! 4. Live: http.proxy IPC dispatch + ACME cert probe (requires deployed primals)

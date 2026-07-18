@@ -2,19 +2,19 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: FIDO2 Entropy Ceremony — validates the hardware-backed
-//! entropy pipeline: SoloKey FIDO2 → bearDog → genetic mixing → key material.
+//! entropy pipeline: `SoloKey` FIDO2 → bearDog → genetic mixing → key material.
 //!
-//! Wave 138a: SoloKey USB on eastGate provides Tier 2 hardware entropy via
+//! Wave 138a: `SoloKey` USB on eastGate provides Tier 2 hardware entropy via
 //! CTAP2 hmac-secret. This scenario validates the structural prerequisites:
 //!
 //! 1. FIDO2 capability domain registered and routed to bearDog
 //! 2. Genetic ceremony methods exist for entropy mixing
 //! 3. Entropy flow: FIDO2 discover → register → contribute → mix
-//! 4. Key derivation chain: entropy → ceremony_init → derive_key → finalize
+//! 4. Key derivation chain: entropy → `ceremony_init` → `derive_key` → finalize
 //! 5. Live FIDO2 probe when hardware is available
 
-use crate::composition::neural_routing::canonical_routing_table;
 use crate::composition::CompositionContext;
+use crate::composition::neural_routing::canonical_routing_table;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -45,8 +45,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave138a_fido2_ceremony",
         provenance_date: "2026-07-13",
-        description:
-            "FIDO2 entropy ceremony — SoloKey CTAP2 → bearDog → genetic mixing → key derivation",
+        description: "FIDO2 entropy ceremony — SoloKey CTAP2 → bearDog → genetic mixing → key derivation",
     },
     run,
 };
@@ -171,10 +170,16 @@ fn phase_entropy_flow(v: &mut ValidationResult) {
         );
     }
 
-    let all_same_owner = [ceremony_init, entropy_contribute, mix_entropy, derive_key, ceremony_finalize]
-        .iter()
-        .filter_map(|r| r.as_ref())
-        .all(|r| r.owner.as_ref() == "beardog");
+    let all_same_owner = [
+        ceremony_init,
+        entropy_contribute,
+        mix_entropy,
+        derive_key,
+        ceremony_finalize,
+    ]
+    .iter()
+    .filter_map(|r| r.as_ref())
+    .all(|r| r.owner.as_ref() == "beardog");
 
     v.check_bool(
         "fido2-ceremony:flow_single_authority",
@@ -192,16 +197,16 @@ fn phase_live_probe(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         has_crypto,
         &format!(
             "crypto capability: {}",
-            if has_crypto { "available" } else { "offline (structural only)" }
+            if has_crypto {
+                "available"
+            } else {
+                "offline (structural only)"
+            }
         ),
     );
 
     if has_crypto {
-        let discover = ctx.call(
-            "crypto",
-            "beardog.fido2.discover",
-            serde_json::json!({}),
-        );
+        let discover = ctx.call("crypto", "beardog.fido2.discover", serde_json::json!({}));
         v.check_bool(
             "fido2-ceremony:live_fido2_discover",
             discover.is_ok(),
@@ -226,7 +231,11 @@ fn phase_live_probe(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             status.is_ok(),
             &format!(
                 "ceremony_init(tier=2): {}",
-                if status.is_ok() { "responded" } else { "unavailable" }
+                if status.is_ok() {
+                    "responded"
+                } else {
+                    "unavailable"
+                }
             ),
         );
     }

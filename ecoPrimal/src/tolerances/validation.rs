@@ -48,7 +48,7 @@ pub const MIN_REGISTERED_METHODS: usize = 450;
 
 /// Maximum WAN IPC health-check latency (ms).
 ///
-/// Source: 2000ms generous ceiling for cross-WAN health probes over WireGuard.
+/// Source: 2000ms generous ceiling for cross-WAN health probes over `WireGuard`.
 /// Used by: `s_wan_ipc_tolerance`.
 pub const WAN_HEALTH_MAX_MS: u64 = 2000;
 
@@ -60,7 +60,7 @@ pub const WAN_HEALTH_SAMPLE_COUNT: usize = 3;
 
 /// TCP connect timeout for validation scenario port probes (milliseconds).
 ///
-/// Source: 3000ms covers WAN WireGuard RTT plus TCP handshake for cross-gate
+/// Source: 3000ms covers WAN `WireGuard` RTT plus TCP handshake for cross-gate
 /// primal port probes. Used by: `s_flockgate_tower_wan`, `s_mesh_topology`.
 pub const SCENARIO_TCP_PROBE_TIMEOUT_MS: u64 = 3000;
 

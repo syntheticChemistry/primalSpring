@@ -5,7 +5,7 @@
 //!
 //! Rust absorption of `tools/nucleus_crypto_bootstrap.sh`. Provides the
 //! same three-tier key derivation (base → family → purpose) using
-//! HMAC-SHA256 via BearDog's JSON-RPC interface, plus round-trip
+//! HMAC-SHA256 via `BearDog`'s JSON-RPC interface, plus round-trip
 //! verification of sign/verify and encrypt/decrypt.
 //!
 //! # Key Derivation Tiers
@@ -20,7 +20,7 @@
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 
-/// Validate crypto bootstrap by verifying BearDog's crypto capabilities.
+/// Validate crypto bootstrap by verifying `BearDog`'s crypto capabilities.
 ///
 /// Checks that the security provider supports the required crypto
 /// operations: `crypto.sign`, `crypto.verify`, `crypto.encrypt`,

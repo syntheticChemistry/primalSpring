@@ -23,7 +23,7 @@
 //!
 //! # Concepts
 //!
-//! - **Channel**: A single entropy source (SoloKey FIDO2, Pixel StrongBox,
+//! - **Channel**: A single entropy source (`SoloKey` FIDO2, Pixel `StrongBox`,
 //!   audio mic, OS getrandom). Each channel has a live signal.
 //! - **Mix bus**: Where channels converge. Shows the mixing operation
 //!   and its output in real time.
@@ -36,7 +36,7 @@
 //!
 //! # Multi-anchor / Multi-user
 //!
-//! Each anchor (SoloKey, YubiKey, StrongBox, audio) is a channel.
+//! Each anchor (`SoloKey`, `YubiKey`, `StrongBox`, audio) is a channel.
 //! Each user gets their own session. Sessions can be compared across
 //! users and across anchor types to validate independence.
 

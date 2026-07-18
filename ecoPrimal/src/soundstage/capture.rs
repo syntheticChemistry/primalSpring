@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! LiveCapture — real-time observation stream from a ceremony.
+//! `LiveCapture` — real-time observation stream from a ceremony.
 //!
 //! `LiveCapture` wraps a ceremony session and provides a stream of
 //! observable events. This is what you'd display in a browser UI or
@@ -21,12 +21,15 @@ pub struct LiveCapture {
 
 impl LiveCapture {
     /// Create a new capture observing a shared session.
-    pub fn new(session: Arc<Mutex<CeremonySession>>) -> Self {
+    pub const fn new(session: Arc<Mutex<CeremonySession>>) -> Self {
         Self { session }
     }
 
     /// Start a new ceremony and return both the session handle and a capture.
-    pub fn begin(id: impl Into<String>, user: impl Into<String>) -> (Arc<Mutex<CeremonySession>>, Self) {
+    pub fn begin(
+        id: impl Into<String>,
+        user: impl Into<String>,
+    ) -> (Arc<Mutex<CeremonySession>>, Self) {
         let session = Arc::new(Mutex::new(CeremonySession::begin(id, user)));
         let capture = Self::new(Arc::clone(&session));
         (session, capture)
@@ -75,6 +78,7 @@ impl LiveCapture {
     }
 
     /// Get a snapshot summary of the current session state.
+    #[must_use]
     pub fn snapshot(&self) -> Option<CaptureSnapshot> {
         let s = self.session.lock().ok()?;
         Some(CaptureSnapshot {

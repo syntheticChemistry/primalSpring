@@ -2,9 +2,9 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: TCP-Only Fallback — validates the server-side transport
-//! binding infrastructure for platforms where UDS is denied (Android SELinux).
+//! binding infrastructure for platforms where UDS is denied (Android `SELinux`).
 //!
-//! Structural phase (Tier::Rust):
+//! Structural phase (`Tier::Rust)`:
 //!   Validates that `server_bind` module exists and functions correctly:
 //!   bind mode parsing, port resolution for all 13 primals, permission
 //!   error detection, and the UDS → TCP fallback chain.
@@ -12,7 +12,7 @@
 //! This scenario is the gate for grapheneGate 13/13: the 4 remaining
 //! primals (coralreef, nestgate, biomeOS, petaltongue) need to adopt
 //! `bind_transport(..., BindMode::Fallback)` to gracefully degrade
-//! from UDS to TCP when SELinux denies `bind()`.
+//! from UDS to TCP when `SELinux` denies `bind()`.
 
 use crate::composition::CompositionContext;
 use crate::ipc::server_bind::{BindError, BindMode, BoundTransport, bind_transport};

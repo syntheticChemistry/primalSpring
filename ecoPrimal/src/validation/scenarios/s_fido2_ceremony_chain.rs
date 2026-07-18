@@ -4,12 +4,12 @@
 //! Scenario: FIDO2 Ceremony Chain — register → authenticate → entropy → Loam cert seed.
 //!
 //! Validates the complete ceremony pipeline that produces a Loam certificate seed:
-//! 1. MakeCredential → credential_id + public key
-//! 2. GetAssertion × N → signatures prove key possession
+//! 1. `MakeCredential` → `credential_id` + public key
+//! 2. `GetAssertion` × N → signatures prove key possession
 //! 3. Entropy harvest → BLAKE3 mixing of all ceremony artifacts
 //! 4. Loam certificate seeding → 32-byte seed for identity certificate
 //!
-//! This is the full chain from "SoloKey tap" to "sovereign identity seed".
+//! This is the full chain from "`SoloKey` tap" to "sovereign identity seed".
 //! The ceremony is atomic: partial completion produces no seed.
 //!
 //! Dual-mode: structural chain validation always, live ceremony only with hardware.
@@ -25,8 +25,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave138b_ceremony_chain",
         provenance_date: "2026-07-14",
-        description:
-            "FIDO2 ceremony chain — register → authenticate → entropy → Loam cert seed (atomic)",
+        description: "FIDO2 ceremony chain — register → authenticate → entropy → Loam cert seed (atomic)",
     },
     run,
 };
@@ -55,10 +54,18 @@ fn phase_ordering(v: &mut ValidationResult) {
         "entropy_harvest",
         "seed_derivation",
     ];
-    v.check_bool("chain:six_steps", steps.len() == 6, "Ceremony has 6 ordered steps");
+    v.check_bool(
+        "chain:six_steps",
+        steps.len() == 6,
+        "Ceremony has 6 ordered steps",
+    );
 
     // Step 1 produces credential_id (required for steps 2-4)
-    v.check_bool("step1:credential_id", true, "Step 1 (register) produces credential_id");
+    v.check_bool(
+        "step1:credential_id",
+        true,
+        "Step 1 (register) produces credential_id",
+    );
 
     // Steps 2-4 require credential_id in allowList
     v.check_bool(
@@ -75,7 +82,11 @@ fn phase_ordering(v: &mut ValidationResult) {
     );
 
     // Step 6 requires the entropy output from step 5
-    v.check_bool("step6:requires_entropy", true, "Step 6 (seed) requires entropy output");
+    v.check_bool(
+        "step6:requires_entropy",
+        true,
+        "Step 6 (seed) requires entropy output",
+    );
 
     // Minimum taps for ceremony: 1 (register) + 3 (authenticate) = 4
     let min_taps = 4;
@@ -88,14 +99,28 @@ fn phase_ordering(v: &mut ValidationResult) {
 
 fn phase_atomicity(v: &mut ValidationResult) {
     // Ceremony state machine: Init → Registering → Authenticating → Harvesting → Complete
-    let states = ["init", "registering", "authenticating", "harvesting", "complete"];
+    let states = [
+        "init",
+        "registering",
+        "authenticating",
+        "harvesting",
+        "complete",
+    ];
     v.check_bool("state:count_5", states.len() == 5, "Ceremony has 5 states");
 
     // Failure at any step rolls back to Init (no partial seeds)
-    v.check_bool("state:failure_resets_init", true, "Failure at any step resets to Init");
+    v.check_bool(
+        "state:failure_resets_init",
+        true,
+        "Failure at any step resets to Init",
+    );
 
     // Timeout at any step (30s CTAP2) triggers rollback
-    v.check_bool("state:timeout_rollback", true, "CTAP2 timeout (30s) triggers rollback");
+    v.check_bool(
+        "state:timeout_rollback",
+        true,
+        "CTAP2 timeout (30s) triggers rollback",
+    );
 
     // ERR_CHANNEL_BUSY requires replug (documented firmware issue)
     v.check_bool(
@@ -105,18 +130,34 @@ fn phase_atomicity(v: &mut ValidationResult) {
     );
 
     // No seed is stored unless all 6 steps complete
-    v.check_bool("state:seed_on_complete", true, "Seed only stored on full completion");
+    v.check_bool(
+        "state:seed_on_complete",
+        true,
+        "Seed only stored on full completion",
+    );
 
     // Partial results are zeroed on failure
-    v.check_bool("state:partial_zeroed", true, "Partial state is zeroed on failure");
+    v.check_bool(
+        "state:partial_zeroed",
+        true,
+        "Partial state is zeroed on failure",
+    );
 }
 
 fn phase_seed_derivation(v: &mut ValidationResult) {
     // Loam seed = BLAKE3(key=os_rng_32, data=ceremony_transcript)
-    v.check_bool("seed:blake3_keyed", true, "Loam seed uses BLAKE3 keyed hash");
+    v.check_bool(
+        "seed:blake3_keyed",
+        true,
+        "Loam seed uses BLAKE3 keyed hash",
+    );
 
     // Key: 32 bytes from OS RNG (Tier 1)
-    v.check_bool("seed:key_os_rng_32", true, "Key is 32 bytes from getrandom (Tier 1)");
+    v.check_bool(
+        "seed:key_os_rng_32",
+        true,
+        "Key is 32 bytes from getrandom (Tier 1)",
+    );
 
     // Transcript includes:
     let transcript_fields = [
@@ -138,14 +179,22 @@ fn phase_seed_derivation(v: &mut ValidationResult) {
 
     // Output: exactly 32 bytes (256 bits)
     let seed_len = 32;
-    v.check_bool("seed:len_32", seed_len == 32, "Loam seed is exactly 32 bytes");
+    v.check_bool(
+        "seed:len_32",
+        seed_len == 32,
+        "Loam seed is exactly 32 bytes",
+    );
 
     // Seed is never logged, only stored in encrypted form
     v.check_bool("seed:not_logged", true, "Seed is never written to logs");
 
     // Seed uniqueness: same SoloKey + same human = different seed each ceremony
     // (because OS RNG key and timing jitter differ)
-    v.check_bool("seed:unique_per_ceremony", true, "Each ceremony produces a unique seed");
+    v.check_bool(
+        "seed:unique_per_ceremony",
+        true,
+        "Each ceremony produces a unique seed",
+    );
 }
 
 fn phase_live_ceremony(v: &mut ValidationResult) {
@@ -153,11 +202,18 @@ fn phase_live_ceremony(v: &mut ValidationResult) {
         || std::path::Path::new("/dev/hidraw0").exists();
 
     if !has_hidraw {
-        v.check_skip("live:skipped", "No /dev/hidraw device — skipping live ceremony chain");
+        v.check_skip(
+            "live:skipped",
+            "No /dev/hidraw device — skipping live ceremony chain",
+        );
         return;
     }
 
-    v.check_bool("live:hidraw_present", has_hidraw, "HID device present for ceremony chain");
+    v.check_bool(
+        "live:hidraw_present",
+        has_hidraw,
+        "HID device present for ceremony chain",
+    );
     v.check_bool(
         "live:deferred",
         true,

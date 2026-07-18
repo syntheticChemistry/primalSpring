@@ -3,7 +3,7 @@
 //! Scenario: Provenance Trio Pipeline — full `nest.store` signal validation.
 //!
 //! Exercises the four-step provenance pipeline defined by `nest_store.toml`:
-//! `content.put` (NestGate) → `dag.event.append` (rhizoCrypt) →
+//! `content.put` (`NestGate`) → `dag.event.append` (rhizoCrypt) →
 //! `spine.seal` (loamSpine) → `braid.create` (sweetGrass).
 //!
 //! This is the base pattern for all NUCLEUS provenance artifacts (playbook

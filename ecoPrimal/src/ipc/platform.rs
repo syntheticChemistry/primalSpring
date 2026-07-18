@@ -39,7 +39,7 @@ pub struct PlatformCapabilities {
     pub uds_available: bool,
     /// TCP loopback sockets can be bound.
     pub tcp_available: bool,
-    /// Linux abstract sockets are functional (not blocked by SELinux).
+    /// Linux abstract sockets are functional (not blocked by `SELinux`).
     pub abstract_sockets: bool,
     /// Path to the detected socket directory, if UDS is available.
     pub socket_dir: Option<PathBuf>,
@@ -146,11 +146,11 @@ fn probe_tcp() -> bool {
 
 /// Probe Linux abstract socket support.
 ///
-/// Abstract sockets are Linux-specific and may be blocked by SELinux
+/// Abstract sockets are Linux-specific and may be blocked by `SELinux`
 /// (common on Android). Since `std::os::linux::net::SocketAddrExt` is
 /// unstable and this crate forbids unsafe code, we check the kernel
 /// feature via `/proc/net/unix` — if the file exists and is readable,
-/// the kernel supports Unix sockets (abstract included unless SELinux
+/// the kernel supports Unix sockets (abstract included unless `SELinux`
 /// blocks them at bind time). A more precise probe would require
 /// `unsafe` libc calls or nightly features.
 ///

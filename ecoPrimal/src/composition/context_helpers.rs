@@ -46,7 +46,7 @@ impl CompositionContext {
     ///
     /// If a bearer token is set (via [`set_bearer_token`](Self::set_bearer_token)),
     /// it is added as `_bearer_token` in the JSON-RPC params. This enables
-    /// scope-checked dispatch on the receiving primal's MethodGate.
+    /// scope-checked dispatch on the receiving primal's `MethodGate`.
     ///
     /// Falls back to a bare call if no bearer token is set.
     ///

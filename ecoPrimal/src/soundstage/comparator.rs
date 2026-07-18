@@ -41,6 +41,7 @@ pub struct Comparator;
 
 impl Comparator {
     /// Compare two completed sessions.
+    #[must_use]
     pub fn compare(a: &SessionRecord, b: &SessionRecord) -> ComparisonResult {
         let fp_a = a.key_fingerprint();
         let fp_b = b.key_fingerprint();
@@ -83,6 +84,7 @@ impl Comparator {
     }
 
     /// Batch compare: all pairs in a set of sessions.
+    #[must_use]
     pub fn compare_all(sessions: &[SessionRecord]) -> Vec<ComparisonResult> {
         let mut results = Vec::new();
         for i in 0..sessions.len() {
@@ -94,6 +96,7 @@ impl Comparator {
     }
 
     /// Check that all sessions in a batch are mutually independent.
+    #[must_use]
     pub fn all_independent(sessions: &[SessionRecord]) -> bool {
         Self::compare_all(sessions)
             .iter()
@@ -124,7 +127,13 @@ mod tests {
     use crate::soundstage::session::CeremonySession;
 
     fn high_entropy_bytes(seed: u8) -> Vec<u8> {
-        (0u8..32).map(|i| seed.wrapping_mul(37).wrapping_add(i.wrapping_mul(13)).wrapping_add(i ^ seed)).collect()
+        (0u8..32)
+            .map(|i| {
+                seed.wrapping_mul(37)
+                    .wrapping_add(i.wrapping_mul(13))
+                    .wrapping_add(i ^ seed)
+            })
+            .collect()
     }
 
     fn make_session(id: &str, user: &str, seed: u8) -> SessionRecord {

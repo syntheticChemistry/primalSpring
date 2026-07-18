@@ -14,8 +14,10 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 use std::net::TcpStream;
 use std::time::Duration;
 
-const FP_COMP_TOML: &str = include_str!("../../../../config/compositions/footprint_composition.toml");
-const PROVISION_SH: &str = include_str!("../../../../../../infra/wateringHole/provision/provision-golgi.sh");
+const FP_COMP_TOML: &str =
+    include_str!("../../../../config/compositions/footprint_composition.toml");
+const PROVISION_SH: &str =
+    include_str!("../../../../../../infra/wateringHole/provision/provision-golgi.sh");
 const MANIFEST_TOML: &str = include_str!("../../../../config/ecosystem/ecosystem_manifest.toml");
 
 /// protoKarya WAN deploy scenario.
@@ -96,13 +98,15 @@ fn phase_structural(v: &mut ValidationResult) {
 
     v.check_bool(
         "wan:fp_http_proxy_cap",
-        FP_COMP_TOML.contains("name = \"http.proxy\"") && FP_COMP_TOML.contains("provider = \"songbird\""),
+        FP_COMP_TOML.contains("name = \"http.proxy\"")
+            && FP_COMP_TOML.contains("provider = \"songbird\""),
         "footPrint declares http.proxy capability from songbird",
     );
 
     v.check_bool(
         "wan:fp_storage_cap",
-        FP_COMP_TOML.contains("name = \"storage.put\"") && FP_COMP_TOML.contains("provider = \"nestgate\""),
+        FP_COMP_TOML.contains("name = \"storage.put\"")
+            && FP_COMP_TOML.contains("provider = \"nestgate\""),
         "footPrint declares storage.put from nestgate",
     );
 }
@@ -110,14 +114,21 @@ fn phase_structural(v: &mut ValidationResult) {
 fn phase_live(v: &mut ValidationResult) {
     v.section("Phase 2: Live — probe WAN surfaces");
 
-    let golgi_reachable = TcpStream::connect_timeout(
-        &"157.230.3.183:443".parse().unwrap(),
-        Duration::from_secs(3),
-    )
-    .is_ok();
+    let Ok(addr) = "157.230.3.183:443".parse() else {
+        v.check_bool(
+            "wan:live:addr_parse",
+            false,
+            "golgi socket address failed to parse",
+        );
+        return;
+    };
+    let golgi_reachable = TcpStream::connect_timeout(&addr, Duration::from_secs(3)).is_ok();
 
     if !golgi_reachable {
-        v.check_skip("wan:live:golgi_tls", "golgi:443 not reachable from this network");
+        v.check_skip(
+            "wan:live:golgi_tls",
+            "golgi:443 not reachable from this network",
+        );
         v.check_skip("wan:live:footprint_200", "golgi not reachable");
         return;
     }
@@ -125,7 +136,16 @@ fn phase_live(v: &mut ValidationResult) {
     v.check_bool("wan:live:golgi_tls", true, "golgi:443 TCP reachable");
 
     let fp_ok = std::process::Command::new("curl")
-        .args(["-s", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "5", "https://primals.eco/footprint/"])
+        .args([
+            "-s",
+            "-o",
+            "/dev/null",
+            "-w",
+            "%{http_code}",
+            "--max-time",
+            "5",
+            "https://primals.eco/footprint/",
+        ])
         .output()
         .map(|o| String::from_utf8_lossy(&o.stdout).trim() == "200")
         .unwrap_or(false);
@@ -133,7 +153,10 @@ fn phase_live(v: &mut ValidationResult) {
     v.check_bool(
         "wan:live:footprint_200",
         fp_ok,
-        &format!("primals.eco/footprint/ → {}", if fp_ok { "200 OK" } else { "NOT 200" }),
+        &format!(
+            "primals.eco/footprint/ → {}",
+            if fp_ok { "200 OK" } else { "NOT 200" }
+        ),
     );
 }
 
@@ -149,7 +172,9 @@ mod tests {
         assert!(
             v.failed == 0 || v.skipped > 0,
             "protokarya-wan-deploy: {} failures ({} passed, {} skipped)",
-            v.failed, v.passed, v.skipped
+            v.failed,
+            v.passed,
+            v.skipped
         );
     }
 }

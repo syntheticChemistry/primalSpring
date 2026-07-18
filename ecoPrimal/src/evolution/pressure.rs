@@ -20,7 +20,7 @@ pub enum PressureCategory {
     /// Example: Songbird EROFS on grapheneGate.
     Filesystem,
     /// UDS/TCP/relay transport assumptions.
-    /// Example: SkunkBat UDS-only crash on SELinux.
+    /// Example: `SkunkBat` UDS-only crash on `SELinux`.
     IpcTransport,
     /// Heap allocation patterns, caching strategies, OOM behavior.
     Memory,
@@ -36,7 +36,7 @@ pub enum PressureCategory {
     Concurrency,
     /// Clock monotonicity, NTP availability, timezone.
     Time,
-    /// Security policy restrictions (SELinux, AppArmor, sandboxing).
+    /// Security policy restrictions (`SELinux`, `AppArmor`, sandboxing).
     SecurityPolicy,
     /// Not yet classified (pending investigation).
     Unknown,

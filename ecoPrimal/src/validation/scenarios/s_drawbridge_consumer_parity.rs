@@ -2,9 +2,9 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Drawbridge Consumer Parity — validates that the songBird allowlist
-//! exactly matches what's declared in drawbridge_bonds.toml.
+//! exactly matches what's declared in `drawbridge_bonds.toml`.
 //!
-//! Three-way match: drawbridge_bonds.toml ↔ capability_registry ↔ songBird config.
+//! Three-way match: `drawbridge_bonds.toml` ↔ `capability_registry` ↔ songBird config.
 //! If a bond is declared but not in the allowlist, traffic is silently dropped.
 //! If an allowlist entry has no bond declaration, it's an undocumented dependency.
 
@@ -44,17 +44,30 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 }
 
 fn phase_bond_inventory(v: &mut ValidationResult) {
-    let parsed: toml::Value = toml::from_str(DRAWBRIDGE_BONDS).expect("valid TOML");
-
-    let bonds = parsed
-        .get("bonds")
-        .and_then(|b| b.as_table())
-        .expect("bonds table");
+    let Ok(parsed) = toml::from_str::<toml::Value>(DRAWBRIDGE_BONDS) else {
+        v.check_bool(
+            "inventory:parse",
+            false,
+            "drawbridge_bonds.toml failed to parse",
+        );
+        return;
+    };
+    let Some(bonds) = parsed.get("bonds").and_then(|b| b.as_table()) else {
+        v.check_bool(
+            "inventory:bonds_table",
+            false,
+            "no [bonds] table in drawbridge_bonds",
+        );
+        return;
+    };
 
     v.check_bool(
         "inventory:bond_count",
         bonds.len() >= 10,
-        &format!("drawbridge_bonds.toml declares {} bonds (expect >= 10)", bonds.len()),
+        &format!(
+            "drawbridge_bonds.toml declares {} bonds (expect >= 10)",
+            bonds.len()
+        ),
     );
 
     let mut host_count = 0;
@@ -88,12 +101,18 @@ fn phase_bond_inventory(v: &mut ValidationResult) {
 }
 
 fn phase_consumer_consistency(v: &mut ValidationResult) {
-    let parsed: toml::Value = toml::from_str(DRAWBRIDGE_BONDS).expect("valid TOML");
-
-    let bonds = parsed
-        .get("bonds")
-        .and_then(|b| b.as_table())
-        .expect("bonds table");
+    let Ok(parsed) = toml::from_str::<toml::Value>(DRAWBRIDGE_BONDS) else {
+        v.check_bool(
+            "consistency:parse",
+            false,
+            "drawbridge_bonds.toml failed to parse",
+        );
+        return;
+    };
+    let Some(bonds) = parsed.get("bonds").and_then(|b| b.as_table()) else {
+        v.check_bool("consistency:bonds_table", false, "no [bonds] table");
+        return;
+    };
 
     let mut consumers: std::collections::HashSet<String> = std::collections::HashSet::new();
     for (_name, bond) in bonds {
@@ -123,9 +142,9 @@ fn phase_consumer_consistency(v: &mut ValidationResult) {
         }
     }
 
-    let has_tier = bonds.values().all(|b| {
-        b.get("tier").and_then(|t| t.as_str()).is_some()
-    });
+    let has_tier = bonds
+        .values()
+        .all(|b| b.get("tier").and_then(|t| t.as_str()).is_some());
     v.check_bool(
         "consistency:all_tiered",
         has_tier,
@@ -138,7 +157,9 @@ fn phase_songbird_ownership(v: &mut ValidationResult) {
 
     let discovery_methods = table.methods_in_domain("discovery");
     let songbird_owns_discovery = discovery_methods.iter().any(|m| {
-        table.route(m).is_some_and(|e| &*e.owner == primal_names::SONGBIRD)
+        table
+            .route(m)
+            .is_some_and(|e| &*e.owner == primal_names::SONGBIRD)
     });
     v.check_bool(
         "ownership:songbird_discovery",
@@ -146,8 +167,7 @@ fn phase_songbird_ownership(v: &mut ValidationResult) {
         "songBird owns methods in discovery domain (http + ipc → drawbridge)",
     );
 
-    let has_proxy = REGISTRY_TOML.contains("http.proxy")
-        || REGISTRY_TOML.contains("proxy");
+    let has_proxy = REGISTRY_TOML.contains("http.proxy") || REGISTRY_TOML.contains("proxy");
     v.check_bool(
         "ownership:proxy_capability",
         has_proxy,
@@ -167,12 +187,21 @@ fn phase_trust_tiers(v: &mut ValidationResult) {
         );
     }
 
-    let parsed: toml::Value = toml::from_str(DRAWBRIDGE_BONDS).expect("valid TOML");
-    let bonds = parsed.get("bonds").and_then(|b| b.as_table()).expect("bonds");
+    let Ok(parsed) = toml::from_str::<toml::Value>(DRAWBRIDGE_BONDS) else {
+        return;
+    };
+    let Some(bonds) = parsed.get("bonds").and_then(|b| b.as_table()) else {
+        return;
+    };
 
-    let fragile_count = bonds.values().filter(|b| {
-        b.get("fragile").and_then(toml::Value::as_bool).unwrap_or(false)
-    }).count();
+    let fragile_count = bonds
+        .values()
+        .filter(|b| {
+            b.get("fragile")
+                .and_then(toml::Value::as_bool)
+                .unwrap_or(false)
+        })
+        .count();
 
     v.check_bool(
         "tier:fragile_declared",
@@ -190,6 +219,10 @@ mod tests {
         let mut v = ValidationResult::new(SCENARIO.meta.id);
         let mut ctx = CompositionContext::discover();
         (SCENARIO.run)(&mut v, &mut ctx);
-        assert_eq!(v.failed, 0, "scenario '{}' had {} failures", SCENARIO.meta.id, v.failed);
+        assert_eq!(
+            v.failed, 0,
+            "scenario '{}' had {} failures",
+            SCENARIO.meta.id, v.failed
+        );
     }
 }

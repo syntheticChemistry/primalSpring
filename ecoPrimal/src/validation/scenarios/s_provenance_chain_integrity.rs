@@ -23,7 +23,7 @@ use crate::validation::ValidationResult;
 use crate::validation::helpers;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-/// Provenance chain integrity — RhizoCrypt DAG → LoamSpine ledger → SweetGrass witness.
+/// Provenance chain integrity — `RhizoCrypt` DAG → `LoamSpine` ledger → `SweetGrass` witness.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "provenance-chain-integrity",

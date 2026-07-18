@@ -4,7 +4,7 @@
 //!
 //! Exercises the time-extended provenance pattern (playbook Artifact 2):
 //! `dag.session.create` → N × `dag.event.append` → `dag.dehydration.trigger`
-//! → `certificate.mint` (type=ferment_transcript).
+//! → `certificate.mint` (`type=ferment_transcript`).
 //!
 //! Unlike the trio pipeline (single-shot), the ferment transcript accumulates
 //! events over time before dehydrating into a sealed hash and minting a

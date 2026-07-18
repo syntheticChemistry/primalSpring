@@ -4,7 +4,7 @@
 //! Scenario: Protocol Escalation — validates the JSON-RPC 2.0 wire protocol
 //! and serialization layer that underlies all primal IPC.
 //!
-//! Absorbed from exp052_protocol_escalation. In the K-Derm model, protocol
+//! Absorbed from `exp052_protocol_escalation`. In the K-Derm model, protocol
 //! escalation is the "membrane channel opening" — the negotiation layer
 //! that establishes communication type (text JSON-RPC vs binary tarpc).
 //!

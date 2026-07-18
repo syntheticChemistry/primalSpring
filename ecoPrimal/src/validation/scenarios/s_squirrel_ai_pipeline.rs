@@ -6,7 +6,7 @@
 //!
 //! Squirrel (via ai.sock) exposes:
 //! - `inference.embed`: embedding generation (requires registered provider)
-//! - `inference.complete`: text generation (requires AI_PROVIDER_SOCKETS)
+//! - `inference.complete`: text generation (requires `AI_PROVIDER_SOCKETS`)
 //! - `health.readiness` with `ai_router` and `capability_registry` checks
 //!
 //! Provenance tracking (provenance.sock) uses riboCipher transport signals.

@@ -7,7 +7,7 @@
 //! Without trust exchange, peers show `"capabilities": []` even when reachable.
 //! This scenario validates the structural contract for trust establishment:
 //!
-//! Phase 1: Trust methods — auth.trust_issuer, btsp.negotiate registered
+//! Phase 1: Trust methods — `auth.trust_issuer`, btsp.negotiate registered
 //! Phase 2: Mesh peer visibility — peers reachable but capabilities gated on trust
 //! Phase 3: Trust topology — backbone vs WAN trust zones, relay trust chain
 //! Phase 4: Live — attempt trust handshake with available peers

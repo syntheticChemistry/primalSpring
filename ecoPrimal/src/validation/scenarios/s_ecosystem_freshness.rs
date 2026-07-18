@@ -4,13 +4,13 @@
 //! Scenario: Ecosystem Freshness — validates the wateringHole ecosystem
 //! manifest and freshness protocol against the local workspace state.
 //!
-//! Structural phase (Tier::Rust):
+//! Structural phase (`Tier::Rust)`:
 //!   Parses `ecosystem_manifest.toml` and `freshness.toml` from the
 //!   wateringHole repo, validates the manifest schema (all required
 //!   fields, valid membrane types, gate profiles reference real repos),
 //!   and cross-checks freshness heads against manifest entries.
 //!
-//! Live phase (Tier::Live):
+//! Live phase (`Tier::Live)`:
 //!   Compares local git HEADs against freshness.toml to detect drift,
 //!   validates that high-priority repos are present on disk.
 
@@ -276,7 +276,9 @@ fn validate_repo_entries(
         v.check_bool(
             &format!("schema:repo:{name}:forgejo_repo"),
             (!forgejo_repo.is_empty() && forgejo_repo.contains('/')) || forgejo_optional,
-            &format!("{name}.forgejo_repo = \"{forgejo_repo}\" (expect org/name or protist/planned)"),
+            &format!(
+                "{name}.forgejo_repo = \"{forgejo_repo}\" (expect org/name or protist/planned)"
+            ),
         );
     }
 
@@ -572,10 +574,7 @@ mod tests {
                 .get("forgejo_repo")
                 .and_then(|v| v.as_str())
                 .unwrap_or("");
-            let category = info
-                .get("category")
-                .and_then(|v| v.as_str())
-                .unwrap_or("");
+            let category = info.get("category").and_then(|v| v.as_str()).unwrap_or("");
             let is_protist = category == "protist";
             assert!(
                 (!fj.is_empty() && fj.contains('/')) || is_protist,

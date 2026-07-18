@@ -15,10 +15,10 @@
 /// Used by: `ipc::client::PrimalClient`, `ipc::transport::Transport`.
 pub const IPC_SOCKET_TIMEOUT_SECS: u64 = 5;
 
-/// Maximum time for the BTSP handshake phase (relay primals call BearDog).
+/// Maximum time for the BTSP handshake phase (relay primals call `BearDog`).
 ///
-/// Source: Relay primals (barraCuda, coralReef, NestGate) forward the BTSP
-/// handshake to BearDog via JSON-RPC, adding a round-trip. 15 seconds
+/// Source: Relay primals (barraCuda, coralReef, `NestGate`) forward the BTSP
+/// handshake to `BearDog` via JSON-RPC, adding a round-trip. 15 seconds
 /// allows for contention when many primals bootstrap simultaneously.
 /// After the handshake, the socket reverts to `IPC_SOCKET_TIMEOUT_SECS`.
 pub const BTSP_HANDSHAKE_TIMEOUT_SECS: u64 = 15;
@@ -107,7 +107,7 @@ pub const RIBOCIPHER_VERSION: u8 = 0x01;
 /// unknown bytes and either ignore or WARN (graceful degradation per spec).
 pub const RIBOCIPHER_CLEAR_SIGNAL: [u8; 2] = [RIBOCIPHER_CLEAR, RIBOCIPHER_VERSION];
 
-/// MitoBeacon obfuscated tier byte (Wave 114 genetics architecture).
+/// `MitoBeacon` obfuscated tier byte (Wave 114 genetics architecture).
 ///
 /// `0xED` signals a mito-beacon obfuscated connection: group membership proven,
 /// tunnel obfuscation negotiated. Not yet active — defined for forward compat.

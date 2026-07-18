@@ -30,7 +30,11 @@ pub const SCENARIO: Scenario = Scenario {
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Ed25519 signing infrastructure");
 
-    let ed25519_methods = ["crypto.sign_ed25519", "crypto.verify_ed25519", "crypto.keygen"];
+    let ed25519_methods = [
+        "crypto.sign_ed25519",
+        "crypto.verify_ed25519",
+        "crypto.keygen",
+    ];
     for method in ed25519_methods {
         v.check_bool(
             &format!("crypto:{}", method.replace("crypto.", "")),
@@ -90,7 +94,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "signing:cascade_breadth",
         present >= 4,
-        &format!("{present}/{} cascade signing methods registered", signing_methods.len()),
+        &format!(
+            "{present}/{} cascade signing methods registered",
+            signing_methods.len()
+        ),
     );
 }
 

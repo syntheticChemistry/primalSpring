@@ -5,13 +5,13 @@
 //! enrolling a Windows gate (northGate) into the ecosystem mesh.
 //!
 //! Wave 139b: songBird shipped Windows cross-compile support (58b10e5).
-//! northGate is a Windows machine with GPU compute and ~1TB AlphaFold data.
+//! northGate is a Windows machine with GPU compute and ~1TB `AlphaFold` data.
 //! This scenario validates:
 //!
 //! 1. songBird Windows IPC platform support (named pipes) exists in code
 //! 2. Mesh topology includes northGate as a recognized gate
 //! 3. Capability registration for GPU compute + remote access relay
-//! 4. Bond model: northGate ComputeHeavy specialization
+//! 4. Bond model: northGate `ComputeHeavy` specialization
 //! 5. TCP fallback transport for cross-platform mesh communication
 
 use crate::bonding::GateSpecialization;
@@ -32,8 +32,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave139b_northgate_mesh",
         provenance_date: "2026-07-14",
-        description:
-            "northGate mesh enrollment — Windows IPC, mesh topology, capability registration",
+        description: "northGate mesh enrollment — Windows IPC, mesh topology, capability registration",
     },
     run,
 };
@@ -67,8 +66,8 @@ fn phase_windows_platform(v: &mut ValidationResult) {
         "songBird registered in capability registry (mesh orchestrator)",
     );
 
-    let tcp_fallback = REGISTRY_TOML.contains("btsp.negotiate")
-        || REGISTRY_TOML.contains("btsp.handshake");
+    let tcp_fallback =
+        REGISTRY_TOML.contains("btsp.negotiate") || REGISTRY_TOML.contains("btsp.handshake");
     v.check_bool(
         "northgate:btsp_protocol",
         tcp_fallback,
@@ -131,9 +130,8 @@ fn phase_mesh_topology(v: &mut ValidationResult) {
         );
     }
 
-    let mesh_has_backbone = MESH_TOML.contains("CRS310")
-        || MESH_TOML.contains("backbone")
-        || MESH_TOML.contains("10G");
+    let mesh_has_backbone =
+        MESH_TOML.contains("CRS310") || MESH_TOML.contains("backbone") || MESH_TOML.contains("10G");
     v.check_bool(
         "northgate:backbone_referenced",
         mesh_has_backbone,
@@ -149,10 +147,7 @@ fn phase_specialization(v: &mut ValidationResult) {
     v.check_bool(
         "northgate:exports_compute",
         has_compute,
-        &format!(
-            "ComputeHeavy exports compute capabilities: {:?}",
-            exports
-        ),
+        &format!("ComputeHeavy exports compute capabilities: {exports:?}"),
     );
 
     let imports = north.natural_imports();
@@ -173,7 +168,7 @@ fn phase_transport_fallback(v: &mut ValidationResult) {
         btsp_negotiate.is_some(),
         &format!(
             "btsp.negotiate → {}",
-            btsp_negotiate.map_or("UNROUTED".to_string(), |r| r.owner.to_string())
+            btsp_negotiate.map_or_else(|| "UNROUTED".to_string(), |r| r.owner.to_string())
         ),
     );
 
@@ -203,7 +198,7 @@ fn phase_capability_routing(v: &mut ValidationResult) {
         compute_dispatch.is_some(),
         &format!(
             "compute.dispatch → {}",
-            compute_dispatch.map_or("UNROUTED".to_string(), |r| r.owner.to_string())
+            compute_dispatch.map_or_else(|| "UNROUTED".to_string(), |r| r.owner.to_string())
         ),
     );
 
@@ -227,11 +222,7 @@ fn phase_live_anchor(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         return;
     }
 
-    let status = ctx.call(
-        "discovery",
-        "btsp.capabilities",
-        serde_json::json!({}),
-    );
+    let status = ctx.call("discovery", "btsp.capabilities", serde_json::json!({}));
 
     match status {
         Ok(resp) => {
@@ -242,10 +233,7 @@ fn phase_live_anchor(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             );
         }
         Err(e) if e.is_skippable() => {
-            v.check_skip(
-                "northgate:live_anchor",
-                &format!("songBird skippable: {e}"),
-            );
+            v.check_skip("northgate:live_anchor", &format!("songBird skippable: {e}"));
         }
         Err(e) => {
             v.check_bool(

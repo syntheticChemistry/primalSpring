@@ -2,14 +2,14 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: protoKarya Composition Routing — validates that live compositions
-//! (footPrint, tideGlass, JupyterHub) can route through the drawbridge → mesh
+//! (footPrint, tideGlass, `JupyterHub`) can route through the drawbridge → mesh
 //! → capability pipeline.
 //!
 //! Wave 138a architecture:
 //! - Each protoKarya project is a composition consuming primal capabilities
 //! - Wildcard DNS (`*.primals.eco`) routes to Caddy on golgi
 //! - songBird mesh/drawbridge dispatches to owning primals
-//! - Data feeds register as drawbridge weak bonds → NestGate CAS
+//! - Data feeds register as drawbridge weak bonds → `NestGate` CAS
 //! - Cross-feeding: projects share data via capability.call
 //!
 //! This scenario validates the structural prerequisites:
@@ -18,8 +18,8 @@
 //! 3. Composition tiers: Tower, Node, Nest cover protoKarya needs
 //! 4. Cross-feed topology: method ownership spans multiple primals
 
-use crate::composition::neural_routing::canonical_routing_table;
 use crate::composition::CompositionContext;
+use crate::composition::neural_routing::canonical_routing_table;
 use crate::primal_names;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
@@ -34,8 +34,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "wave138a_protokarya_routing",
         provenance_date: "2026-07-14",
-        description:
-            "protoKarya composition routing — live compositions consume capabilities via drawbridge mesh",
+        description: "protoKarya composition routing — live compositions consume capabilities via drawbridge mesh",
     },
     run,
 };

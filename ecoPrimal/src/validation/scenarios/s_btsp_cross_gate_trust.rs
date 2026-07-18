@@ -4,11 +4,11 @@
 //! Scenario: BTSP Cross-Gate Trust Verification
 //!
 //! Validates that BTSP trust chains work across gates — tokens issued on
-//! one gate can be verified on another via the TrustedIssuerRegistry.
+//! one gate can be verified on another via the `TrustedIssuerRegistry`.
 //!
 //! Phases:
-//! 1. Structural: TrustedIssuerRegistry config and multi-issuer support
-//! 2. Wire contract: auth.trust_issuer, auth.verify_ionic, trust.list
+//! 1. Structural: `TrustedIssuerRegistry` config and multi-issuer support
+//! 2. Wire contract: `auth.trust_issuer`, `auth.verify_ionic`, trust.list
 //! 3. Live: BTSP credential issuance on local gate
 //! 4. Live: Cross-gate trust verification (issued here, verified there)
 

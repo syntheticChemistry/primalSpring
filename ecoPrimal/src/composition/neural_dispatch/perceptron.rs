@@ -11,20 +11,20 @@
 //!
 //! | Dim | Name | Range | Source |
 //! |-----|------|-------|--------|
-//! | 0–6 | `tier_onehot` | {0,1} | CompositionTier (7 variants) |
-//! | 7–11 | `route_onehot` | {0,1} | RoutePath (5 variants) |
-//! | 12 | `latency_norm` | [0,1] | latency_ms / MAX_LATENCY_MS |
+//! | 0–6 | `tier_onehot` | {0,1} | `CompositionTier` (7 variants) |
+//! | 7–11 | `route_onehot` | {0,1} | `RoutePath` (5 variants) |
+//! | 12 | `latency_norm` | [0,1] | `latency_ms` / `MAX_LATENCY_MS` |
 //! | 13 | `success` | {0,1} | 1.0 if succeeded |
 //! | 14–26 | `owner_onehot` | {0,1} | primal index (13 primals) |
 //! | 27 | `hour_sin` | [-1,1] | sin(2π * hour/24) |
 //! | 28 | `hour_cos` | [-1,1] | cos(2π * hour/24) |
-//! | 29 | `day_sin` | [-1,1] | sin(2π * day_of_week/7) |
-//! | 30 | `day_cos` | [-1,1] | cos(2π * day_of_week/7) |
+//! | 29 | `day_sin` | [-1,1] | sin(2π * `day_of_week/7`) |
+//! | 30 | `day_cos` | [-1,1] | cos(2π * `day_of_week/7`) |
 //! | 31 | `method_hash_0` | [0,1] | method name hash bits 0–7 / 255 |
 //! | 32 | `method_hash_1` | [0,1] | method name hash bits 8–15 / 255 |
 //! | 33 | `method_hash_2` | [0,1] | method name hash bits 16–23 / 255 |
 //! | 34 | `method_hash_3` | [0,1] | method name hash bits 24–31 / 255 |
-//! | 35 | `domain_depth` | [0,1] | number of '.' separators / MAX_DEPTH |
+//! | 35 | `domain_depth` | [0,1] | number of '.' separators / `MAX_DEPTH` |
 //!
 //! # Label (training target)
 //!

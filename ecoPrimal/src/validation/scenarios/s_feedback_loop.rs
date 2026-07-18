@@ -4,8 +4,8 @@
 //! Scenario: Feedback Loop — validates the Wave 42 instrumented dispatch path
 //! and verifies biomeOS routing weights update in response to dispatches.
 //!
-//! Exercises the full feedback cycle: dispatch_instrumented → BridgeOutcome →
-//! record_bridge_outcome → routing_weights change → utilization tracking.
+//! Exercises the full feedback cycle: `dispatch_instrumented` → `BridgeOutcome` →
+//! `record_bridge_outcome` → `routing_weights` change → utilization tracking.
 
 use crate::composition::CompositionContext;
 use crate::composition::neural_dispatch::NeuralDispatcher;
@@ -13,7 +13,7 @@ use crate::ipc::neural_bridge::NeuralBridge;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-/// Feedback loop scenario — Tier::Live, validates instrumented dispatch and weight updates.
+/// Feedback loop scenario — `Tier::Live`, validates instrumented dispatch and weight updates.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "feedback-loop",

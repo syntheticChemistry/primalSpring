@@ -74,7 +74,12 @@ fn phase_structural(v: &mut ValidationResult) {
     v.check_bool(
         "xcompile:matrix_size",
         matrix_size >= 56,
-        &format!("cross-compile matrix: {} cells ({}×{})", matrix_size, all_primals.len(), TARGET_ARCHITECTURES.len()),
+        &format!(
+            "cross-compile matrix: {} cells ({}×{})",
+            matrix_size,
+            all_primals.len(),
+            TARGET_ARCHITECTURES.len()
+        ),
     );
 }
 
@@ -83,7 +88,9 @@ fn phase_live_checksums(v: &mut ValidationResult) {
         .args(["-s", "--max-time", "10", DEPOT_CHECKSUMS_URL])
         .output()
     {
-        Ok(output) if output.status.success() => String::from_utf8_lossy(&output.stdout).to_string(),
+        Ok(output) if output.status.success() => {
+            String::from_utf8_lossy(&output.stdout).to_string()
+        }
         _ => {
             v.check_skip("xcompile:live:fetch", "depot not reachable");
             return;
@@ -114,7 +121,10 @@ fn phase_live_checksums(v: &mut ValidationResult) {
             &after_header[..end]
         } else {
             v.check_bool(
-                &format!("xcompile:live:{}_section", arch.split('-').next().unwrap_or("?")),
+                &format!(
+                    "xcompile:live:{}_section",
+                    arch.split('-').next().unwrap_or("?")
+                ),
                 false,
                 &format!("[{arch}] section missing from checksums.toml"),
             );
@@ -139,7 +149,10 @@ fn phase_live_checksums(v: &mut ValidationResult) {
         v.check_bool(
             &format!("xcompile:live:{arch_short}_coverage"),
             arch_present >= 12,
-            &format!("{arch}: {arch_present}/{} primals have checksums", all_primals.len()),
+            &format!(
+                "{arch}: {arch_present}/{} primals have checksums",
+                all_primals.len()
+            ),
         );
     }
 
@@ -158,7 +171,11 @@ fn phase_live_checksums(v: &mut ValidationResult) {
     );
 
     // Threshold: 85% allows pre-harvest state; raises to 100% post-harvest
-    let coverage_pct = if total_expected > 0 { (total_present * 100) / total_expected } else { 0 };
+    let coverage_pct = if total_expected > 0 {
+        (total_present * 100) / total_expected
+    } else {
+        0
+    };
     v.check_bool(
         "xcompile:live:coverage_threshold",
         coverage_pct >= 85,

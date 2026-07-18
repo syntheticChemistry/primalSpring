@@ -6,12 +6,12 @@
 //! health monitoring for external data sources.
 //!
 //! Structural checks:
-//! - Registry parses as valid TOML with [meta] schema_version
+//! - Registry parses as valid TOML with [meta] `schema_version`
 //! - All entries have required fields
 //! - Trust tiers are valid enum values
 //! - Every bond has at least one consumer
 //! - No duplicate hosts
-//! - Science APIs (NCBI, UniProt, PDB) are declared
+//! - Science APIs (NCBI, `UniProt`, PDB) are declared
 
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
@@ -68,7 +68,10 @@ fn phase_parse(v: &mut ValidationResult) {
         parsed.is_ok(),
         &format!(
             "drawbridge_bonds.toml parses as valid TOML{}",
-            parsed.as_ref().err().map_or(String::new(), |e| format!(" ({e})"))
+            parsed
+                .as_ref()
+                .err()
+                .map_or(String::new(), |e| format!(" ({e})"))
         ),
     );
 
@@ -150,7 +153,8 @@ impl SchemaAudit {
                 }
             }
         } else {
-            self.missing_fields.push(format!("{name}: missing 'methods'"));
+            self.missing_fields
+                .push(format!("{name}: missing 'methods'"));
         }
 
         if let Some(consumers) = table.get("consumers").and_then(|c| c.as_array()) {
@@ -158,11 +162,13 @@ impl SchemaAudit {
                 self.empty_consumers.push(name.to_owned());
             }
         } else {
-            self.missing_fields.push(format!("{name}: missing 'consumers'"));
+            self.missing_fields
+                .push(format!("{name}: missing 'consumers'"));
         }
 
         if table.get("description").and_then(|d| d.as_str()).is_none() {
-            self.missing_fields.push(format!("{name}: missing 'description'"));
+            self.missing_fields
+                .push(format!("{name}: missing 'description'"));
         }
     }
 
@@ -272,8 +278,8 @@ fn phase_science_coverage(v: &mut ValidationResult) {
         "NCBI PubChem + Entrez bonds declared",
     );
 
-    let has_structural = BONDS_TOML.contains("data.rcsb.org")
-        && BONDS_TOML.contains("alphafold.ebi.ac.uk");
+    let has_structural =
+        BONDS_TOML.contains("data.rcsb.org") && BONDS_TOML.contains("alphafold.ebi.ac.uk");
     v.check_bool(
         "science:structural_bio",
         has_structural,

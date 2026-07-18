@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: Mesh Overlay — validates the WireGuard sovereign overlay network.
+//! Scenario: Mesh Overlay — validates the `WireGuard` sovereign overlay network.
 //!
 //! The 10.13.37.0/24 mesh connects gates across physical boundaries (LAN, WAN,
-//! VPS) via encrypted WireGuard tunnels through golgi as hub. This scenario
+//! VPS) via encrypted `WireGuard` tunnels through golgi as hub. This scenario
 //! validates:
 //!
 //! 1. Local wg0 interface exists and has correct address

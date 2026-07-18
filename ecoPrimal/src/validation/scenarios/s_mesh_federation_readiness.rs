@@ -2,7 +2,7 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Mesh Federation Readiness — validates federation methods and
-//! WireGuard mesh WAN peer configuration.
+//! `WireGuard` mesh WAN peer configuration.
 
 use crate::composition::CompositionContext;
 use crate::evolution::gate::{CytoplasmZone, all_mesh_gates};
@@ -58,9 +58,7 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
 
     let wan_peers: Vec<_> = all_mesh_gates()
         .iter()
-        .filter(|g| {
-            CytoplasmZone::for_gate(&g.name) == CytoplasmZone::Wan && !g.address.is_empty()
-        })
+        .filter(|g| CytoplasmZone::for_gate(&g.name) == CytoplasmZone::Wan && !g.address.is_empty())
         .collect();
 
     v.check_bool(
@@ -69,7 +67,10 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         &format!(
             "{} WAN WireGuard peers: {:?}",
             wan_peers.len(),
-            wan_peers.iter().map(|g| (&g.name, &g.address)).collect::<Vec<_>>()
+            wan_peers
+                .iter()
+                .map(|g| (&g.name, &g.address))
+                .collect::<Vec<_>>()
         ),
     );
 
@@ -108,7 +109,8 @@ mod tests {
             // when run in full suite (STALE-SOCKETS P2 — SOCKET-DIR-UNIFY).
             eprintln!(
                 "mesh-federation-readiness: {}/{} checks failed (likely stale socket — P2 SOCKET-DIR-UNIFY)",
-                v.failed, v.passed + v.failed + v.skipped
+                v.failed,
+                v.passed + v.failed + v.skipped
             );
             return;
         }

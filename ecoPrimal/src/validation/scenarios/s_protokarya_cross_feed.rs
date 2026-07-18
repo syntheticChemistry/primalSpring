@@ -74,7 +74,12 @@ fn phase_data_production(v: &mut ValidationResult) {
 fn phase_data_consumption(v: &mut ValidationResult) {
     let table = canonical_routing_table();
 
-    let fetch_methods = ["storage.fetch", "storage.fetch_content", "content.fetch", "storage.get"];
+    let fetch_methods = [
+        "storage.fetch",
+        "storage.fetch_content",
+        "content.fetch",
+        "storage.get",
+    ];
     let mut has_fetch = false;
     for method in fetch_methods {
         if table.route(method).is_some() {
@@ -101,8 +106,8 @@ fn phase_data_consumption(v: &mut ValidationResult) {
 fn phase_capability_routing(v: &mut ValidationResult) {
     let table = canonical_routing_table();
 
-    let has_capability_call = table.route("capability.call").is_some()
-        || REGISTRY_TOML.contains("capability.call");
+    let has_capability_call =
+        table.route("capability.call").is_some() || REGISTRY_TOML.contains("capability.call");
     v.check_bool(
         "routing:capability_call",
         has_capability_call,
@@ -118,8 +123,7 @@ fn phase_capability_routing(v: &mut ValidationResult) {
         "capability.discover/list registered (protist finds sibling data)",
     );
 
-    let has_mesh = table.route("mesh.peers").is_some()
-        || REGISTRY_TOML.contains("mesh.peers");
+    let has_mesh = table.route("mesh.peers").is_some() || REGISTRY_TOML.contains("mesh.peers");
     v.check_bool(
         "routing:mesh_peers",
         has_mesh,
@@ -132,7 +136,10 @@ fn phase_shared_domains(v: &mut ValidationResult) {
 
     let shared = [
         ("storage", "Data persistence (shared by all protists)"),
-        ("discovery", "Network + IPC (drawbridge bonds, peer discovery)"),
+        (
+            "discovery",
+            "Network + IPC (drawbridge bonds, peer discovery)",
+        ),
         ("tensor", "Compute (matrix/vector operations for science)"),
     ];
 
@@ -164,6 +171,10 @@ mod tests {
         let mut v = ValidationResult::new(SCENARIO.meta.id);
         let mut ctx = CompositionContext::discover();
         (SCENARIO.run)(&mut v, &mut ctx);
-        assert_eq!(v.failed, 0, "scenario '{}' had {} failures", SCENARIO.meta.id, v.failed);
+        assert_eq!(
+            v.failed, 0,
+            "scenario '{}' had {} failures",
+            SCENARIO.meta.id, v.failed
+        );
     }
 }

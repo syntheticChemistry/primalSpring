@@ -42,8 +42,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     );
     v.check_bool(
         "federation:methods_registered",
-        REGISTRY_TOML.contains("federation.join")
-            && REGISTRY_TOML.contains("federation.health"),
+        REGISTRY_TOML.contains("federation.join") && REGISTRY_TOML.contains("federation.health"),
         "federation.join and federation.health registered",
     );
 

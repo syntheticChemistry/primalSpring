@@ -5,13 +5,13 @@
 //!
 //! Provides `resolve_mito_seed()` which discovers or generates a machine-level
 //! BLAKE3 seed suitable for BTSP Phase 1 (family membership). The seed is
-//! hex-encoded and used as raw UTF-8 bytes on the wire, matching BearDog's
+//! hex-encoded and used as raw UTF-8 bytes on the wire, matching `BearDog`'s
 //! `String::into_bytes()` convention.
 //!
 //! Priority order:
 //! 1. `GUIDESTONE_SEED` env var (explicit override)
 //! 2. `FAMILY_SEED` env var (already set by caller / launcher)
-//! 3. `$SOCKET_DIR/.family.seed` file (written by nucleus_launcher.sh)
+//! 3. `$SOCKET_DIR/.family.seed` file (written by `nucleus_launcher.sh`)
 //! 4. Fresh generation: `BLAKE3("guidestone-mito-v1" || machine_id || hostname || 32 OsRng bytes)`
 
 use std::collections::HashMap;
@@ -58,7 +58,7 @@ impl std::fmt::Display for SeedSource {
 ///
 /// Checks env vars and seed files in priority order. If nothing is found,
 /// generates a fresh machine-level seed from OS entropy + machine identity.
-/// Returns a hex-encoded string matching BearDog's wire format.
+/// Returns a hex-encoded string matching `BearDog`'s wire format.
 #[must_use]
 pub fn resolve_mito_seed() -> MitoSeed {
     if let Some(seed) = read_env_seed(crate::env_keys::GUIDESTONE_SEED) {

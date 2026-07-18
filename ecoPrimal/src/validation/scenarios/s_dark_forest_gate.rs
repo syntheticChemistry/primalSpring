@@ -5,7 +5,7 @@
 //!
 //! Structural validation of the Dark Forest standard: zero metadata leakage,
 //! zero port exposure, Songbird-only network surface, BTSP crypto integrity,
-//! and enclave computing boundaries. All checks are Tier::Rust — no live
+//! and enclave computing boundaries. All checks are `Tier::Rust` — no live
 //! primals required.
 //!
 //! See `specs/DARK_FOREST_GLACIAL_GATE.md` for the five-pillar standard.

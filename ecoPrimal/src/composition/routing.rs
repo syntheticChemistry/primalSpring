@@ -279,8 +279,8 @@ pub fn primal_home_tier_priority(primal: &str) -> Option<u8> {
 ///
 /// For each TOML section with methods:
 /// 1. If `routes_to` is specified, use it (explicit routing override).
-/// 2. If the section name is already an ALL_CAPS discovery domain, route to itself.
-/// 3. Otherwise, find the owner primal's primary ALL_CAPS domain by inverting
+/// 2. If the section name is already an `ALL_CAPS` discovery domain, route to itself.
+/// 3. Otherwise, find the owner primal's primary `ALL_CAPS` domain by inverting
 ///    the capability→owner map.
 ///
 /// This replaces 30+ hand-maintained match arms with a single TOML-derived table.
@@ -391,7 +391,7 @@ static METHOD_OVERRIDES: LazyLock<HashMap<String, String>> = LazyLock::new(|| {
 ///
 /// The routing is derived entirely from `config/capability_registry.toml`:
 /// - Full-method overrides for cross-domain methods (e.g. `security.audit_log` → defense)
-/// - Prefix-based routing from TOML section → owner → ALL_CAPS domain
+/// - Prefix-based routing from TOML section → owner → `ALL_CAPS` domain
 /// - Fallback: the prefix itself (for springs, apps, and unknown domains)
 ///
 /// ```

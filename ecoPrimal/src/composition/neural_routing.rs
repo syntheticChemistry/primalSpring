@@ -24,7 +24,7 @@
 //! initialization. As primals announce via `primal.announce`, the table
 //! can be updated with runtime routing data (latencies, error rates,
 //! socket endpoints). Graphs define composition patterns — sequences of
-//! methods that form emergent systems like RootPulse.
+//! methods that form emergent systems like `RootPulse`.
 //!
 //! This is Layer 1-2 of the Neural API evolution model. Layers 3-5
 //! (cross-gate, adaptive, learned) build on this foundation.
@@ -106,7 +106,7 @@ pub struct RouteEntry {
     pub domain: Arc<str>,
     /// Which composition tier this method participates in.
     pub tier: CompositionTier,
-    /// Whether this method has a composition graph (e.g., "nest.store" → nest_store.toml).
+    /// Whether this method has a composition graph (e.g., "nest.store" → `nest_store.toml`).
     pub has_composition_graph: bool,
     /// Semantic aliases that map to this method.
     pub aliases: Vec<Arc<str>>,
@@ -116,7 +116,7 @@ pub struct RouteEntry {
 /// emergent system when executed as a graph.
 #[derive(Debug, Clone)]
 pub struct CompositionPattern {
-    /// Pattern name (e.g., "rootpulse_commit").
+    /// Pattern name (e.g., "`rootpulse_commit`").
     pub name: Arc<str>,
     /// Ordered method sequence (topological).
     pub methods: Vec<Arc<str>>,
@@ -198,7 +198,11 @@ fn register_domain_methods(parsed: &toml::Value, composition_methods: &[String])
         let methods = value
             .get("methods")
             .and_then(toml::Value::as_array)
-            .map(|arr| arr.iter().filter_map(toml::Value::as_str).collect::<Vec<_>>())
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(toml::Value::as_str)
+                    .collect::<Vec<_>>()
+            })
             .unwrap_or_default();
 
         for method_str in &methods {
@@ -286,7 +290,10 @@ fn collect_composition_patterns(parsed: &toml::Value) -> Vec<CompositionPattern>
 
         let arc_primals: Vec<Arc<str>> = primals.iter().map(|s| Arc::from(s.as_str())).collect();
 
-        if let Some(sigs) = group_val.get("compositions").and_then(toml::Value::as_array) {
+        if let Some(sigs) = group_val
+            .get("compositions")
+            .and_then(toml::Value::as_array)
+        {
             for sig in sigs {
                 let name = sig.get("name").and_then(toml::Value::as_str).unwrap_or("");
                 let full_name: Arc<str> = Arc::from(format!("{group_name}_{name}").as_str());

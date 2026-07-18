@@ -3,7 +3,7 @@
 
 //! Scenario: Compute Hosting Contract — validates the E2E ABG compute path.
 //!
-//! Wave 132f critical path: JupyterHub hosted on ironGate (localhost:8000),
+//! Wave 132f critical path: `JupyterHub` hosted on ironGate (localhost:8000),
 //! capability registered via `primal.announce`, songBird routes from public
 //! entry (sporeGate) to compute backend via mesh capability routing.
 //!
@@ -12,7 +12,7 @@
 //! 2. Topology: ironGate in mesh with compute role, correct zone
 //! 3. Routing: compute/jupyter capabilities resolve to correct gates
 //! 4. Gateway: http.proxy → songBird → ironGate routing contract
-//! 5. Live: JupyterHub health + kernel API (requires deployed JupyterHub)
+//! 5. Live: `JupyterHub` health + kernel API (requires deployed `JupyterHub`)
 
 use crate::composition::{CompositionContext, capability_to_primal};
 use crate::evolution::gate::{all_mesh_gates, mesh_address};

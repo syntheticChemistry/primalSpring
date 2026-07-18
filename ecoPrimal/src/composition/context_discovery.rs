@@ -189,7 +189,7 @@ pub(super) fn rediscover_clients(
     upgrade_btsp_clients(clients)
 }
 
-/// Tiers 2-4: connect by capability for each ALL_CAPS entry.
+/// Tiers 2-4: connect by capability for each `ALL_CAPS` entry.
 fn discover_tiers_2_4(
     clients: &mut HashMap<CapabilityDomain, PrimalClient>,
     discovery_paths: &mut BTreeMap<CapabilityDomain, DiscoveryPath>,

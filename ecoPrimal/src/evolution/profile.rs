@@ -25,7 +25,7 @@ pub struct ProfileConstraints {
     pub target_triple: Option<String>,
     /// Atomic type string (e.g. "tower", "micro").
     pub atomic_type: String,
-    /// Transport mode (e.g. "tcp_only", "tcp_enabled").
+    /// Transport mode (e.g. "`tcp_only`", "`tcp_enabled`").
     pub transport: String,
     /// Maximum primals (from `[composition.constraints]`).
     pub max_primals: Option<usize>,

@@ -5,7 +5,7 @@
 //!
 //! Provides [`bind_transport`] — the canonical pattern for primals that
 //! need to run on platforms where Unix domain sockets are unavailable
-//! or restricted (e.g. Android SELinux denies UDS bind with `EACCES`).
+//! or restricted (e.g. Android `SELinux` denies UDS bind with `EACCES`).
 //!
 //! # Fallback chain
 //!

@@ -2,14 +2,14 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: barraCuda Precision Routing — deep tensor and dispatch validation.
 //!
-//! Exercises barraCuda's precision routing, TensorSession lifecycle, and
+//! Exercises barraCuda's precision routing, `TensorSession` lifecycle, and
 //! spring-system absorption patterns. With barraCuda released back for
 //! evolution, this scenario validates deeper integration than the basic
 //! compute-triangle `stats.mean` round-trip.
 //!
 //! Phases:
 //! 1. `barracuda.precision.route` — multi-operation precision tier queries
-//! 2. `tensor.create` + `tensor.session.status` — TensorSession lifecycle
+//! 2. `tensor.create` + `tensor.session.status` — `TensorSession` lifecycle
 //! 3. `stats.variance` / `stats.std` — statistical operation coverage
 
 use crate::composition::CompositionContext;

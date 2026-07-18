@@ -2,13 +2,13 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Genetics Compliance — validates that the running NUCLEUS gate
-//! has proper genetic identity (three-tier model) and that the BearDog
+//! has proper genetic identity (three-tier model) and that the `BearDog`
 //! genetic RPC surface is operational.
 //!
 //! The genetics compliance engine checks:
-//! 1. Structural: GeneticTier model, identity construction, tier ordering
-//! 2. Family identity: FAMILY_ID resolved, FAMILY_SEED available
-//! 3. Genetic RPC: BearDog `genetic.*` methods are reachable
+//! 1. Structural: `GeneticTier` model, identity construction, tier ordering
+//! 2. Family identity: `FAMILY_ID` resolved, `FAMILY_SEED` available
+//! 3. Genetic RPC: `BearDog` `genetic.*` methods are reachable
 //! 4. Round-trip: beacon derivation, lineage key derivation, proof/verify cycle
 //! 5. Compliance: all running primals share the same family lineage
 

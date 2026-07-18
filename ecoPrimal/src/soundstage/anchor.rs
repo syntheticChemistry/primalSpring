@@ -16,9 +16,9 @@ pub struct Anchor {
 /// Categories of trust anchors.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AnchorKind {
-    /// FIDO2 token (SoloKey, YubiKey) — CTAP2 hmac-secret for entropy.
+    /// FIDO2 token (`SoloKey`, `YubiKey`) — CTAP2 hmac-secret for entropy.
     Fido2,
-    /// Hardware security module (Titan M2 StrongBox) — key storage + attestation.
+    /// Hardware security module (Titan M2 `StrongBox`) — key storage + attestation.
     StrongBox,
     /// Audio capture (mic/headset) — environmental entropy.
     Audio,
@@ -53,6 +53,7 @@ impl Anchor {
         }
     }
 
+    #[must_use]
     pub fn os_entropy() -> Self {
         Self {
             kind: AnchorKind::OsEntropy,

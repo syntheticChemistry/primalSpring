@@ -51,7 +51,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "membrane:method_breadth",
         membrane_count >= 4,
-        &format!("{membrane_count}/{} membrane coordination methods present", membrane_methods.len()),
+        &format!(
+            "{membrane_count}/{} membrane coordination methods present",
+            membrane_methods.len()
+        ),
     );
 
     let table = canonical_routing_table();
@@ -66,20 +69,37 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 2: Ingress/egress data flow semantics");
 
     let ingress_methods = ["content.put", "storage.store", "content.push", "git.push"];
-    let egress_methods = ["content.get", "storage.fetch", "content.fetch_heads", "impulse.read"];
+    let egress_methods = [
+        "content.get",
+        "storage.fetch",
+        "content.fetch_heads",
+        "impulse.read",
+    ];
 
-    let ingress_ok = ingress_methods.iter().filter(|m| REGISTRY_TOML.contains(**m)).count();
-    let egress_ok = egress_methods.iter().filter(|m| REGISTRY_TOML.contains(**m)).count();
+    let ingress_ok = ingress_methods
+        .iter()
+        .filter(|m| REGISTRY_TOML.contains(**m))
+        .count();
+    let egress_ok = egress_methods
+        .iter()
+        .filter(|m| REGISTRY_TOML.contains(**m))
+        .count();
 
     v.check_bool(
         "flow:ingress_methods",
         ingress_ok >= 3,
-        &format!("{ingress_ok}/{} ingress methods registered", ingress_methods.len()),
+        &format!(
+            "{ingress_ok}/{} ingress methods registered",
+            ingress_methods.len()
+        ),
     );
     v.check_bool(
         "flow:egress_methods",
         egress_ok >= 3,
-        &format!("{egress_ok}/{} egress methods registered", egress_methods.len()),
+        &format!(
+            "{egress_ok}/{} egress methods registered",
+            egress_methods.len()
+        ),
     );
     v.check_bool(
         "flow:bidirectional",

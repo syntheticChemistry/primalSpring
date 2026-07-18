@@ -5,7 +5,7 @@
 //!
 //! Validates the shader compilation pipeline from capability registration through
 //! backend coverage (SPIR-V, WGSL, PTX), precision tiers (f32 default, f64 via
-//! SHADER_F64), and integration with barraCuda/toadStool dispatch.
+//! `SHADER_F64`), and integration with barraCuda/toadStool dispatch.
 //!
 //! Phases:
 //! 1. Shader methods — compile, multi-compile, validate, backend listing

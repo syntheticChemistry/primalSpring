@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: Defense Attestation Surface — validates SkunkBat's threat detection
+//! Scenario: Defense Attestation Surface — validates `SkunkBat`'s threat detection
 //! and defense attestation capabilities.
 //!
 //! Validates:
-//! 1. Security capability domain routing resolves to BearDog
+//! 1. Security capability domain routing resolves to `BearDog`
 //! 2. Defense attestation methods are registered
 //! 3. BTSP handshake pattern is enforced for security operations
 //! 4. Threat classification taxonomy covers known categories
-//! 5. Live defense attestation responds (when SkunkBat reachable)
+//! 5. Live defense attestation responds (when `SkunkBat` reachable)
 
 use crate::composition::{CompositionContext, capability_to_primal, method_to_capability_domain};
 use crate::primal_names;

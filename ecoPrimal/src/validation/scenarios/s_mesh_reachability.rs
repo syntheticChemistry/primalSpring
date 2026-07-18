@@ -2,7 +2,7 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Mesh Reachability — validates RTT thresholds and handshake
-//! freshness for the WireGuard sovereign overlay.
+//! freshness for the `WireGuard` sovereign overlay.
 //!
 //! Unlike `s_mesh_overlay` which validates basic connectivity (ping succeeds),
 //! this scenario validates *quality*:
@@ -13,7 +13,7 @@
 //! | Cross-zone (WAN relay) | < 100ms | ISP hop through golgi |
 //! | Remote VPS | < 150ms | Cloud hop |
 //!
-//! Handshake freshness: WireGuard handshakes rotate every 2 minutes under
+//! Handshake freshness: `WireGuard` handshakes rotate every 2 minutes under
 //! active traffic. A handshake older than 5 minutes suggests the tunnel is
 //! idle or degraded.
 

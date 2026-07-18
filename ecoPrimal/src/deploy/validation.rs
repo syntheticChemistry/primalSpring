@@ -104,7 +104,7 @@ pub struct DeploymentReadiness {
 ///
 /// This is the graph-as-source-of-truth path: the graph defines what
 /// capabilities are needed, and this function discovers providers at runtime.
-/// A single CompositionContext is used for all nodes, avoiding redundant
+/// A single `CompositionContext` is used for all nodes, avoiding redundant
 /// socket discovery.
 #[must_use]
 pub fn validate_live_by_capability(path: &Path) -> LiveGraphValidation {
@@ -223,7 +223,7 @@ pub fn validate_all_graphs(dir: &Path) -> Vec<GraphValidation> {
 /// - Structural validation (graph parses, nodes are well-formed)
 /// - Binary discovery (each spawnable node's binary exists via `launcher::discover_binary`)
 /// - Environment checks (`FAMILY_ID` and `XDG_RUNTIME_DIR` are set)
-/// - Bonding consistency (security_model vs bonding_policy)
+/// - Bonding consistency (`security_model` vs `bonding_policy`)
 ///
 /// # Errors
 ///

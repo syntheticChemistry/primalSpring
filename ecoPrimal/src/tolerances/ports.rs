@@ -199,7 +199,7 @@ pub static PORT_REGISTRY: &[PortEntry] = &[
 
 /// Federation / CNS port assignments — deployment-profile variants.
 ///
-/// These are separate from the canonical PORT_REGISTRY because they are
+/// These are separate from the canonical `PORT_REGISTRY` because they are
 /// per-deployment-profile (nucleus01 vs primalspring01) rather than
 /// per-primal. Federation ports are Songbird mesh coordination endpoints;
 /// CNS ports are profile-specific crypto/defense RPC endpoints.

@@ -10,7 +10,7 @@
 //! |----------|-------|------------------|------------------------------------|
 //! | Backbone | Hub 1 | CRS310 (10G)     | sporeGate, eastGate, northGate, ironGate |
 //! | House2   | Hub 2 | Omada SX3008F    | strandGate, southGate, swiftGate, fieldGate |
-//! | Garage   | Hub 3 | planned          | (future compute + outdoor WiFi)    |
+//! | Garage   | Hub 3 | planned          | (future compute + outdoor `WiFi`)    |
 //! | WAN      | —     | Internet/VPS     | golgi, flockGate, grapheneGate     |
 //!
 //! The target topology forms a triangle:
@@ -240,7 +240,7 @@ fn validate_enrollment_zones(v: &mut ValidationResult) {
     }
 }
 
-/// Validate WireGuard mesh overlay address assignments (10.13.37.0/24).
+/// Validate `WireGuard` mesh overlay address assignments (10.13.37.0/24).
 fn validate_mesh_addresses(v: &mut ValidationResult) {
     let gates = all_mesh_gates();
     let peered: Vec<_> = gates.iter().filter(|e| !e.address.is_empty()).collect();

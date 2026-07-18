@@ -8,8 +8,8 @@
 //! cellmembrane-types. This scenario validates:
 //! 1. Every depot architecture has a corresponding Platform triple
 //! 2. Every known gate has a Platform assignment
-//! 3. Platform methods (exe_extension, install_base, depot_path) are consistent
-//! 4. Legacy TargetArch → Platform conversion coverage
+//! 3. Platform methods (`exe_extension`, `install_base`, `depot_path`) are consistent
+//! 4. Legacy `TargetArch` → Platform conversion coverage
 
 use std::path::PathBuf;
 
@@ -24,8 +24,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "wave139e_platform_types",
         provenance_date: "2026-07-15",
-        description:
-            "Platform type parity — OS Atheism depot/gate coverage validation",
+        description: "Platform type parity — OS Atheism depot/gate coverage validation",
     },
     run,
 };
@@ -95,7 +94,10 @@ fn phase_type_definitions(v: &mut ValidationResult, _ctx: &mut CompositionContex
     if !arch_path.exists() {
         v.check_skip(
             "platform:arch_rs_exists",
-            &format!("arch.rs not found at {} (cellMembrane not in workspace)", arch_path.display()),
+            &format!(
+                "arch.rs not found at {} (cellMembrane not in workspace)",
+                arch_path.display()
+            ),
         );
         return;
     }
@@ -112,10 +114,21 @@ fn phase_type_definitions(v: &mut ValidationResult, _ctx: &mut CompositionContex
         }
     };
 
-    let required_types = ["enum TargetOs", "enum CpuArch", "enum LinkModel", "struct Platform"];
+    let required_types = [
+        "enum TargetOs",
+        "enum CpuArch",
+        "enum LinkModel",
+        "struct Platform",
+    ];
     for ty in required_types {
         v.check_bool(
-            &format!("platform:type_{}", ty.split_whitespace().last().unwrap_or("unknown").to_lowercase()),
+            &format!(
+                "platform:type_{}",
+                ty.split_whitespace()
+                    .last()
+                    .unwrap_or("unknown")
+                    .to_lowercase()
+            ),
             content.contains(ty),
             &format!("{ty} defined in arch.rs"),
         );
@@ -253,8 +266,8 @@ fn phase_legacy_compat(v: &mut ValidationResult, _ctx: &mut CompositionContext) 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::validation::ValidationResult;
     use crate::composition::CompositionContext;
+    use crate::validation::ValidationResult;
 
     #[test]
     fn scenario_metadata_valid() {
@@ -275,7 +288,10 @@ mod tests {
         assert!(GATE_PLATFORMS.len() >= 6, "need at least 6 gate platforms");
         let gates: Vec<_> = GATE_PLATFORMS.iter().map(|(g, _, _)| *g).collect();
         assert!(gates.contains(&"northGate"), "northGate must have platform");
-        assert!(gates.contains(&"grapheneGate"), "grapheneGate must have platform");
+        assert!(
+            gates.contains(&"grapheneGate"),
+            "grapheneGate must have platform"
+        );
     }
 
     #[test]
@@ -286,7 +302,9 @@ mod tests {
         if v.failed > 0 && v.skipped > 0 {
             eprintln!(
                 "platform-type-parity: {}/{} checks — {} failures may be from missing cellMembrane in workspace",
-                v.passed, v.passed + v.failed + v.skipped, v.failed
+                v.passed,
+                v.passed + v.failed + v.skipped,
+                v.failed
             );
             return;
         }

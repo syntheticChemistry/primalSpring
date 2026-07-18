@@ -45,7 +45,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
             ),
         );
     } else {
-        v.check_skip("platform:socket_dir_declared", "UDS unavailable on this platform");
+        v.check_skip(
+            "platform:socket_dir_declared",
+            "UDS unavailable on this platform",
+        );
     }
 
     v.section("Phase 2: Socket directory resolution contract");
@@ -85,9 +88,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "socket:membrane_equivalent",
         is_membrane_path || caps.uds_available,
-        &format!(
-            "socket dir '{socket_dir}' is /run/membrane equivalent or UDS-capable platform"
-        ),
+        &format!("socket dir '{socket_dir}' is /run/membrane equivalent or UDS-capable platform"),
     );
 }
 

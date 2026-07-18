@@ -5,7 +5,7 @@
 //!
 //! Validates the 3-tier entropy model for Loam certificate seeding:
 //! - Tier 1 (OS): Environmental noise (getrandom/urandom)
-//! - Tier 2 (Hardware): Internal mutation (SoloKey secure element RNG via signature nonce)
+//! - Tier 2 (Hardware): Internal mutation (`SoloKey` secure element RNG via signature nonce)
 //! - Tier 3 (Human): Selection pressure (tap timing jitter, nanosecond precision)
 //!
 //! Phase 1: Structural validation of mixing function properties
@@ -25,8 +25,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave138b_entropy_mixing",
         provenance_date: "2026-07-14",
-        description:
-            "FIDO2 entropy mixing — Tier 1+2+3 via BLAKE3, passes NIST SP 800-22 monobit/runs",
+        description: "FIDO2 entropy mixing — Tier 1+2+3 via BLAKE3, passes NIST SP 800-22 monobit/runs",
     },
     run,
 };
@@ -45,12 +44,24 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 fn phase_tier_model(v: &mut ValidationResult) {
     // 3 tiers: OS, Hardware, Human
     let tiers = ["os_environmental", "hardware_mutation", "human_selection"];
-    v.check_bool("tier:count_3", tiers.len() == 3, "Entropy model has exactly 3 tiers");
+    v.check_bool(
+        "tier:count_3",
+        tiers.len() == 3,
+        "Entropy model has exactly 3 tiers",
+    );
 
     // Each tier contributes independently
     v.check_bool("tier1:os_getrandom", true, "Tier 1 (OS) sources getrandom");
-    v.check_bool("tier2:hw_nonce", true, "Tier 2 (Hardware) sources signature nonce");
-    v.check_bool("tier3:human_timing", true, "Tier 3 (Human) sources tap timing");
+    v.check_bool(
+        "tier2:hw_nonce",
+        true,
+        "Tier 2 (Hardware) sources signature nonce",
+    );
+    v.check_bool(
+        "tier3:human_timing",
+        true,
+        "Tier 3 (Human) sources tap timing",
+    );
 
     // No single compromised tier can predict the seed
     v.check_bool(
@@ -61,15 +72,27 @@ fn phase_tier_model(v: &mut ValidationResult) {
 
     // Output is 32 bytes (256 bits)
     let output_len = 32;
-    v.check_bool("output:len_32", output_len == 32, "Mixed output is 32 bytes (256 bits)");
+    v.check_bool(
+        "output:len_32",
+        output_len == 32,
+        "Mixed output is 32 bytes (256 bits)",
+    );
 }
 
 fn phase_blake3_mixing(v: &mut ValidationResult) {
     // BLAKE3 keyed hash: key is Tier 1 (OS RNG), data is Tier 2 + Tier 3
-    v.check_bool("blake3:key_len_32", true, "BLAKE3 keyed_hash uses 32-byte key");
+    v.check_bool(
+        "blake3:key_len_32",
+        true,
+        "BLAKE3 keyed_hash uses 32-byte key",
+    );
 
     // Key derivation: OS RNG provides the BLAKE3 key
-    v.check_bool("blake3:key_from_os_rng", true, "Key is sourced from OS RNG (Tier 1)");
+    v.check_bool(
+        "blake3:key_from_os_rng",
+        true,
+        "Key is sourced from OS RNG (Tier 1)",
+    );
 
     // Data includes: challenge (32 bytes) + signature (variable) + timing (8 bytes)
     let min_data_len = 32 + 64 + 8; // challenge + min_sig + timestamp
@@ -95,16 +118,20 @@ fn phase_blake3_mixing(v: &mut ValidationResult) {
     );
 
     // Avalanche: flipping 1 input bit changes ~50% of output bits
-    v.check_bool("blake3:avalanche", true, "BLAKE3 provides avalanche property");
+    v.check_bool(
+        "blake3:avalanche",
+        true,
+        "BLAKE3 provides avalanche property",
+    );
 }
 
 fn phase_statistical_quality(v: &mut ValidationResult) {
     // Generate a mock 256-bit output (simulate well-mixed entropy)
     // In live mode this would use actual BLAKE3 output from ceremony
     let mock_output: [u8; 32] = [
-        0x6a, 0x3b, 0xc4, 0x8e, 0x17, 0xf2, 0x9d, 0x51, 0xa8, 0x7c, 0x3e, 0xd0, 0x4b, 0x96,
-        0xe5, 0x2f, 0x8a, 0x1d, 0xc7, 0x63, 0xb4, 0x0e, 0x59, 0xa2, 0xf6, 0x38, 0xd1, 0x7c,
-        0x4e, 0x95, 0x0b, 0xa3,
+        0x6a, 0x3b, 0xc4, 0x8e, 0x17, 0xf2, 0x9d, 0x51, 0xa8, 0x7c, 0x3e, 0xd0, 0x4b, 0x96, 0xe5,
+        0x2f, 0x8a, 0x1d, 0xc7, 0x63, 0xb4, 0x0e, 0x59, 0xa2, 0xf6, 0x38, 0xd1, 0x7c, 0x4e, 0x95,
+        0x0b, 0xa3,
     ];
 
     // Monobit test: count of 1-bits should be within [112, 144] for 256 bits

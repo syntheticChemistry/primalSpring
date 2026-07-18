@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: SkunkBat MethodGate Enforcement — threat detection and access control.
+//! Scenario: `SkunkBat` `MethodGate` Enforcement — threat detection and access control.
 //!
-//! Validates SkunkBat's role as the defensive primal: MethodGate enforcement,
+//! Validates `SkunkBat`'s role as the defensive primal: `MethodGate` enforcement,
 //! threat detection, and audit surface. The blurb identifies these methods as
 //! "not in binary yet" (P1 gap on flockGate), so this scenario validates the
 //! structural readiness: domain registration, routing, and BTSP escalation.
 //!
 //! Phases:
 //! 1. Domain registration: threat, audit, defense domains owned by skunkbat
-//! 2. MethodGate contract: method_gate.* methods expected
-//! 3. BTSP integration: btsp_escalation flag, Tower atomic membership
-//! 4. Defense topology: SkunkBat port, Tower gates have SkunkBat
-//! 5. Live: SkunkBat health probing
+//! 2. `MethodGate` contract: `method_gate`.* methods expected
+//! 3. BTSP integration: `btsp_escalation` flag, Tower atomic membership
+//! 4. Defense topology: `SkunkBat` port, Tower gates have `SkunkBat`
+//! 5. Live: `SkunkBat` health probing
 
 use crate::composition::{CompositionContext, capability_to_primal};
 use crate::primal_names;
@@ -24,7 +24,7 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
 const TOPOLOGY_TOML: &str = include_str!("../../../../config/mesh_topology.toml");
 
-/// SkunkBat MethodGate scenario metadata.
+/// `SkunkBat` `MethodGate` scenario metadata.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "skunkbat-method-gate",
@@ -37,7 +37,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
-/// Run all SkunkBat MethodGate validation phases.
+/// Run all `SkunkBat` `MethodGate` validation phases.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Phase 1: Domain registration");
     phase_domains(v);

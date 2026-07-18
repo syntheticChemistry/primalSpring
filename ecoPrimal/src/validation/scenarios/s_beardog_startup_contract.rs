@@ -6,13 +6,13 @@
 //!
 //! Wave 132f exposed two P1 debt items in bearDog:
 //!
-//! 1. **CryptoProvider**: `rustls_rustcrypto::provider().install_default()` must
+//! 1. **`CryptoProvider`**: `rustls_rustcrypto::provider().install_default()` must
 //!    be called before any ACME or TLS operations. Without it, `serve_https_gateway`
 //!    panics at `assert_installed()`. This scenario validates that bearDog's
 //!    capability registry includes TLS methods and that the ACME gateway contract
 //!    is structurally sound.
 //!
-//! 2. **BindMode::Auto**: Should auto-detect Android abstract sockets via
+//! 2. **`BindMode::Auto`**: Should auto-detect Android abstract sockets via
 //!    `ANDROID_ROOT`/`ANDROID_DATA` env vars or `cfg(target_os = "android")`.
 //!    primalSpring's `PlatformCapabilities::detect()` provides the reference
 //!    implementation. This scenario validates platform detection alignment.
@@ -20,7 +20,7 @@
 //! Phases:
 //! 1. TLS ownership: bearDog owns `tls.*` in registry, ACME cert domain
 //! 2. Platform detection: `PlatformCapabilities` abstract socket probe
-//! 3. Startup ordering: CryptoProvider before TLS bind (structural contract)
+//! 3. Startup ordering: `CryptoProvider` before TLS bind (structural contract)
 //! 4. Live: bearDog health + TLS port probe (requires deployed bearDog)
 
 use crate::composition::CompositionContext;

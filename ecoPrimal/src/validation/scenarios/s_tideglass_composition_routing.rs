@@ -7,7 +7,7 @@
 //! tideGlass (Gene Perturbation Simulator) requires:
 //! - barraCuda for linear algebra and statistical computation
 //! - petalTongue for chart/visualization rendering
-//! - songBird for drawbridge bonds (LINCS L1000, GEO, ChEMBL, NF Data Portal)
+//! - songBird for drawbridge bonds (LINCS L1000, GEO, `ChEMBL`, NF Data Portal)
 //! - nestGate for data persistence
 
 use crate::composition::CompositionContext;
@@ -52,9 +52,15 @@ fn phase_compute_pipeline(v: &mut ValidationResult) {
     let table = canonical_routing_table();
 
     let compute_methods = [
-        ("tensor.matmul", "Matrix multiplication for perturbation models"),
+        (
+            "tensor.matmul",
+            "Matrix multiplication for perturbation models",
+        ),
         ("math.matvec", "Matrix-vector ops for gene expression"),
-        ("math.stats", "Statistical computation for gene-gene interactions"),
+        (
+            "math.stats",
+            "Statistical computation for gene-gene interactions",
+        ),
     ];
 
     for (method, desc) in compute_methods {
@@ -125,8 +131,8 @@ fn phase_science_bonds(v: &mut ValidationResult) {
         );
     }
 
-    let proto_consumer = DRAWBRIDGE_BONDS.contains("\"protoKarya\"")
-        || DRAWBRIDGE_BONDS.contains("\"tideGlass\"");
+    let proto_consumer =
+        DRAWBRIDGE_BONDS.contains("\"protoKarya\"") || DRAWBRIDGE_BONDS.contains("\"tideGlass\"");
     v.check_bool(
         "bond:protokarya_consumer",
         proto_consumer,
@@ -154,8 +160,8 @@ fn phase_deploy_graph(v: &mut ValidationResult) {
 
     let table = canonical_routing_table();
     let has_storage = table.route("storage.store").is_some();
-    let has_compute = table.route("math.matmul").is_some()
-        || table.route("compute.dispatch").is_some();
+    let has_compute =
+        table.route("math.matmul").is_some() || table.route("compute.dispatch").is_some();
     v.check_bool(
         "graph:storage_compute_pair",
         has_storage && has_compute,
@@ -194,6 +200,10 @@ mod tests {
         let mut v = ValidationResult::new(SCENARIO.meta.id);
         let mut ctx = CompositionContext::discover();
         (SCENARIO.run)(&mut v, &mut ctx);
-        assert_eq!(v.failed, 0, "scenario '{}' had {} failures", SCENARIO.meta.id, v.failed);
+        assert_eq!(
+            v.failed, 0,
+            "scenario '{}' had {} failures",
+            SCENARIO.meta.id, v.failed
+        );
     }
 }

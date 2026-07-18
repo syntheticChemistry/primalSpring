@@ -34,7 +34,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "viz:minimum_gates",
         peered.len() >= 4,
-        &format!("{} peered gates (need ≥4 for meaningful visualization)", peered.len()),
+        &format!(
+            "{} peered gates (need ≥4 for meaningful visualization)",
+            peered.len()
+        ),
     );
 
     v.check_bool(
@@ -66,7 +69,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "viz:all_addresses_resolved",
         resolved == peered.len(),
-        &format!("{resolved}/{} peered gates have mesh_address lookups", peered.len()),
+        &format!(
+            "{resolved}/{} peered gates have mesh_address lookups",
+            peered.len()
+        ),
     );
 
     v.section("Phase 3: Role diversity for viz layers");
@@ -75,7 +81,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "viz:role_diversity",
         roles.len() >= 2,
-        &format!("{} distinct gate roles for visualization layers: {roles:?}", roles.len()),
+        &format!(
+            "{} distinct gate roles for visualization layers: {roles:?}",
+            roles.len()
+        ),
     );
 }
 

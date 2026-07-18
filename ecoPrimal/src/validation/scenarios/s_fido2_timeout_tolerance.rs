@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: FIDO2 Timeout Tolerance — UserActionTimeout handled gracefully.
+//! Scenario: FIDO2 Timeout Tolerance — `UserActionTimeout` handled gracefully.
 //!
 //! Validates graceful degradation when CTAP2 operations time out:
-//! - User doesn't tap within 30s → CTAP2_ERR_ACTION_TIMEOUT (0x2A)
-//! - Keepalive polling handles STATUS_UPNEEDED correctly
-//! - ERR_CHANNEL_BUSY (0x06) recovery via CTAPHID_CANCEL + replug
+//! - User doesn't tap within 30s → `CTAP2_ERR_ACTION_TIMEOUT` (0x2A)
+//! - Keepalive polling handles `STATUS_UPNEEDED` correctly
+//! - `ERR_CHANNEL_BUSY` (0x06) recovery via `CTAPHID_CANCEL` + replug
 //! - Ceremony state machine handles partial timeout without corruption
 //!
 //! These are critical UX paths — the system must never hang or corrupt state
@@ -25,8 +25,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave138b_timeout_tolerance",
         provenance_date: "2026-07-14",
-        description:
-            "FIDO2 timeout tolerance — UserActionTimeout + ERR_CHANNEL_BUSY handled gracefully",
+        description: "FIDO2 timeout tolerance — UserActionTimeout + ERR_CHANNEL_BUSY handled gracefully",
     },
     run,
 };
@@ -65,10 +64,18 @@ fn phase_timeout_errors(v: &mut ValidationResult) {
 
     // Application must NOT retry automatically after timeout
     // (user chose not to tap — respect that decision)
-    v.check_bool("timeout:no_auto_retry", true, "No automatic retry after user timeout");
+    v.check_bool(
+        "timeout:no_auto_retry",
+        true,
+        "No automatic retry after user timeout",
+    );
 
     // Error is reported to caller as structured error, not panic
-    v.check_bool("timeout:result_err", true, "Timeout reported as Result::Err, never panic");
+    v.check_bool(
+        "timeout:result_err",
+        true,
+        "Timeout reported as Result::Err, never panic",
+    );
 
     // CTAP2_ERR_KEEPALIVE_CANCEL = 0x2D (if we send CTAPHID_CANCEL)
     let err_keepalive_cancel: u8 = 0x2D;
@@ -88,11 +95,19 @@ fn phase_keepalive_polling(v: &mut ValidationResult) {
         status_processing == 1,
         "STATUS_PROCESSING is 1",
     );
-    v.check_bool("keepalive:status_upneeded_2", status_upneeded == 2, "STATUS_UPNEEDED is 2");
+    v.check_bool(
+        "keepalive:status_upneeded_2",
+        status_upneeded == 2,
+        "STATUS_UPNEEDED is 2",
+    );
 
     // Poll interval: 200ms per attempt (matches HID_READ_TIMEOUT_MS)
     let poll_interval_ms = 200;
-    v.check_bool("keepalive:poll_200ms", poll_interval_ms == 200, "Poll interval is 200ms");
+    v.check_bool(
+        "keepalive:poll_200ms",
+        poll_interval_ms == 200,
+        "Poll interval is 200ms",
+    );
 
     // Maximum attempts: 150 (30s / 200ms)
     let max_attempts = 150;
@@ -103,7 +118,11 @@ fn phase_keepalive_polling(v: &mut ValidationResult) {
     );
 
     // Empty reads (0 bytes) are not errors — just "no data yet"
-    v.check_bool("keepalive:empty_read_ok", true, "Empty HID read returns Ok(0), not error");
+    v.check_bool(
+        "keepalive:empty_read_ok",
+        true,
+        "Empty HID read returns Ok(0), not error",
+    );
 
     // Keepalive packets are 64 bytes with cmd=KEEPALIVE (0xBB)
     let keepalive_cmd: u8 = 0xBB;
@@ -114,7 +133,11 @@ fn phase_keepalive_polling(v: &mut ValidationResult) {
     );
 
     // Must sleep between polls to avoid CPU spin
-    v.check_bool("keepalive:sleep_between_polls", true, "Sleep between polls prevents CPU spin");
+    v.check_bool(
+        "keepalive:sleep_between_polls",
+        true,
+        "Sleep between polls prevents CPU spin",
+    );
 }
 
 fn phase_channel_busy_recovery(v: &mut ValidationResult) {
@@ -193,13 +216,25 @@ fn phase_ceremony_timeout_state(v: &mut ValidationResult) {
     );
 
     // No partial entropy is incorporated into seed
-    v.check_bool("ceremony:no_partial_entropy", true, "No partial entropy on timeout");
+    v.check_bool(
+        "ceremony:no_partial_entropy",
+        true,
+        "No partial entropy on timeout",
+    );
 
     // Ceremony can be restarted from beginning after timeout
-    v.check_bool("ceremony:restartable", true, "Ceremony restartable after timeout");
+    v.check_bool(
+        "ceremony:restartable",
+        true,
+        "Ceremony restartable after timeout",
+    );
 
     // signCount is not incremented on timeout (no successful assertion)
-    v.check_bool("ceremony:signcount_unchanged", true, "signCount unchanged on timeout");
+    v.check_bool(
+        "ceremony:signcount_unchanged",
+        true,
+        "signCount unchanged on timeout",
+    );
 }
 
 #[cfg(test)]

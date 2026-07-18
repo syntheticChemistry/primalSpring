@@ -27,18 +27,15 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave139c_depot_wan",
         provenance_date: "2026-07-15",
-        description:
-            "Depot WAN serving — validates VPS depot endpoint, checksums, signatures, architecture coverage",
+        description: "Depot WAN serving — validates VPS depot endpoint, checksums, signatures, architecture coverage",
     },
     run,
 };
 
 const DEPOT_BASE_URL: &str = "https://membrane.primals.eco/depot";
 
-const EXPECTED_ARCHITECTURES: &[&str] = &[
-    "x86_64-unknown-linux-musl",
-    "aarch64-unknown-linux-musl",
-];
+const EXPECTED_ARCHITECTURES: &[&str] =
+    &["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"];
 
 const WINDOWS_ARCHITECTURE: &str = "x86_64-pc-windows-gnu";
 
@@ -145,9 +142,15 @@ fn phase_checksums(v: &mut ValidationResult) {
                         .count();
 
                     v.check_bool(
-                        &format!("wan:checksums_{}_coverage", arch.split('-').next().unwrap_or("unknown")),
+                        &format!(
+                            "wan:checksums_{}_coverage",
+                            arch.split('-').next().unwrap_or("unknown")
+                        ),
                         primal_count >= 10,
-                        &format!("{arch}: {primal_count}/{} primals in checksums", Primal::ALL_SLUGS.len()),
+                        &format!(
+                            "{arch}: {primal_count}/{} primals in checksums",
+                            Primal::ALL_SLUGS.len()
+                        ),
                     );
                 }
             }
@@ -219,9 +222,7 @@ fn phase_signatures(v: &mut ValidationResult) {
 
 fn phase_architecture(v: &mut ValidationResult) {
     for arch in EXPECTED_ARCHITECTURES {
-        let probe_url = format!(
-            "{DEPOT_BASE_URL}/primals/{arch}/songbird"
-        );
+        let probe_url = format!("{DEPOT_BASE_URL}/primals/{arch}/songbird");
 
         match std::process::Command::new("curl")
             .args(["-sI", "--max-time", "5", &probe_url])
@@ -230,23 +231,27 @@ fn phase_architecture(v: &mut ValidationResult) {
             Ok(output) => {
                 let stdout = String::from_utf8_lossy(&output.stdout);
                 v.check_bool(
-                    &format!("wan:arch_{}_present", arch.split('-').next().unwrap_or("unknown")),
+                    &format!(
+                        "wan:arch_{}_present",
+                        arch.split('-').next().unwrap_or("unknown")
+                    ),
                     stdout.contains("200"),
                     &format!("{arch}/songbird exists in WAN depot"),
                 );
             }
             Err(_) => {
                 v.check_skip(
-                    &format!("wan:arch_{}_present", arch.split('-').next().unwrap_or("unknown")),
+                    &format!(
+                        "wan:arch_{}_present",
+                        arch.split('-').next().unwrap_or("unknown")
+                    ),
                     "network unreachable",
                 );
             }
         }
     }
 
-    let win_url = format!(
-        "{DEPOT_BASE_URL}/primals/{WINDOWS_ARCHITECTURE}/songbird.exe"
-    );
+    let win_url = format!("{DEPOT_BASE_URL}/primals/{WINDOWS_ARCHITECTURE}/songbird.exe");
     match std::process::Command::new("curl")
         .args(["-sI", "--max-time", "5", &win_url])
         .output()
@@ -260,18 +265,13 @@ fn phase_architecture(v: &mut ValidationResult) {
             );
         }
         Err(_) => {
-            v.check_skip(
-                "wan:arch_windows_present",
-                "network unreachable",
-            );
+            v.check_skip("wan:arch_windows_present", "network unreachable");
         }
     }
 }
 
 fn phase_live_probe(v: &mut ValidationResult) {
-    let probe_url = format!(
-        "{DEPOT_BASE_URL}/primals/x86_64-unknown-linux-musl/membrane"
-    );
+    let probe_url = format!("{DEPOT_BASE_URL}/primals/x86_64-unknown-linux-musl/membrane");
 
     match std::process::Command::new("curl")
         .args(["-sI", "--max-time", "5", &probe_url])
@@ -313,8 +313,8 @@ fn phase_live_probe(v: &mut ValidationResult) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::validation::ValidationResult;
     use crate::composition::CompositionContext;
+    use crate::validation::ValidationResult;
 
     #[test]
     fn scenario_metadata_valid() {

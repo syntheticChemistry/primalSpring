@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: PetalTongue Visualization — dashboard and render pipeline.
+//! Scenario: `PetalTongue` Visualization — dashboard and render pipeline.
 //!
-//! Validates PetalTongue's visualization capabilities as the ecosystem's
-//! proprioceptive surface. PetalTongue renders composition state, gate
+//! Validates `PetalTongue`'s visualization capabilities as the ecosystem's
+//! proprioceptive surface. `PetalTongue` renders composition state, gate
 //! topology, and primal health into dashboards.
 //!
 //! Phases:
@@ -12,7 +12,7 @@
 //! 2. Domain routing: all viz domains resolve to petaltongue
 //! 3. Dashboard contract: expected query/render/stream surface
 //! 4. Web UI alignment: play.html exists (static dashboard shell)
-//! 5. Live: PetalTongue health + viz.query dispatch
+//! 5. Live: `PetalTongue` health + viz.query dispatch
 
 use crate::composition::{CompositionContext, capability_to_primal};
 use crate::primal_names;
@@ -22,7 +22,7 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 
 const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
 
-/// PetalTongue visualization scenario metadata.
+/// `PetalTongue` visualization scenario metadata.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "petaltongue-viz",
@@ -46,7 +46,7 @@ const VIZ_METHODS: &[(&str, &str)] = &[
     ("interaction.subscribe", "event subscription"),
 ];
 
-/// Run all PetalTongue visualization phases.
+/// Run all `PetalTongue` visualization phases.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Phase 1: Capability coverage");
     phase_capabilities(v);

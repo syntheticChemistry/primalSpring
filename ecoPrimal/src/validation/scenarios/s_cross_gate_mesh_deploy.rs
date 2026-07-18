@@ -30,7 +30,11 @@ pub const SCENARIO: Scenario = Scenario {
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Deploy methods route correctly");
 
-    let deploy_methods = ["graph.deploy", "graph.execute", "coordination.deploy_atomic"];
+    let deploy_methods = [
+        "graph.deploy",
+        "graph.execute",
+        "coordination.deploy_atomic",
+    ];
     let table = canonical_routing_table();
 
     for method in deploy_methods {

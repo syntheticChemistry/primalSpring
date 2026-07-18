@@ -2,19 +2,19 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Keygen Interaction Surface — validates the full key generation
-//! interaction surface that larger systems (browser UI, RustDesk, ADB) leverage.
+//! interaction surface that larger systems (browser UI, `RustDesk`, ADB) leverage.
 //!
 //! Wave 138a: The key generation ceremony needs to be browser-accessible via
 //! Neural API HTTP for interactive initial key creation. This scenario validates:
 //!
 //! 1. All keygen methods are dispatch-routable (same path browser→NAPI→bearDog)
 //! 2. Ephemeral key generation + comparison flow exists
-//! 3. Multi-source genetic mixing (FIDO2 + audio + StrongBox + getrandom)
+//! 3. Multi-source genetic mixing (FIDO2 + audio + `StrongBox` + getrandom)
 //! 4. Ceremony state machine: init → contribute(N sources) → mix → derive → finalize
 //! 5. Neural API dispatch compatibility (methods callable via capability.call)
 
-use crate::composition::neural_routing::canonical_routing_table;
 use crate::composition::CompositionContext;
+use crate::composition::neural_routing::canonical_routing_table;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -52,8 +52,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave138a_keygen_surface",
         provenance_date: "2026-07-13",
-        description:
-            "Keygen interaction surface — browser-accessible ceremony via Neural API dispatch",
+        description: "Keygen interaction surface — browser-accessible ceremony via Neural API dispatch",
     },
     run,
 };
@@ -96,7 +95,10 @@ fn phase_keygen_dispatch(v: &mut ValidationResult) {
         all_routed,
         &format!(
             "{}/{} keygen methods routable",
-            KEYGEN_METHODS.iter().filter(|m| table.route(m).is_some()).count(),
+            KEYGEN_METHODS
+                .iter()
+                .filter(|m| table.route(m).is_some())
+                .count(),
             KEYGEN_METHODS.len()
         ),
     );
@@ -121,7 +123,9 @@ fn phase_ceremony_state_machine(v: &mut ValidationResult) {
         ),
     );
 
-    let single_authority = owners.iter().all(|o| *o == owners.first().copied().unwrap_or(""));
+    let single_authority = owners
+        .iter()
+        .all(|o| *o == owners.first().copied().unwrap_or(""));
     v.check_bool(
         "keygen:ceremony_single_authority",
         single_authority,
@@ -248,9 +252,7 @@ fn phase_napi_compatibility(v: &mut ValidationResult, ctx: &mut CompositionConte
 
     let ceremony_methods_in_crypto_domain = CEREMONY_STATE_MACHINE
         .iter()
-        .all(|m| {
-            table.route(m).is_some()
-        });
+        .all(|m| table.route(m).is_some());
 
     v.check_bool(
         "keygen:napi_all_ceremony_routable",
@@ -258,9 +260,7 @@ fn phase_napi_compatibility(v: &mut ValidationResult, ctx: &mut CompositionConte
         "all ceremony methods routable via Neural API dispatch (browser path)",
     );
 
-    let keygen_methods_routable = KEYGEN_METHODS
-        .iter()
-        .all(|m| table.route(m).is_some());
+    let keygen_methods_routable = KEYGEN_METHODS.iter().all(|m| table.route(m).is_some());
 
     v.check_bool(
         "keygen:napi_all_keygen_routable",
@@ -274,7 +274,11 @@ fn phase_napi_compatibility(v: &mut ValidationResult, ctx: &mut CompositionConte
         has_crypto_cap,
         &format!(
             "crypto capability via NAPI: {}",
-            if has_crypto_cap { "live (browser can call)" } else { "offline (structural only)" }
+            if has_crypto_cap {
+                "live (browser can call)"
+            } else {
+                "offline (structural only)"
+            }
         ),
     );
 
@@ -289,7 +293,11 @@ fn phase_napi_compatibility(v: &mut ValidationResult, ctx: &mut CompositionConte
             gen_test.is_ok(),
             &format!(
                 "live generate_keypair: {}",
-                if gen_test.is_ok() { "responded" } else { "unavailable" }
+                if gen_test.is_ok() {
+                    "responded"
+                } else {
+                    "unavailable"
+                }
             ),
         );
     }

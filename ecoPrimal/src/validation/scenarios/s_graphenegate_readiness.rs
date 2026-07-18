@@ -4,7 +4,7 @@
 //! Scenario: grapheneGate Readiness — validates that all 13 primals have
 //! TCP-only fallback infrastructure for Pixel 8 (aarch64-musl) deployment.
 //!
-//! Structural phase (Tier::Rust):
+//! Structural phase (`Tier::Rust)`:
 //!   - All 13 primals have TCP fallback ports registered
 //!   - `BindMode` parsing covers all variants
 //!   - `PRIMAL_BIND_MODE` env key is defined
@@ -34,7 +34,7 @@ use crate::primal_names::Primal;
 
 const ALL_13_PRIMALS: &[&str] = Primal::ALL_SLUGS;
 
-/// Resolve the ecoPrimals workspace root from CARGO_MANIFEST_DIR.
+/// Resolve the ecoPrimals workspace root from `CARGO_MANIFEST_DIR`.
 /// primalSpring lives at `springs/primalSpring/ecoPrimal` within the workspace,
 /// so we walk up to find `infra/plasmidBin`.
 fn ecoprimals_root() -> Option<std::path::PathBuf> {
@@ -111,7 +111,7 @@ fn phase_upstream_blockers(v: &mut ValidationResult) {
     );
 }
 
-/// Checks whether a primal's bind-mode-specific subsystem respects tcp_only.
+/// Checks whether a primal's bind-mode-specific subsystem respects `tcp_only`.
 /// Returns true only when we can structurally verify the fix has landed.
 /// For now, checks if the primal's codebase contains the guard pattern.
 fn check_primal_bind_mode_adoption(primal: &str, subsystem: &str) -> bool {
@@ -403,7 +403,7 @@ fn phase_matrix_cell(v: &mut ValidationResult) {
     }
 }
 
-/// Returns a SystemTime cutoff: binaries must be newer than this to be "fresh".
+/// Returns a `SystemTime` cutoff: binaries must be newer than this to be "fresh".
 /// TCP fallback adoption commits were June 10 2026 ~08:00 UTC-4.
 fn chrono_lite_cutoff() -> std::time::SystemTime {
     use std::time::{Duration, UNIX_EPOCH};

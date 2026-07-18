@@ -89,25 +89,25 @@ pub enum Spring {
 /// - **Meta**: Orchestration + intelligence. Coordinates compositions,
 ///   manages gate lifecycle, provides AI inference.
 ///
-/// Because Tower is embedded in Node, Nest, and full NUCLEUS, the BearDog
+/// Because Tower is embedded in Node, Nest, and full NUCLEUS, the `BearDog`
 /// genetic encryption model propagates to every cross-gate bond. Covalent
 /// bonds share the family seed (full trust); ionic bonds provide metered,
 /// contract-based access — enabling gates like a cold-storage NAS to serve
 /// data securely to compute-heavy gates without shared secrets.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Atomic {
-    /// Electron shell: BearDog + Songbird + SkunkBat.
+    /// Electron shell: `BearDog` + Songbird + `SkunkBat`.
     /// The trust boundary — BTSP encryption, mesh discovery, threat assessment.
     /// Present in every other atomic as the encryption substrate.
     Tower,
-    /// Proton: Tower + ToadStool + BarraCuda + CoralReef.
+    /// Proton: Tower + `ToadStool` + `BarraCuda` + `CoralReef`.
     /// Compute capacity — dispatch, tensor math, shader compilation.
     Node,
-    /// Neutron: Tower + NestGate + RhizoCrypt + LoamSpine + SweetGrass.
+    /// Neutron: Tower + `NestGate` + `RhizoCrypt` + `LoamSpine` + `SweetGrass`.
     /// Storage + lineage — content persistence, DAG provenance, attribution.
     /// Enables cross-gate data serving (e.g. cold NAS via ionic bonds).
     Nest,
-    /// Meta-tier: BiomeOS + Squirrel + PetalTongue.
+    /// Meta-tier: `BiomeOS` + Squirrel + `PetalTongue`.
     /// Orchestration, AI inference, visualization.
     Meta,
 }

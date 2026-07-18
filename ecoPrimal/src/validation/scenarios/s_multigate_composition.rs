@@ -9,7 +9,7 @@
 //! 2. Assigns primals based on gate role (compute gates get GPU primals)
 //! 3. Routes dispatch correctly (gpu → ironGate, nest → sporeGate)
 //! 4. Maintains BTSP enforcement across all gates
-//! 5. Live: BiomeOS health on local gate
+//! 5. Live: `BiomeOS` health on local gate
 
 use crate::composition::CompositionContext;
 use crate::evolution::{all_mesh_gates, mesh_address};

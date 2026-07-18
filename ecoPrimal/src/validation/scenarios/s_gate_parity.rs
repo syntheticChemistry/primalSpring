@@ -2,12 +2,12 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Gate Parity — asserts that the local gate has N primals alive,
-//! systemd units persisted (enabled), and WireGuard handshakes are fresh.
+//! systemd units persisted (enabled), and `WireGuard` handshakes are fresh.
 //!
 //! Gate parity is the foundational health assertion: a gate is "sovereign" when:
 //! 1. Expected primals are running as user systemd units
 //! 2. Those units are *enabled* (persist across reboot)
-//! 3. WireGuard has recent handshakes with mesh peers (< 3 minutes)
+//! 3. `WireGuard` has recent handshakes with mesh peers (< 3 minutes)
 //! 4. The gate identity is resolvable via membrane
 //!
 //! This scenario is designed to run on any enrolled gate and adapts its

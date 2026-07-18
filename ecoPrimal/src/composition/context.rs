@@ -234,7 +234,7 @@ impl CompositionContext {
     ///
     /// Once set, [`call_authenticated`](Self::call_authenticated) will inject
     /// `_bearer_token` into JSON-RPC params for scope-checked dispatch on
-    /// the receiving primal's MethodGate.
+    /// the receiving primal's `MethodGate`.
     pub fn set_bearer_token(&mut self, token: impl Into<String>) {
         self.bearer_token = Some(token.into());
     }
@@ -636,7 +636,7 @@ impl CompositionContext {
     /// Full discovery path map (capability -> mechanism).
     ///
     /// Useful for telemetry, guidestone reporting, and liveSpore-style
-    /// provenance journals (mirrors lithoSpore's DiscoveryPath pattern).
+    /// provenance journals (mirrors lithoSpore's `DiscoveryPath` pattern).
     #[must_use]
     pub const fn discovery_paths(&self) -> &BTreeMap<CapabilityDomain, DiscoveryPath> {
         &self.discovery_paths

@@ -16,7 +16,11 @@ const PORTS_TOML: &str = include_str!("../../../../config/ports.toml");
 /// Drawbridge bond tier labels from the K-Derm weak-bond model.
 const BOND_TIERS: &[(&str, BondType, TrustModel)] = &[
     ("scientific", BondType::Ionic, TrustModel::Contractual),
-    ("community", BondType::Metallic, TrustModel::MitoBeaconFamily),
+    (
+        "community",
+        BondType::Metallic,
+        TrustModel::MitoBeaconFamily,
+    ),
     ("commercial", BondType::Ionic, TrustModel::Contractual),
     ("municipal", BondType::Covalent, TrustModel::Organizational),
     ("untrusted", BondType::Weak, TrustModel::ZeroTrust),

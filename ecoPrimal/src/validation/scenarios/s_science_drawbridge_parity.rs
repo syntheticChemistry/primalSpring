@@ -3,12 +3,12 @@
 
 //! Scenario: Science Drawbridge Parity — validates that the science API weak
 //! bonds declared in songBird's bond constants match the primalSpring
-//! drawbridge_bonds.toml registry and the Caddy proxy configuration.
+//! `drawbridge_bonds.toml` registry and the Caddy proxy configuration.
 //!
 //! Wave 139c: songBird shipped NCBI/PubChem drawbridge bonds (64393c2).
 //! This scenario ensures three-way parity:
 //! 1. songBird `SCIENCE_BONDS` constant hosts
-//! 2. drawbridge_bonds.toml registry entries
+//! 2. `drawbridge_bonds.toml` registry entries
 //! 3. Caddy science-api-proxy snippet routes
 
 use crate::composition::CompositionContext;
@@ -22,8 +22,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "wave139c_science_bonds",
         provenance_date: "2026-07-15",
-        description:
-            "Science drawbridge parity — songBird bonds ↔ registry ↔ Caddy proxy three-way validation",
+        description: "Science drawbridge parity — songBird bonds ↔ registry ↔ Caddy proxy three-way validation",
     },
     run,
 };
@@ -90,16 +89,15 @@ fn phase_trust_tiers(v: &mut ValidationResult) {
         return;
     };
 
-    let bonds = match doc.get("bonds").and_then(|b| b.as_table()) {
-        Some(t) => t,
-        None => {
-            v.check_bool(
-                "science:tier_parse",
-                false,
-                "no [bonds] table in drawbridge_bonds.toml",
-            );
-            return;
-        }
+    let bonds = if let Some(t) = doc.get("bonds").and_then(|b| b.as_table()) {
+        t
+    } else {
+        v.check_bool(
+            "science:tier_parse",
+            false,
+            "no [bonds] table in drawbridge_bonds.toml",
+        );
+        return;
     };
 
     for (name, host) in SCIENCE_BOND_HOSTS {
@@ -162,11 +160,7 @@ fn phase_consumers(v: &mut ValidationResult) {
             let consumers = entry
                 .get("consumers")
                 .and_then(|c| c.as_array())
-                .map(|arr| {
-                    arr.iter()
-                        .filter_map(|v| v.as_str())
-                        .collect::<Vec<_>>()
-                })
+                .map(|arr| arr.iter().filter_map(|v| v.as_str()).collect::<Vec<_>>())
                 .unwrap_or_default();
 
             v.check_bool(
@@ -188,8 +182,7 @@ fn phase_consumers(v: &mut ValidationResult) {
                 v.check_skip(
                     &format!("science:consumer_match_{name}"),
                     &format!(
-                        "{key}: consumers {:?} — none match expected {:?}",
-                        consumers, expected_consumers
+                        "{key}: consumers {consumers:?} — none match expected {expected_consumers:?}"
                     ),
                 );
             }
@@ -231,8 +224,8 @@ fn phase_caddy_parity(v: &mut ValidationResult) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::validation::ValidationResult;
     use crate::composition::CompositionContext;
+    use crate::validation::ValidationResult;
 
     #[test]
     fn scenario_metadata_valid() {

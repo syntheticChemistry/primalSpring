@@ -56,9 +56,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 2: Songbird owns WAN dispatch surface");
 
     let table = canonical_routing_table();
-    let mesh_owner = table
-        .route("mesh.relay")
-        .map_or("", |e| e.owner.as_ref());
+    let mesh_owner = table.route("mesh.relay").map_or("", |e| e.owner.as_ref());
     v.check_bool(
         "owner:mesh_relay_songbird",
         mesh_owner == primal_names::SONGBIRD,
@@ -86,10 +84,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "topo:wan_gates_declared",
         !wan_gates.is_empty(),
-        &format!(
-            "{} WAN-zone gates in mesh topology",
-            wan_gates.len()
-        ),
+        &format!("{} WAN-zone gates in mesh topology", wan_gates.len()),
     );
 
     let wan_meshed = wan_gates.iter().filter(|g| !g.address.is_empty()).count();

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: Coordination API surface — exercises primalSpring's own
-//! coordination and neural_api methods (Wave 47 method coverage push).
+//! coordination and `neural_api` methods (Wave 47 method coverage push).
 
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;

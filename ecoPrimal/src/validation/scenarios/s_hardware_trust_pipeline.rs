@@ -4,18 +4,18 @@
 //! Scenario: Hardware Trust Pipeline — validates the full end-to-end local
 //! ceremony from hardware entropy to Loam Certificate minting.
 //!
-//! Wave 138a LOCAL-CEREMONY-E2E: SoloKey entropy + Pixel biometric + bearDog
+//! Wave 138a LOCAL-CEREMONY-E2E: `SoloKey` entropy + Pixel biometric + bearDog
 //! key generation → Loam Certificate mint. This scenario validates the
 //! structural topology for the complete pipeline:
 //!
-//! 1. Hardware entropy sources (FIDO2 + StrongBox) are routable
+//! 1. Hardware entropy sources (FIDO2 + `StrongBox`) are routable
 //! 2. Entropy converges at bearDog for mixing
-//! 3. Key material flows to signing (crypto.sign_ed25519)
+//! 3. Key material flows to signing (`crypto.sign_ed25519`)
 //! 4. Signed material flows to Loam Certificate mint (loamSpine)
 //! 5. Certificate verification closes the loop
 
-use crate::composition::neural_routing::canonical_routing_table;
 use crate::composition::CompositionContext;
+use crate::composition::neural_routing::canonical_routing_table;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
@@ -32,16 +32,21 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave138a_hw_trust",
         provenance_date: "2026-07-13",
-        description:
-            "Hardware trust pipeline — FIDO2+StrongBox entropy → bearDog key gen → Loam Certificate mint",
+        description: "Hardware trust pipeline — FIDO2+StrongBox entropy → bearDog key gen → Loam Certificate mint",
     },
     run,
 };
 
 /// Pipeline stages in order.
 const PIPELINE_STAGES: &[(&str, &str)] = &[
-    ("beardog.fido2.discover", "Hardware discovery (SoloKey/StrongBox)"),
-    ("genetic.entropy_contribute", "Entropy contribution from hardware"),
+    (
+        "beardog.fido2.discover",
+        "Hardware discovery (SoloKey/StrongBox)",
+    ),
+    (
+        "genetic.entropy_contribute",
+        "Entropy contribution from hardware",
+    ),
     ("genetic.mix_entropy", "Multi-source entropy mixing"),
     ("genetic.ceremony_init", "Ceremony initialization (Tier 2)"),
     ("genetic.derive_key", "Key derivation from mixed entropy"),
@@ -49,10 +54,7 @@ const PIPELINE_STAGES: &[(&str, &str)] = &[
     ("crypto.sign_ed25519", "Ed25519 signing with derived key"),
 ];
 
-const CERTIFICATE_METHODS: &[&str] = &[
-    "spine.create",
-    "spine.seal",
-];
+const CERTIFICATE_METHODS: &[&str] = &["spine.create", "spine.seal"];
 
 /// Run the hardware trust pipeline validation.
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
@@ -123,7 +125,9 @@ fn phase_certificate_endpoints(v: &mut ValidationResult) {
         verify_route.is_some(),
         &format!(
             "crypto.verify_ed25519: {}",
-            verify_route.as_ref().map_or("UNROUTED", |r| r.owner.as_ref())
+            verify_route
+                .as_ref()
+                .map_or("UNROUTED", |r| r.owner.as_ref())
         ),
     );
 }
@@ -131,13 +135,16 @@ fn phase_certificate_endpoints(v: &mut ValidationResult) {
 fn phase_authority_chain(v: &mut ValidationResult) {
     let table = canonical_routing_table();
 
-    let entropy_owner = table.route("genetic.mix_entropy")
+    let entropy_owner = table
+        .route("genetic.mix_entropy")
         .map(|r| r.owner.to_string())
         .unwrap_or_default();
-    let sign_owner = table.route("crypto.sign_ed25519")
+    let sign_owner = table
+        .route("crypto.sign_ed25519")
         .map(|r| r.owner.to_string())
         .unwrap_or_default();
-    let cert_owner = table.route("spine.create")
+    let cert_owner = table
+        .route("spine.create")
         .map(|r| r.owner.to_string())
         .unwrap_or_default();
 
@@ -210,7 +217,11 @@ fn phase_live_probe(v: &mut ValidationResult, ctx: &mut CompositionContext) {
         has_crypto,
         &format!(
             "crypto capability (bearDog): {}",
-            if has_crypto { "live — full pipeline testable" } else { "offline (structural only)" }
+            if has_crypto {
+                "live — full pipeline testable"
+            } else {
+                "offline (structural only)"
+            }
         ),
     );
 
@@ -225,7 +236,11 @@ fn phase_live_probe(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             sign_test.is_ok(),
             &format!(
                 "crypto.sign_ed25519: {}",
-                if sign_test.is_ok() { "responded" } else { "unavailable" }
+                if sign_test.is_ok() {
+                    "responded"
+                } else {
+                    "unavailable"
+                }
             ),
         );
     }
@@ -242,7 +257,11 @@ fn phase_live_probe(v: &mut ValidationResult, ctx: &mut CompositionContext) {
             spine_check.is_ok(),
             &format!(
                 "spine.create: {}",
-                if spine_check.is_ok() { "responded" } else { "unavailable" }
+                if spine_check.is_ok() {
+                    "responded"
+                } else {
+                    "unavailable"
+                }
             ),
         );
     }

@@ -6,7 +6,7 @@
 //! generation ceremonies.
 //!
 //! This bridges the soundStage concept with the FIDO2 ceremony path:
-//! - Channels map to anchors (SoloKey, StrongBox, audio, OS)
+//! - Channels map to anchors (`SoloKey`, `StrongBox`, audio, OS)
 //! - Sessions record full ceremonies
 //! - Comparator proves key independence across users/sessions
 //! - Quality gates reject degenerate entropy
@@ -117,7 +117,10 @@ fn phase_session_capture(v: &mut ValidationResult) {
     v.check_bool(
         "session:captures_events",
         record.event_count() >= 5,
-        &format!("Session captured {} events (req/resp/contrib)", record.event_count()),
+        &format!(
+            "Session captured {} events (req/resp/contrib)",
+            record.event_count()
+        ),
     );
     v.check_bool(
         "session:has_monitor",
@@ -138,12 +141,23 @@ fn phase_live_capture(v: &mut ValidationResult) {
     let (session, capture) = LiveCapture::begin("live-001", "eastgate");
 
     capture.add_anchor(anchor);
-    capture.observe_request("fido2:solokey-east", "beardog.fido2.make_credential", &[0x01; 8]);
-    capture.observe_response("fido2:solokey-east", "beardog.fido2.make_credential", &simulated_entropy(0x44));
+    capture.observe_request(
+        "fido2:solokey-east",
+        "beardog.fido2.make_credential",
+        &[0x01; 8],
+    );
+    capture.observe_response(
+        "fido2:solokey-east",
+        "beardog.fido2.make_credential",
+        &simulated_entropy(0x44),
+    );
     capture.observe_contribution("fido2:solokey-east", &simulated_entropy(0x44));
     capture.observe_key_derived(&simulated_entropy(0x55));
 
-    let snap = capture.snapshot().unwrap();
+    let Some(snap) = capture.snapshot() else {
+        v.check_bool("capture:thread_safe", false, "LiveCapture lock poisoned");
+        return;
+    };
     v.check_bool(
         "capture:thread_safe",
         true,
@@ -161,11 +175,17 @@ fn phase_live_capture(v: &mut ValidationResult) {
     );
 
     drop(capture);
-    let record = Arc::try_unwrap(session)
-        .unwrap()
-        .into_inner()
-        .unwrap()
-        .finalize();
+    let record = if let Ok(mutex) = Arc::try_unwrap(session) {
+        if let Ok(sess) = mutex.into_inner() {
+            sess.finalize()
+        } else {
+            v.check_bool("capture:finalize", false, "session mutex poisoned");
+            return;
+        }
+    } else {
+        v.check_bool("capture:finalize", false, "session Arc still shared");
+        return;
+    };
     v.check_bool(
         "capture:finalize",
         record.source_count() >= 1,
@@ -320,6 +340,9 @@ mod tests {
         let e2 = simulated_entropy(0x22);
         assert_ne!(e1, e2, "different seeds must produce different entropy");
         let unique: std::collections::HashSet<u8> = e1.iter().copied().collect();
-        assert!(unique.len() > 8, "entropy should have significant byte diversity");
+        assert!(
+            unique.len() > 8,
+            "entropy should have significant byte diversity"
+        );
     }
 }

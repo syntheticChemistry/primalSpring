@@ -8,9 +8,9 @@
 //! for the operational steps that complete full mesh:
 //!
 //! Phase 1: Drawbridge Deploy — songBird :7780 configuration + proxy routes
-//! Phase 2: Caddy Relay — golgi reverse_proxy target → drawbridge via WG
+//! Phase 2: Caddy Relay — golgi `reverse_proxy` target → drawbridge via WG
 //! Phase 3: mesh.init Peering — bootstrap peer addresses resolvable, JSON-RPC contract
-//! Phase 4: Pepti Warehouse — cross-arch depot structure (x86_64 + aarch64)
+//! Phase 4: Pepti Warehouse — cross-arch depot structure (`x86_64` + aarch64)
 //! Phase 5: E2E Path — Caddy → WG → drawbridge → capability.call → backend
 //! Phase 6: Live — actual mesh.init reachability (requires deployed songBird)
 //!
@@ -223,7 +223,7 @@ fn phase_mesh_init(v: &mut ValidationResult) {
 }
 
 /// Phase 4: Pepti warehouse cross-arch depot structure.
-/// Sovereign CI builds x86_64 + aarch64 targets → golgi depot.
+/// Sovereign CI builds `x86_64` + aarch64 targets → golgi depot.
 fn phase_pepti_warehouse(v: &mut ValidationResult) {
     let expected_targets = ["x86_64-unknown-linux-gnu", "aarch64-linux-android"];
 

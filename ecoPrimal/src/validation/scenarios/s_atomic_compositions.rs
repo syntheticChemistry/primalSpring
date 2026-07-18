@@ -7,9 +7,9 @@
 //! Validates that all composition graphs parse as valid TOML, reference
 //! capabilities registered in the canonical registry, use coordination
 //! patterns consistent with their declared intent, and respect Dark Forest
-//! security invariants (secure_by_default, btsp_enforced).
+//! security invariants (`secure_by_default`, `btsp_enforced`).
 //!
-//! Tier 1 checks are Tier::Rust — no live primals required.
+//! Tier 1 checks are `Tier::Rust` — no live primals required.
 //! Tier 2 checks validate live composition dispatch when biomeOS is available.
 
 use crate::composition::CompositionContext;

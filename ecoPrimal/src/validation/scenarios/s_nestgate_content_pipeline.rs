@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
-//! Scenario: NestGate Content Pipeline — contract test for `content.*` methods.
+//! Scenario: `NestGate` Content Pipeline — contract test for `content.*` methods.
 //!
 //! Validates that the `content` capability domain is discoverable and that
 //! `content.put` → `content.get` produces a correct round-trip (BLAKE3 hash

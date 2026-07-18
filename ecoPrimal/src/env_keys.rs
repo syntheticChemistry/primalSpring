@@ -140,7 +140,7 @@ pub const PRIMAL_SOCKET_MODE: &str = "PRIMAL_SOCKET_MODE";
 /// Server-side bind mode: `uds_only` (default), `tcp_only`, `fallback`.
 ///
 /// Controls how [`ipc::server_bind::bind_transport`] selects its transport.
-/// Set to `fallback` on platforms where UDS may be denied (Android SELinux).
+/// Set to `fallback` on platforms where UDS may be denied (Android `SELinux`).
 /// Set to `tcp_only` to skip UDS entirely (grapheneGate, containers).
 pub const PRIMAL_BIND_MODE: &str = "PRIMAL_BIND_MODE";
 

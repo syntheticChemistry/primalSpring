@@ -28,8 +28,8 @@ pub const SCENARIO: Scenario = Scenario {
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Drawbridge boundary control");
 
-    let has_drawbridge = REGISTRY_TOML.contains("drawbridge")
-        || REGISTRY_TOML.contains("http.proxy");
+    let has_drawbridge =
+        REGISTRY_TOML.contains("drawbridge") || REGISTRY_TOML.contains("http.proxy");
     v.check_bool(
         "drawbridge:method_registered",
         has_drawbridge,
@@ -72,7 +72,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.check_bool(
         "darkforest:method_breadth",
         registered >= 3,
-        &format!("{registered}/{} dark forest demarcation methods present", darkforest_methods.len()),
+        &format!(
+            "{registered}/{} dark forest demarcation methods present",
+            darkforest_methods.len()
+        ),
     );
 
     v.check_bool(

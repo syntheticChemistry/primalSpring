@@ -5,7 +5,7 @@
 //! guarantees from provenance through attestation to ledger commitment.
 //!
 //! Validates:
-//! 1. Provenance trio primals are all routable (RhizoCrypt + LoamSpine + SweetGrass)
+//! 1. Provenance trio primals are all routable (`RhizoCrypt` + `LoamSpine` + `SweetGrass`)
 //! 2. Sovereignty method surface covers required operations
 //! 3. AGPL-3.0 license compliance in workspace crates
 //! 4. Lineage chain cryptographic properties (BLAKE3 + Ed25519)

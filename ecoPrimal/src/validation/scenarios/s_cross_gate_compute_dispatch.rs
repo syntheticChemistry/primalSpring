@@ -10,7 +10,7 @@
 //! Phases:
 //! 1. Structural: compute capabilities registered and routed to Node atomic
 //! 2. Wire contract: ml.*, compute.*, fleet.* methods in registry
-//! 3. Routing: capability_to_primal resolves compute domains correctly
+//! 3. Routing: `capability_to_primal` resolves compute domains correctly
 //! 4. Live: ToadStool/BarraCuda health probing for dispatch readiness
 
 use crate::composition::{CompositionContext, capability_to_primal, method_to_capability_domain};

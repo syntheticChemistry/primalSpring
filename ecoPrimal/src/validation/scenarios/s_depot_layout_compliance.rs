@@ -64,8 +64,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 
 fn phase_primal_coverage(v: &mut ValidationResult) {
     for &primal in REQUIRED_PRIMALS {
-        let registered = REGISTRY_TOML.contains(primal)
-            || PROTO_NUCLEATE.contains(primal);
+        let registered = REGISTRY_TOML.contains(primal) || PROTO_NUCLEATE.contains(primal);
         v.check_bool(
             &format!("coverage:{primal}"),
             registered,
@@ -90,8 +89,7 @@ fn phase_manifest_structure(v: &mut ValidationResult) {
         "proto_nucleate references manifest structure for depot",
     );
 
-    let has_version = PROTO_NUCLEATE.contains("version")
-        || PROTO_NUCLEATE.contains("semver");
+    let has_version = PROTO_NUCLEATE.contains("version") || PROTO_NUCLEATE.contains("semver");
     v.check_bool(
         "manifest:versioned",
         has_version,
@@ -154,8 +152,8 @@ fn phase_trust_artifacts(v: &mut ValidationResult) {
         "BLAKE3 hash method available for checksum generation",
     );
 
-    let has_sign = REGISTRY_TOML.contains("crypto.sign")
-        || REGISTRY_TOML.contains("crypto.sign_ed25519");
+    let has_sign =
+        REGISTRY_TOML.contains("crypto.sign") || REGISTRY_TOML.contains("crypto.sign_ed25519");
     v.check_bool(
         "trust:ed25519_sign",
         has_sign,

@@ -324,7 +324,10 @@ fn node_parity_tensor_reduce_sum() {
         eprintln!("WARN: tensor.batch.submit failed — likely stale socket (SOCKET-DIR-UNIFY)");
         return;
     }
-    assert_eq!(v.failed, 0, "node tensor.batch.submit should not fail when primal is live");
+    assert_eq!(
+        v.failed, 0,
+        "node tensor.batch.submit should not fail when primal is live"
+    );
 }
 
 #[test]

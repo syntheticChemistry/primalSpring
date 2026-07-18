@@ -49,10 +49,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 2: Backbone gate density");
 
     let gates = all_mesh_gates();
-    let backbone_gates: Vec<_> = gates
-        .iter()
-        .filter(|g| g.zone == "Backbone")
-        .collect();
+    let backbone_gates: Vec<_> = gates.iter().filter(|g| g.zone == "Backbone").collect();
     v.check_bool(
         "backbone:gate_count",
         backbone_gates.len() >= 2,
@@ -63,7 +60,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         ),
     );
 
-    let meshed_backbone = backbone_gates.iter().filter(|g| !g.address.is_empty()).count();
+    let meshed_backbone = backbone_gates
+        .iter()
+        .filter(|g| !g.address.is_empty())
+        .count();
     v.check_bool(
         "backbone:meshed_peers",
         meshed_backbone >= 2,

@@ -13,11 +13,11 @@ use std::fmt;
 /// computation is universal math, not silicon theology.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Target {
-    /// Standard x86_64 Linux with musl (eastGate, fieldGate, ironGate).
+    /// Standard `x86_64` Linux with musl (eastGate, fieldGate, ironGate).
     X86_64Musl,
-    /// ARM64 Linux with musl (grapheneGate — SELinux, restricted dirs).
+    /// ARM64 Linux with musl (grapheneGate — `SELinux`, restricted dirs).
     Aarch64Musl,
-    /// RISC-V 64-bit Linux with musl (toadStool gateway, SiFive boards).
+    /// RISC-V 64-bit Linux with musl (toadStool gateway, `SiFive` boards).
     Riscv64Musl,
     /// WebAssembly + WASI (browser/serverless, sandboxed, no filesystem).
     Wasm32Wasi,
@@ -28,7 +28,7 @@ pub enum Target {
 /// CPU architecture for bare-metal targets.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Arch {
-    /// x86_64 bare metal.
+    /// `x86_64` bare metal.
     X86_64,
     /// ARM64 bare metal.
     Aarch64,

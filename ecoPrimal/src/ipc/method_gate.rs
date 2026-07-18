@@ -36,7 +36,7 @@ pub enum MethodAccessLevel {
     Protected,
 }
 
-/// Methods that are always public. Matches NestGate PG-56's exempt
+/// Methods that are always public. Matches `NestGate` PG-56's exempt
 /// whitelist pattern: only introspection and liveness are open.
 const PUBLIC_METHOD_PREFIXES: &[&str] = &["health."];
 
@@ -122,7 +122,7 @@ pub struct CallerContext {
 pub enum ConnectionOrigin {
     /// Local Unix domain socket.
     Unix,
-    /// TCP loopback (127.0.0.1 / ::1).
+    /// TCP loopback (127.0.0.1 / `::1`).
     Loopback,
     /// Remote TCP connection.
     Remote,

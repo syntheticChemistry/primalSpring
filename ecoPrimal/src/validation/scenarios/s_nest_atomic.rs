@@ -84,7 +84,7 @@ fn phase_health(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     }
 }
 
-/// Phase 4: Spore gateway structural validation (exp115_nest_ingest_pseudospore).
+/// Phase 4: Spore gateway structural validation (`exp115_nest_ingest_pseudospore`).
 ///
 /// Validates pseudoSpore 2.0 postPrimordial infrastructure:
 /// - Ownership matrix documented (three-way split)

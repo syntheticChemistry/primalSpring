@@ -4,7 +4,7 @@
 //! Covalent mesh trust phases (4-6) — extracted for maintainability.
 //!
 //! - Phase 4: Security trust (bearDog BTSP cross-gate token validation)
-//! - Phase 5: Content integrity (NestGate federation BLAKE3 end-to-end)
+//! - Phase 5: Content integrity (`NestGate` federation BLAKE3 end-to-end)
 //! - Phase 6: Dark Forest invariants (isolation + reversibility)
 
 use crate::composition::CompositionContext;
@@ -198,7 +198,7 @@ fn verify_with_source(v: &mut ValidationResult, ctx: &mut CompositionContext, va
 ///
 /// When verified locally (same key issued and verifies), `verification_source`
 /// is `"local"` and gate binding comes from the token's embedded claims.
-/// When verified via TrustedIssuerRegistry, `verification_source` is `"remote"`
+/// When verified via `TrustedIssuerRegistry`, `verification_source` is `"remote"`
 /// and provenance comes from top-level `issuer_gate_id`.
 fn verify_remote_source(
     v: &mut ValidationResult,
@@ -416,7 +416,7 @@ fn verify_reject_forged(v: &mut ValidationResult, ctx: &mut CompositionContext) 
     }
 }
 
-/// Phase 5: Content integrity — NestGate federation BLAKE3 end-to-end.
+/// Phase 5: Content integrity — `NestGate` federation BLAKE3 end-to-end.
 pub(super) fn phase_content_integrity(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.check_bool(
         "content:registry_put",

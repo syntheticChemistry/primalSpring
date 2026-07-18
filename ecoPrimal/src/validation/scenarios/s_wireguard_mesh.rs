@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: WireGuard Mesh — validates the 5-node sovereign overlay topology.
+//! Scenario: `WireGuard` Mesh — validates the 5-node sovereign overlay topology.
 //!
 //! The 10.13.37.0/24 mesh connects golgi, sporeGate, pepti, eastGate, and
-//! flockGate via encrypted WireGuard tunnels on port 51820. This scenario
+//! flockGate via encrypted `WireGuard` tunnels on port 51820. This scenario
 //! validates:
 //!
 //! Phase 1 (Structural/Rust tier):
 //! 1. wg0.conf exists at standard paths
 //! 2. Config has [Interface] + at least one [Peer] section
 //! 3. Local listen port is 51820
-//! 4. Peer AllowedIPs reference the 10.13.37.0/24 mesh subnet
+//! 4. Peer `AllowedIPs` reference the 10.13.37.0/24 mesh subnet
 //!
 //! Phase 2 (Live tier):
 //! 1. `wg show wg0` returns interface info (skip if not root)
@@ -39,7 +39,7 @@ fn expected_peers() -> Vec<(&'static str, &'static str)> {
         .collect()
 }
 
-/// WireGuard mesh topology validation scenario.
+/// `WireGuard` mesh topology validation scenario.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "wireguard-mesh",
@@ -52,7 +52,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
-/// Run WireGuard mesh validation.
+/// Run `WireGuard` mesh validation.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: WireGuard configuration");
     phase_config_structure(v);

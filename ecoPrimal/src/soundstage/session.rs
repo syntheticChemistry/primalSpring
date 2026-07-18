@@ -114,12 +114,14 @@ impl CeremonySession {
     }
 
     /// Number of mix inputs recorded so far.
-    pub fn mix_input_count(&self) -> usize {
+    #[must_use]
+    pub const fn mix_input_count(&self) -> usize {
         self.mix_inputs.len()
     }
 
     /// Whether a monitor (key fingerprint) has been recorded.
-    pub fn has_monitor(&self) -> bool {
+    #[must_use]
+    pub const fn has_monitor(&self) -> bool {
         self.monitor.is_some()
     }
 
@@ -147,26 +149,31 @@ impl CeremonySession {
 
 impl SessionRecord {
     /// Total events captured in this session.
-    pub fn event_count(&self) -> usize {
+    #[must_use]
+    pub const fn event_count(&self) -> usize {
         self.events.len()
     }
 
     /// How many distinct sources contributed entropy.
-    pub fn source_count(&self) -> usize {
+    #[must_use]
+    pub const fn source_count(&self) -> usize {
         self.mix_inputs.len()
     }
 
     /// Whether the ceremony produced a quality key.
+    #[must_use]
     pub fn quality_pass(&self) -> bool {
         self.monitor.as_ref().is_some_and(|m| m.quality_pass)
     }
 
     /// Key fingerprint (for comparison with other sessions).
+    #[must_use]
     pub fn key_fingerprint(&self) -> Option<[u8; 32]> {
         self.monitor.as_ref().map(|m| m.key_fingerprint)
     }
 
     /// All response events (data flowing back FROM hardware).
+    #[must_use]
     pub fn responses(&self) -> Vec<&ChannelEvent> {
         self.events
             .iter()
@@ -175,6 +182,7 @@ impl SessionRecord {
     }
 
     /// All contribution events (data flowing INTO mix bus).
+    #[must_use]
     pub fn contributions(&self) -> Vec<&ChannelEvent> {
         self.events
             .iter()
@@ -182,7 +190,6 @@ impl SessionRecord {
             .collect()
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -227,7 +234,10 @@ mod tests {
         session.record_monitor(&[0xDD; 32]);
 
         let record = session.finalize();
-        assert!(!record.quality_pass(), "single-source ceremony should not pass quality");
+        assert!(
+            !record.quality_pass(),
+            "single-source ceremony should not pass quality"
+        );
     }
 
     #[test]

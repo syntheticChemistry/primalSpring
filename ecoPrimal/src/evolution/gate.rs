@@ -8,7 +8,7 @@
 //! - Depot freshness (how old are the binaries)
 //! - VCS sync status (is it on HEAD)
 //! - Mesh connectivity (federation peers reachable)
-//! - Identity configuration (GATE_NAME, FAMILY_SEED)
+//! - Identity configuration (`GATE_NAME`, `FAMILY_SEED`)
 
 use std::fmt;
 
@@ -50,9 +50,9 @@ impl fmt::Display for ReadinessLevel {
 pub enum CytoplasmZone {
     /// Hub 1: CRS310 backbone, sporeGate plasma membrane, 10G fabric.
     Backbone,
-    /// Hub 2: Omada SX3008F (standalone L2), Flint 2 WiFi, house 2 gates.
+    /// Hub 2: Omada SX3008F (standalone L2), Flint 2 `WiFi`, house 2 gates.
     House2,
-    /// Hub 3: Garage, planned compute + outdoor WiFi.
+    /// Hub 3: Garage, planned compute + outdoor `WiFi`.
     Garage,
     /// WAN: gates outside the plasma membrane (VPS, offsite, public internet).
     Wan,
@@ -237,7 +237,7 @@ static MESH_REGISTRY: std::sync::LazyLock<Vec<MeshEntry>> = std::sync::LazyLock:
 pub struct MeshEntry {
     /// Gate name (e.g. `"eastGate"`).
     pub name: String,
-    /// WireGuard overlay address (e.g. `"10.13.37.5"`).
+    /// `WireGuard` overlay address (e.g. `"10.13.37.5"`).
     pub address: String,
     /// Gate role (e.g. `"meta"`, `"hub"`, `"tower"`).
     pub role: String,
@@ -249,7 +249,7 @@ pub struct MeshEntry {
     pub services: Vec<String>,
 }
 
-/// WireGuard mesh address assignments (10.13.37.0/24 overlay).
+/// `WireGuard` mesh address assignments (10.13.37.0/24 overlay).
 ///
 /// Reads from `config/mesh_topology.toml` (SSOT). Adding a gate means adding
 /// one `[[gate]]` entry to the TOML — no code changes required.

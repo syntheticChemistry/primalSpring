@@ -577,7 +577,11 @@ impl AtomicHarness {
 
         let missing: Vec<&str> = {
             let ordered_set: HashSet<&str> = ordered.iter().map(String::as_str).collect();
-            required.iter().copied().filter(|r| !ordered_set.contains(r)).collect()
+            required
+                .iter()
+                .copied()
+                .filter(|r| !ordered_set.contains(r))
+                .collect()
         };
         for r in missing {
             ordered.push(r.to_owned());

@@ -68,7 +68,11 @@ fn phase_structural(v: &mut ValidationResult) {
     v.check_bool(
         "depot:primal_plus_extra",
         primal_count >= 14,
-        &format!("{primal_count} primals + extras (ALL_SLUGS={} + extra={})", Primal::ALL_SLUGS.len(), EXTRA_BINARIES.len()),
+        &format!(
+            "{primal_count} primals + extras (ALL_SLUGS={} + extra={})",
+            Primal::ALL_SLUGS.len(),
+            EXTRA_BINARIES.len()
+        ),
     );
 }
 
@@ -76,20 +80,36 @@ fn phase_live(v: &mut ValidationResult) {
     v.section("Phase 2: Live — probe depot for architecture directories");
 
     let depot_reachable = std::process::Command::new("curl")
-        .args(["-sI", "--max-time", "5", &format!("{DEPOT_BASE}/x86_64-unknown-linux-musl/songbird")])
+        .args([
+            "-sI",
+            "--max-time",
+            "5",
+            &format!("{DEPOT_BASE}/x86_64-unknown-linux-musl/songbird"),
+        ])
         .output()
         .map(|o| String::from_utf8_lossy(&o.stdout).contains("200"))
         .unwrap_or(false);
 
     if !depot_reachable {
-        v.check_skip("depot:live:reachable", "depot not reachable from this network");
+        v.check_skip(
+            "depot:live:reachable",
+            "depot not reachable from this network",
+        );
         return;
     }
 
-    v.check_bool("depot:live:reachable", true, "depot endpoint reachable (songbird 200)");
+    v.check_bool(
+        "depot:live:reachable",
+        true,
+        "depot endpoint reachable (songbird 200)",
+    );
 
     for (arch, expected_min) in ARCHITECTURES {
-        let binary_name = if *arch == "x86_64-pc-windows-gnu" { "songbird.exe" } else { "songbird" };
+        let binary_name = if *arch == "x86_64-pc-windows-gnu" {
+            "songbird.exe"
+        } else {
+            "songbird"
+        };
         let url = format!("{DEPOT_BASE}/{arch}/{binary_name}");
 
         let exists = std::process::Command::new("curl")
@@ -101,7 +121,10 @@ fn phase_live(v: &mut ValidationResult) {
         v.check_bool(
             &format!("depot:live:{}", arch.split('-').next().unwrap_or("unknown")),
             exists,
-            &format!("{arch}/songbird → {}", if exists { "200 OK" } else { "NOT FOUND" }),
+            &format!(
+                "{arch}/songbird → {}",
+                if exists { "200 OK" } else { "NOT FOUND" }
+            ),
         );
 
         if exists && *arch == "x86_64-unknown-linux-musl" {
@@ -126,7 +149,11 @@ fn phase_live(v: &mut ValidationResult) {
                 &format!(
                     "x86_64-musl: {found}/{} binaries present{}",
                     Primal::ALL_SLUGS.len() + EXTRA_BINARIES.len(),
-                    if missing.is_empty() { String::new() } else { format!(" (missing: {})", missing.join(", ")) }
+                    if missing.is_empty() {
+                        String::new()
+                    } else {
+                        format!(" (missing: {})", missing.join(", "))
+                    }
                 ),
             );
         }
@@ -145,7 +172,9 @@ mod tests {
         assert!(
             v.failed == 0 || v.skipped > 0,
             "depot-architecture-coverage: {} failures ({} passed, {} skipped)",
-            v.failed, v.passed, v.skipped
+            v.failed,
+            v.passed,
+            v.skipped
         );
     }
 }

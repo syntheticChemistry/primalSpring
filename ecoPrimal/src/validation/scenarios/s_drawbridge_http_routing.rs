@@ -11,10 +11,10 @@
 //! - No other port is exposed externally; songBird IS the port solver
 //!
 //! Phases:
-//! 1. Registry: http.proxy method registered in capability_registry
+//! 1. Registry: http.proxy method registered in `capability_registry`
 //! 2. Port contract: drawbridge on :7780, federation on :7700 (distinct)
 //! 3. Route schema: path → capability domain → primal → gate resolution
-//! 4. Environment contract: SONGBIRD_DRAWBRIDGE_* env vars
+//! 4. Environment contract: `SONGBIRD_DRAWBRIDGE`_* env vars
 //! 5. Live: drawbridge health (requires deployed songBird)
 
 use crate::composition::{CompositionContext, capability_to_primal, method_to_capability_domain};

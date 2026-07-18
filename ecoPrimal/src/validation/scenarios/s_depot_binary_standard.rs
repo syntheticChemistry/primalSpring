@@ -30,8 +30,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave139a_depot_standard",
         provenance_date: "2026-07-14",
-        description:
-            "Depot binary standard — musl-static linkage, full primal coverage, checksums + signatures",
+        description: "Depot binary standard — musl-static linkage, full primal coverage, checksums + signatures",
     },
     run,
 };
@@ -88,36 +87,30 @@ fn resolve_plasmidbin_root() -> Option<PathBuf> {
 fn phase_depot_discovery(v: &mut ValidationResult) -> Option<PathBuf> {
     let depot = resolve_depot_dir();
 
-    match &depot {
-        Some(path) => {
-            v.check_bool(
-                "depot-std:discovered",
-                true,
-                &format!("depot at {}", path.display()),
-            );
+    if let Some(path) = &depot {
+        v.check_bool(
+            "depot-std:discovered",
+            true,
+            &format!("depot at {}", path.display()),
+        );
 
-            let triple = crate::tolerances::current_target_triple();
-            let path_str = path.to_string_lossy();
-            let has_triple = path_str.contains(&triple);
-            v.check_bool(
-                "depot-std:triple_in_path",
-                has_triple,
-                &format!(
-                    "depot path {} target triple `{triple}`",
-                    if has_triple { "contains" } else { "missing" }
-                ),
-            );
-        }
-        None => {
-            v.check_skip(
-                "depot-std:discovered",
-                "no depot directory found (plasmidBin layout or $ECOPRIMALS_PLASMID_BIN)",
-            );
-            v.check_skip(
-                "depot-std:triple_in_path",
-                "depot not found",
-            );
-        }
+        let triple = crate::tolerances::current_target_triple();
+        let path_str = path.to_string_lossy();
+        let has_triple = path_str.contains(&triple);
+        v.check_bool(
+            "depot-std:triple_in_path",
+            has_triple,
+            &format!(
+                "depot path {} target triple `{triple}`",
+                if has_triple { "contains" } else { "missing" }
+            ),
+        );
+    } else {
+        v.check_skip(
+            "depot-std:discovered",
+            "no depot directory found (plasmidBin layout or $ECOPRIMALS_PLASMID_BIN)",
+        );
+        v.check_skip("depot-std:triple_in_path", "depot not found");
     }
 
     depot
@@ -163,7 +156,10 @@ fn phase_binary_coverage(v: &mut ValidationResult, depot: &Option<PathBuf>) {
 
 fn phase_static_linkage(v: &mut ValidationResult, depot: &Option<PathBuf>) {
     let Some(root) = depot else {
-        v.check_skip("depot-std:static_linkage", "no depot — skipping linkage check");
+        v.check_skip(
+            "depot-std:static_linkage",
+            "no depot — skipping linkage check",
+        );
         return;
     };
 
@@ -196,7 +192,9 @@ fn phase_static_linkage(v: &mut ValidationResult, depot: &Option<PathBuf>) {
                     v.check_bool(
                         &format!("depot-std:static_{primal}"),
                         false,
-                        &format!("`{primal}` is dynamically linked (violates musl-static standard)"),
+                        &format!(
+                            "`{primal}` is dynamically linked (violates musl-static standard)"
+                        ),
                     );
                 }
             }
@@ -207,15 +205,10 @@ fn phase_static_linkage(v: &mut ValidationResult, depot: &Option<PathBuf>) {
         v.check_bool(
             "depot-std:static_linkage",
             statically_linked == checked,
-            &format!(
-                "{statically_linked}/{checked} binaries are statically linked",
-            ),
+            &format!("{statically_linked}/{checked} binaries are statically linked",),
         );
     } else {
-        v.check_skip(
-            "depot-std:static_linkage",
-            "no binaries found to check",
-        );
+        v.check_skip("depot-std:static_linkage", "no binaries found to check");
     }
 }
 
@@ -286,7 +279,11 @@ fn phase_integrity_artifacts(v: &mut ValidationResult) {
         checksums.exists(),
         &format!(
             "checksums.toml {}",
-            if checksums.exists() { "present" } else { "MISSING" }
+            if checksums.exists() {
+                "present"
+            } else {
+                "MISSING"
+            }
         ),
     );
 
@@ -296,7 +293,11 @@ fn phase_integrity_artifacts(v: &mut ValidationResult) {
         signatures.exists(),
         &format!(
             "signatures.toml {}",
-            if signatures.exists() { "present" } else { "MISSING (depot not cellMembrane-signed)" }
+            if signatures.exists() {
+                "present"
+            } else {
+                "MISSING (depot not cellMembrane-signed)"
+            }
         ),
     );
 }
@@ -316,7 +317,11 @@ fn phase_layout_standard(v: &mut ValidationResult, depot: &Option<PathBuf>) {
         in_primals_dir,
         &format!(
             "depot is inside `primals/` directory (plasmidBin standard): {}",
-            if in_primals_dir { "yes" } else { "no (possible genomeBin legacy layout)" }
+            if in_primals_dir {
+                "yes"
+            } else {
+                "no (possible genomeBin legacy layout)"
+            }
         ),
     );
 
@@ -331,7 +336,11 @@ fn phase_layout_standard(v: &mut ValidationResult, depot: &Option<PathBuf>) {
         matches_triple,
         &format!(
             "directory name `{dir_name}` {} target triple `{triple}`",
-            if matches_triple { "matches" } else { "does NOT match" }
+            if matches_triple {
+                "matches"
+            } else {
+                "does NOT match"
+            }
         ),
     );
 }

@@ -60,9 +60,9 @@ pub fn validate_bonding_policies(v: &mut ValidationResult) {
     );
 }
 
-/// Live ionic bond negotiation — attempt `bonding.propose` via BearDog.
+/// Live ionic bond negotiation — attempt `bonding.propose` via `BearDog`.
 ///
-/// This pressures BearDog to implement runtime bond signing. Until
+/// This pressures `BearDog` to implement runtime bond signing. Until
 /// then, this documents the gap with a graceful skip.
 ///
 /// Layer 5 (live): attempt `bonding.propose` on the Tower security primal.

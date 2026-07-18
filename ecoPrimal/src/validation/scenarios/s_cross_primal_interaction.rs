@@ -2,7 +2,7 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Cross-Primal Interaction — probes capabilities through direct
-//! socket connections that bypass the normal CompositionContext routing.
+//! socket connections that bypass the normal `CompositionContext` routing.
 //!
 //! With 13/13 NUCLEUS live, many sockets exist that aren't routed through
 //! the standard capability discovery (security → skunkBat, but crypto.sock
@@ -12,7 +12,7 @@
 //! This validates:
 //! 1. Direct socket connectivity to all 13 primals
 //! 2. Sub-capability sockets (crypto, btsp, storage, provenance, etc.)
-//! 3. BiomeOS neural API socket
+//! 3. `BiomeOS` neural API socket
 //! 4. Cross-primal method routing (can we reach bearDog for genetics?)
 
 use std::path::{Path, PathBuf};

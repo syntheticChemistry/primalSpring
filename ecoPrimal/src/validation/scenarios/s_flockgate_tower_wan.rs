@@ -2,7 +2,7 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: flockGate Tower WAN — validates flockGate's Tower atomic
-//! (BearDog, Songbird, SkunkBat) over the WireGuard WAN mesh.
+//! (`BearDog`, Songbird, `SkunkBat`) over the `WireGuard` WAN mesh.
 //!
 //! Phase 1 (Structural): flockGate zone, mesh address, and Tower composition model.
 //! Phase 2 (Live): ICMP + TCP reachability of all three Tower primals at 10.13.37.6.

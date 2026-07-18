@@ -200,7 +200,7 @@ impl TargetDeclaration {
         }
     }
 
-    /// Total targets this primal aims to support (proven + in_progress + endgame).
+    /// Total targets this primal aims to support (proven + `in_progress` + endgame).
     #[must_use]
     #[expect(
         clippy::missing_const_for_fn,

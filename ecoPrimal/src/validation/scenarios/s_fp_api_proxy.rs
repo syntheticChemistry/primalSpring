@@ -37,7 +37,12 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         "footprint.*/fp.* methods or http.proxy registered for API proxy",
     );
 
-    let proxy_methods = ["http.proxy", "http.get", "http.request", "network.http_request"];
+    let proxy_methods = [
+        "http.proxy",
+        "http.get",
+        "http.request",
+        "network.http_request",
+    ];
     for method in proxy_methods {
         v.check_bool(
             &format!("proxy:{}", method.replace('.', "_")),

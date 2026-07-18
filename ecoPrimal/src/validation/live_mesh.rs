@@ -25,7 +25,7 @@ use std::time::Duration;
 pub struct LiveMeshConfig {
     /// Local gate identifier.
     pub local_gate: String,
-    /// Remote gate endpoints (gate_id → host:port).
+    /// Remote gate endpoints (`gate_id` → host:port).
     pub remote_gates: BTreeMap<String, String>,
     /// Whether BTSP credentials are available.
     pub btsp_available: bool,
@@ -206,7 +206,7 @@ impl LiveMeshConfig {
     }
 }
 
-/// Parse mesh peer env vars into gate_id → address map.
+/// Parse mesh peer env vars into `gate_id` → address map.
 ///
 /// Reads `MESH_PEERS` first, falling back to deprecated `SONGBIRD_PEERS`.
 /// Format: `gate_id=host:port,gate_id=host:port` or `host:port,host:port`

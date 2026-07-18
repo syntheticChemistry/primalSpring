@@ -6,14 +6,14 @@
 //!
 //! The mobile mesh model:
 //! - grapheneGate connects to eastGate via USB tethering (internet + gate)
-//! - BindMode::Auto selects TCP fallback on Android (SELinux blocks UDS)
+//! - `BindMode::Auto` selects TCP fallback on Android (`SELinux` blocks UDS)
 //! - mesh.init bootstraps peering via eastGate (localhost over ADB forward)
 //! - Once peered, songBird on grapheneGate can relay for WAN nodes via cellular
 //!
 //! Phases:
-//! 1. BindMode::Auto correctly selects fallback on restricted platforms
-//! 2. mesh_topology.toml: grapheneGate has transport=adb, role=mobile
-//! 3. mesh.init contract: bootstrap_peers parameter, peer discovery flow
+//! 1. `BindMode::Auto` correctly selects fallback on restricted platforms
+//! 2. `mesh_topology.toml`: grapheneGate has transport=adb, role=mobile
+//! 3. mesh.init contract: `bootstrap_peers` parameter, peer discovery flow
 //! 4. Tether duality: simultaneous internet provision + gate operation
 //! 5. Live: ADB device reachability + port forward validation
 

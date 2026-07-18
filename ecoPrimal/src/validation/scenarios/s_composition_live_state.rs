@@ -5,7 +5,7 @@
 //! expected for this gate matches what is actually running.
 //!
 //! Compares:
-//! - Expected primals (from AtomicType::FullNucleus roster) vs running systemd units
+//! - Expected primals (from `AtomicType::FullNucleus` roster) vs running systemd units
 //! - Expected sockets vs actual socket files
 //! - Graph node order vs actual startup order (journal timestamps)
 //! - Capability resolution vs graph `by_capability` declarations

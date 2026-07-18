@@ -7,13 +7,13 @@
 //! The pepti warehouse model:
 //! - Sovereign CI (sporeGate) compiles for multiple architectures
 //! - Binaries are published to pepti warehouse (golgi depot)
-//! - Gates pull binaries via WireGuard overlay or golgi relay
+//! - Gates pull binaries via `WireGuard` overlay or golgi relay
 //! - Cross-hardware validation (grapheneGate, ironGate, etc.) without local builds
 //!
 //! Phases:
-//! 1. Depot structure: aarch64 + x86_64 binary inventories
+//! 1. Depot structure: aarch64 + `x86_64` binary inventories
 //! 2. Architecture coverage: all 13 primals built for each target
-//! 3. deploy_pixel.sh contract: handles all 13 primal startup sequences
+//! 3. `deploy_pixel.sh` contract: handles all 13 primal startup sequences
 //! 4. ADB transport: port forwarding config covers Tower composition
 //! 5. Live: depot freshness + binary checksums (requires depot access)
 

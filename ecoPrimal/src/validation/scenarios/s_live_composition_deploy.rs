@@ -30,7 +30,11 @@ pub const SCENARIO: Scenario = Scenario {
 pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Phase 1: Deploy methods in capability registry");
 
-    let deploy_methods = ["graph.deploy", "graph.execute", "coordination.deploy_atomic"];
+    let deploy_methods = [
+        "graph.deploy",
+        "graph.execute",
+        "coordination.deploy_atomic",
+    ];
     for method in deploy_methods {
         v.check_bool(
             &format!("registry:{}", method.replace('.', "_")),

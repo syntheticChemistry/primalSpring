@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
-//! Scenario: Metallic Bond — validates metallic, weak, and OrganoMetalSalt
+//! Scenario: Metallic Bond — validates metallic, weak, and `OrganoMetalSalt`
 //! bond types, trust model hierarchy, content distribution tiers, and
 //! BTSP cipher constraints per bond type.
 

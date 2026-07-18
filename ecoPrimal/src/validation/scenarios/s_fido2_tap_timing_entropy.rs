@@ -24,8 +24,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Both,
         provenance_crate: "wave138b_tap_timing",
         provenance_date: "2026-07-14",
-        description:
-            "FIDO2 tap-timing entropy — nanosecond capture, jitter analysis, non-zero values",
+        description: "FIDO2 tap-timing entropy — nanosecond capture, jitter analysis, non-zero values",
     },
     run,
 };
@@ -43,7 +42,11 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 
 fn phase_timing_model(v: &mut ValidationResult) {
     // Timing uses std::time::Instant (monotonic clock)
-    v.check_bool("timing:monotonic_instant", true, "Timing source is monotonic (Instant)");
+    v.check_bool(
+        "timing:monotonic_instant",
+        true,
+        "Timing source is monotonic (Instant)",
+    );
 
     // Resolution: at least microsecond, ideally nanosecond
     // Linux clock_gettime(CLOCK_MONOTONIC) provides nanosecond resolution
@@ -87,16 +90,20 @@ fn phase_timing_model(v: &mut ValidationResult) {
 fn phase_jitter_analysis(v: &mut ValidationResult) {
     // Simulated tap timings (nanoseconds) — realistic human tap jitter
     let mock_timings_ns: &[u64] = &[
-        312_456_789,  // ~312ms
-        287_123_456,  // ~287ms
-        445_678_901,  // ~445ms
-        198_345_678,  // ~198ms
-        523_901_234,  // ~523ms
+        312_456_789, // ~312ms
+        287_123_456, // ~287ms
+        445_678_901, // ~445ms
+        198_345_678, // ~198ms
+        523_901_234, // ~523ms
     ];
 
     // All timings must be non-zero
     let all_nonzero = mock_timings_ns.iter().all(|&t| t > 0);
-    v.check_bool("jitter:all_nonzero", all_nonzero, "All tap timings are non-zero");
+    v.check_bool(
+        "jitter:all_nonzero",
+        all_nonzero,
+        "All tap timings are non-zero",
+    );
 
     // All timings must be distinct (no duplicate taps)
     let mut sorted = mock_timings_ns.to_vec();
@@ -132,7 +139,10 @@ fn phase_jitter_analysis(v: &mut ValidationResult) {
     v.check_bool(
         "jitter:entropy_bits",
         entropy_bits > 1.0,
-        &format!("Timing entropy: {entropy_bits:.1} bits from {0} taps", mock_timings_ns.len()),
+        &format!(
+            "Timing entropy: {entropy_bits:.1} bits from {0} taps",
+            mock_timings_ns.len()
+        ),
     );
 
     // Per-tap minimum: at least 1 bit of entropy from timing alone
@@ -148,11 +158,18 @@ fn phase_live_tap_timing(v: &mut ValidationResult) {
         || std::path::Path::new("/dev/hidraw0").exists();
 
     if !has_hidraw {
-        v.check_skip("live:skipped", "No /dev/hidraw device — skipping live tap timing");
+        v.check_skip(
+            "live:skipped",
+            "No /dev/hidraw device — skipping live tap timing",
+        );
         return;
     }
 
-    v.check_bool("live:hidraw_present", has_hidraw, "HID device present for tap timing test");
+    v.check_bool(
+        "live:hidraw_present",
+        has_hidraw,
+        "HID device present for tap timing test",
+    );
     v.check_bool(
         "live:deferred",
         true,

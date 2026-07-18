@@ -10,7 +10,7 @@
 //! `meta.deploy` signal graph is wired correctly and that all AI overlay
 //! graphs include skunkBat for audit coverage.
 //!
-//! All checks are Tier::Rust — no live primals required.
+//! All checks are `Tier::Rust` — no live primals required.
 
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;

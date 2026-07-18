@@ -4,11 +4,11 @@
 //! Scenario: Gate Expansion Readiness — validates infrastructure for
 //! enrolling new gates (northGate, westGate) into the ecosystem.
 //!
-//! Phase 1 (Structural): Verify GateSpecialization model covers all planned
+//! Phase 1 (Structural): Verify `GateSpecialization` model covers all planned
 //! gate roles, bonding policies are consistent, and composition graphs exist
-//! for both FullNucleus (13/13) and Nest Atomic (7/7) deployments.
+//! for both `FullNucleus` (13/13) and Nest Atomic (7/7) deployments.
 //!
-//! Phase 2 (Structural): Verify x86_64 binary depot has required primals
+//! Phase 2 (Structural): Verify `x86_64` binary depot has required primals
 //! for each target composition and deployment infrastructure exists.
 //!
 //! Phase 3 (Live): Probe existing NUCLEUS health to confirm the seed gate

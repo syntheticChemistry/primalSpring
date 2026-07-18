@@ -6,8 +6,8 @@
 //! Used by springs to validate that primal composition output matches
 //! local Rust math (which was already validated against Python baselines).
 //!
-//! Ordering: EXACT < DETERMINISTIC_FLOAT < DF64_PARITY < CPU_GPU_PARITY
-//!           <= IPC_ROUND_TRIP < WGSL_SHADER <= STOCHASTIC_SEED
+//! Ordering: EXACT < `DETERMINISTIC_FLOAT` < `DF64_PARITY` < `CPU_GPU_PARITY`
+//!           <= `IPC_ROUND_TRIP` < `WGSL_SHADER` <= `STOCHASTIC_SEED`
 
 /// Exact integer parity — zero tolerance.
 ///

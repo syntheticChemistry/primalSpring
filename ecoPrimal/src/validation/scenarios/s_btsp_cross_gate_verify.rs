@@ -2,9 +2,9 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 //! Scenario: BTSP Cross-Gate Verify — validates cross-gate token issuance,
 //! trust hierarchy, cipher negotiation, and method gating for the 5-node
-//! WireGuard mesh.
+//! `WireGuard` mesh.
 //!
-//! Structural phases validate BtspCipherSuite properties, bond-gated cipher
+//! Structural phases validate `BtspCipherSuite` properties, bond-gated cipher
 //! constraints, and gate trust topology. Live phase probes cross-gate bearDog
 //! endpoints for auth capabilities.
 

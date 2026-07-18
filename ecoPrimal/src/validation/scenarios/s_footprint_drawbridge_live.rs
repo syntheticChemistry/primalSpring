@@ -2,7 +2,7 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: footPrint Drawbridge Live — validates the E2E data flow from
-//! external GIS services through songBird drawbridge to NestGate CAS.
+//! external GIS services through songBird drawbridge to `NestGate` CAS.
 //!
 //! This proves the composition path: external API → drawbridge → primal → CAS.
 //! Without this, footPrint is just a static SPA with proxy passthrough.
@@ -90,8 +90,7 @@ fn phase_drawbridge_routing(v: &mut ValidationResult) {
         "HTTP proxy/get/post routing owned by songBird (drawbridge transport)",
     );
 
-    let has_proxy = REGISTRY_TOML.contains("http.proxy")
-        || REGISTRY_TOML.contains("proxy");
+    let has_proxy = REGISTRY_TOML.contains("http.proxy") || REGISTRY_TOML.contains("proxy");
     v.check_bool(
         "routing:proxy_registered",
         has_proxy,
@@ -152,8 +151,8 @@ fn phase_composition_wiring(v: &mut ValidationResult) {
         "Bond flow: consumers + cache policy declared for footPrint",
     );
 
-    let has_storage = REGISTRY_TOML.contains("storage.store")
-        || REGISTRY_TOML.contains("content.store");
+    let has_storage =
+        REGISTRY_TOML.contains("storage.store") || REGISTRY_TOML.contains("content.store");
     v.check_bool(
         "wiring:storage_for_cache",
         has_storage,
@@ -188,6 +187,10 @@ mod tests {
         let mut v = ValidationResult::new(SCENARIO.meta.id);
         let mut ctx = CompositionContext::discover();
         (SCENARIO.run)(&mut v, &mut ctx);
-        assert_eq!(v.failed, 0, "scenario '{}' had {} failures", SCENARIO.meta.id, v.failed);
+        assert_eq!(
+            v.failed, 0,
+            "scenario '{}' had {} failures",
+            SCENARIO.meta.id, v.failed
+        );
     }
 }

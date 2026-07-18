@@ -7,7 +7,7 @@
 //! All inter-gate traffic routes through Songbird braid. Intra-gate
 //! stays UDS (zero TCP for non-Tower primals).
 //!
-//! Tier::Both — structural port mapping always runs; live port
+//! `Tier::Both` — structural port mapping always runs; live port
 //! reachability checks require deployed primals.
 
 use crate::composition::CompositionContext;

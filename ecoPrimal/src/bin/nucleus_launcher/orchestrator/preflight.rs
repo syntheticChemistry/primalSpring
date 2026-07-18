@@ -77,7 +77,9 @@ pub fn run_preflight(primals: &[&str], uds_only: bool) -> PreflightResult {
                 for (name, path) in &binary_paths {
                     if let Some(pt) = primals_table {
                         if let Some(hashes) = pt.get(name).and_then(toml::Value::as_table) {
-                            if let Some(expected) = hashes.get(&triple).and_then(toml::Value::as_str) {
+                            if let Some(expected) =
+                                hashes.get(&triple).and_then(toml::Value::as_str)
+                            {
                                 if let Ok(data) = std::fs::read(path) {
                                     let actual = blake3::hash(&data).to_hex().to_string();
                                     if actual != expected {
