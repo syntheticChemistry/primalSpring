@@ -64,20 +64,23 @@ fn phase_structural(v: &mut ValidationResult) {
 
     v.check_bool(
         "wan:fp_spa_url",
-        FP_COMP_TOML.contains("primals.eco/footprint/"),
-        "SPA URL = primals.eco/footprint/",
+        FP_COMP_TOML.contains("footprint.primals.eco")
+            || FP_COMP_TOML.contains("primals.eco/footprint/"),
+        "SPA URL includes footprint.primals.eco or primals.eco/footprint/",
     );
 
     v.check_bool(
         "wan:caddy_footprint_route",
-        PROVISION_SH.contains("handle_path /footprint/*"),
-        "Caddy has handle_path /footprint/* block",
+        PROVISION_SH.contains("footprint.primals.eco")
+            || PROVISION_SH.contains("handle_path /footprint/*"),
+        "Caddy has footprint.primals.eco vhost or handle_path block",
     );
 
     v.check_bool(
         "wan:caddy_spa_fallback",
-        PROVISION_SH.contains("try_files {path} /index.html"),
-        "Caddy SPA fallback (try_files → index.html)",
+        PROVISION_SH.contains("try_files {path} /index.html")
+            || PROVISION_SH.contains("reverse_proxy"),
+        "Caddy SPA fallback or reverse_proxy to Express",
     );
 
     v.check_bool(
@@ -146,7 +149,7 @@ fn phase_live(v: &mut ValidationResult) {
             "%{http_code}",
             "--max-time",
             "5",
-            "https://primals.eco/footprint/",
+            "https://footprint.primals.eco/",
         ])
         .output()
         .map(|o| String::from_utf8_lossy(&o.stdout).trim() == "200")
@@ -156,7 +159,7 @@ fn phase_live(v: &mut ValidationResult) {
         "wan:live:footprint_200",
         fp_ok,
         &format!(
-            "primals.eco/footprint/ → {}",
+            "footprint.primals.eco/ → {}",
             if fp_ok { "200 OK" } else { "NOT 200" }
         ),
     );
