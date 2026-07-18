@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: protoKarya WAN Deploy — validates that protist compositions
-//! (footPrint, tideGlass) have proper Caddy routing, composition manifests,
-//! and capability wiring for WAN deployment at `*.primals.eco`.
+//! Scenario: `protoKarya` WAN Deploy.
+//!
+//! Validates that protist compositions (`footPrint`, `tideGlass`) have proper
+//! Caddy routing, composition manifests, and capability wiring for WAN
+//! deployment at `*.primals.eco`.
 //!
 //! Structural phase: validates config declarations.
 //! Live phase: probes actual URLs for HTTP 200.

@@ -20,6 +20,7 @@ use crate::primal_names::Primal;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "depot-wan-serving",
@@ -39,6 +40,7 @@ const EXPECTED_ARCHITECTURES: &[&str] =
 
 const WINDOWS_ARCHITECTURE: &str = "x86_64-pc-windows-gnu";
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Endpoint reachability");
     phase_reachability(v);

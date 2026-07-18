@@ -93,9 +93,13 @@ impl LiveCapture {
 /// Point-in-time snapshot of a live capture.
 #[derive(Debug, Clone)]
 pub struct CaptureSnapshot {
+    /// Session identifier.
     pub id: String,
+    /// Operator who initiated the ceremony.
     pub user: String,
+    /// How many entropy sources have contributed so far.
     pub mix_input_count: usize,
+    /// Whether a key derivation has been observed.
     pub has_monitor: bool,
 }
 

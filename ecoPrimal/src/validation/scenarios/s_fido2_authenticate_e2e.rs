@@ -14,6 +14,7 @@ use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "fido2-authenticate-e2e",
@@ -26,6 +27,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: GetAssertion CBOR construction");
     phase_get_assertion_cbor(v);

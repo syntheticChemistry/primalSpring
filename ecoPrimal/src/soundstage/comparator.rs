@@ -14,12 +14,19 @@ use super::session::SessionRecord;
 /// Comparison result between two sessions.
 #[derive(Debug, Clone)]
 pub struct ComparisonResult {
+    /// ID of the first session compared.
     pub session_a: String,
+    /// ID of the second session compared.
     pub session_b: String,
+    /// Whether the derived keys differ (true = safe).
     pub keys_independent: bool,
+    /// Average entropy quality of session A (bits/byte).
     pub entropy_quality_a: f64,
+    /// Average entropy quality of session B (bits/byte).
     pub entropy_quality_b: f64,
+    /// Anchor labels that both sessions used.
     pub shared_anchors: Vec<String>,
+    /// Summary judgment.
     pub verdict: Verdict,
 }
 
@@ -104,6 +111,7 @@ impl Comparator {
     }
 }
 
+#[allow(clippy::cast_precision_loss)]
 fn avg_entropy_quality(session: &SessionRecord) -> f64 {
     if session.mix_inputs.is_empty() {
         return 0.0;

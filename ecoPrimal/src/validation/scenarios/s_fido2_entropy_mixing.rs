@@ -18,6 +18,7 @@ use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "fido2-entropy-mixing",
@@ -30,6 +31,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Entropy tier model");
     phase_tier_model(v);

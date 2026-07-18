@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: Depot Layout Compliance — validates that the ecosystem's binary
-//! depot follows the plasmidBin standard: full primal coverage, musl-static
-//! linkage, checksums.toml, signatures.toml, and manifest completeness.
+//! Scenario: Depot Layout Compliance.
 //!
-//! Wave 139a divergence: sporeGate genomeBin had 6/14 primals, dynamically linked.
+//! Validates that the ecosystem's binary depot follows the `plasmidBin` standard:
+//! full primal coverage, musl-static linkage, checksums.toml, signatures.toml,
+//! and manifest completeness.
+//!
+//! Wave 139a divergence: sporeGate `genomeBin` had 6/14 primals, dynamically linked.
 //! This scenario ensures any depot passes the post-primordial standard.
 
 use crate::composition::CompositionContext;
@@ -16,6 +18,7 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 const PROTO_NUCLEATE: &str = include_str!("../../../../config/proto_nucleate.toml");
 const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "depot-layout-compliance",
@@ -45,6 +48,7 @@ const REQUIRED_PRIMALS: &[&str] = &[
     primal_names::SWEETGRASS,
 ];
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Primal coverage (13/13 NUCLEUS primals required)");
     phase_primal_coverage(v);

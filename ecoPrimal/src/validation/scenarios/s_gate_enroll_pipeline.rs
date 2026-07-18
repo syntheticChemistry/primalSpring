@@ -27,6 +27,7 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 const MANIFEST: &str = include_str!("../../../../../../infra/wateringHole/ecosystem_manifest.toml");
 const MESH_TOML: &str = include_str!("../../../../config/mesh_topology.toml");
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "gate-enroll-pipeline",
@@ -50,6 +51,7 @@ const ENROLLMENT_PHASES: &[&str] = &[
 
 const REQUIRED_GATE_FIELDS: &[&str] = &["ip", "transport", "roles"];
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Manifest gate profiles");
     phase_manifest_profiles(v);

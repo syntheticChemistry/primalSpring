@@ -17,6 +17,7 @@ use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "fido2-tap-timing-entropy",
@@ -29,6 +30,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Timing capture model");
     phase_timing_model(v);
@@ -135,6 +137,7 @@ fn phase_jitter_analysis(v: &mut ValidationResult) {
     // Entropy contribution: log2 of distinct timing buckets (1ms granularity)
     let buckets: std::collections::HashSet<u64> =
         mock_timings_ns.iter().map(|&t| t / 1_000_000).collect();
+    #[allow(clippy::cast_precision_loss)]
     let entropy_bits = (buckets.len() as f64).log2();
     v.check_bool(
         "jitter:entropy_bits",

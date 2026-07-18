@@ -17,6 +17,7 @@ use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "platform-type-parity",
@@ -54,12 +55,13 @@ const GATE_PLATFORMS: &[(&str, &str, &str)] = &[
 
 const ARCH_RS_PATH: &str = "gardens/cellMembrane/crates/cellmembrane-types/src/arch.rs";
 
-pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
+/// Execute this scenario's validation phases.
+pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.section("Phase 1: Platform type definitions in arch.rs");
-    phase_type_definitions(v, _ctx);
+    phase_type_definitions(v, ctx);
 
     v.section("Phase 2: Depot triple coverage");
-    phase_depot_coverage(v, _ctx);
+    phase_depot_coverage(v, ctx);
 
     v.section("Phase 3: Gate platform assignments");
     phase_gate_assignments(v);
@@ -68,7 +70,7 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     phase_method_contracts(v);
 
     v.section("Phase 5: Legacy TargetArch compatibility");
-    phase_legacy_compat(v, _ctx);
+    phase_legacy_compat(v, ctx);
 }
 
 fn ecoprimals_root() -> Option<PathBuf> {

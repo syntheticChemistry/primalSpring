@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
-//! Scenario: Science Drawbridge Parity — validates that the science API weak
-//! bonds declared in songBird's bond constants match the primalSpring
-//! `drawbridge_bonds.toml` registry and the Caddy proxy configuration.
+//! Scenario: Science Drawbridge Parity.
+//!
+//! Validates that the science API weak bonds declared in songBird's bond
+//! constants match `drawbridge_bonds.toml` and the Caddy proxy configuration.
 //!
 //! Wave 139c: songBird shipped NCBI/PubChem drawbridge bonds (64393c2).
 //! This scenario ensures three-way parity:
@@ -15,6 +16,7 @@ use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "science-drawbridge-parity",
@@ -38,6 +40,7 @@ const SCIENCE_BOND_HOSTS: &[(&str, &str)] = &[
     ("alphafold", "alphafold.ebi.ac.uk"),
 ];
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Science bond hosts in registry");
     phase_registry_coverage(v);
@@ -89,9 +92,7 @@ fn phase_trust_tiers(v: &mut ValidationResult) {
         return;
     };
 
-    let bonds = if let Some(t) = doc.get("bonds").and_then(|b| b.as_table()) {
-        t
-    } else {
+    let Some(bonds) = doc.get("bonds").and_then(|b| b.as_table()) else {
         v.check_bool(
             "science:tier_parse",
             false,

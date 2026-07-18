@@ -56,12 +56,14 @@ pub enum EventKind {
 /// A channel — one observable entropy source during a ceremony.
 #[derive(Debug)]
 pub struct Channel {
+    /// The hardware anchor this channel observes.
     pub anchor: Anchor,
     events: Vec<ChannelEvent>,
     start: Instant,
 }
 
 impl Channel {
+    /// Create a new channel observing the given anchor.
     #[must_use]
     pub fn new(anchor: Anchor) -> Self {
         Self {
@@ -176,6 +178,10 @@ fn make_signal(data: &[u8]) -> Signal {
 }
 
 /// Shannon entropy in bits per byte (0.0 = all same, 8.0 = perfectly random).
+///
+/// Cast precision loss is acceptable: entropy samples are bounded to ≤256 distinct
+/// byte values over inputs that fit in memory, well within f64 mantissa range.
+#[allow(clippy::cast_precision_loss)]
 fn shannon_entropy(data: &[u8]) -> f64 {
     if data.is_empty() {
         return 0.0;

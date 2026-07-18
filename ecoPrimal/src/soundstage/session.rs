@@ -15,7 +15,9 @@ use std::time::Instant;
 /// A live ceremony session — records all channels and mixing in real time.
 #[derive(Debug)]
 pub struct CeremonySession {
+    /// Unique session identifier.
     pub id: String,
+    /// User/operator who initiated the ceremony.
     pub user: String,
     channels: HashMap<String, Channel>,
     mix_inputs: Vec<MixInput>,
@@ -26,9 +28,13 @@ pub struct CeremonySession {
 /// An entropy contribution that went into the mix bus.
 #[derive(Debug, Clone)]
 pub struct MixInput {
+    /// Which anchor produced this entropy.
     pub anchor_label: String,
+    /// BLAKE3 fingerprint of the contributed bytes.
     pub fingerprint: [u8; 32],
+    /// Byte length of the contribution.
     pub len: usize,
+    /// Shannon entropy estimate (bits/byte, max 8.0).
     pub entropy_estimate: f64,
 }
 
@@ -48,12 +54,19 @@ pub struct Monitor {
 /// A completed session recording — serializable, comparable.
 #[derive(Debug, Clone)]
 pub struct SessionRecord {
+    /// Unique session identifier.
     pub id: String,
+    /// User/operator who ran the ceremony.
     pub user: String,
+    /// Labels of all channels that participated.
     pub channels_used: Vec<String>,
+    /// All captured events across all channels.
     pub events: Vec<ChannelEvent>,
+    /// Entropy contributions that entered the mix bus.
     pub mix_inputs: Vec<MixInput>,
+    /// Final key observation (fingerprint only, never raw material).
     pub monitor: Option<Monitor>,
+    /// Wall-clock duration of the ceremony in milliseconds.
     pub duration_ms: u128,
 }
 

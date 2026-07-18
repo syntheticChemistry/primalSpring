@@ -17,6 +17,7 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 const DRAWBRIDGE_BONDS: &str = include_str!("../../../../config/drawbridge_bonds.toml");
 const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "drawbridge-consumer-parity",
@@ -29,6 +30,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Bond host inventory");
     phase_bond_inventory(v);

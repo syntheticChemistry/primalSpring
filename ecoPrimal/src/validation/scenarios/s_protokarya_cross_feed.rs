@@ -16,6 +16,7 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 
 const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "protokarya-cross-feed",
@@ -28,6 +29,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Data production path (footPrint → CAS)");
     phase_data_production(v);

@@ -43,16 +43,16 @@ pub fn run(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     let depot_root = phase_depot_discovery(v);
 
     v.section("Phase 2: Binary coverage");
-    phase_binary_coverage(v, &depot_root);
+    phase_binary_coverage(v, depot_root.as_ref());
 
     v.section("Phase 3: Static linkage standard");
-    phase_static_linkage(v, &depot_root);
+    phase_static_linkage(v, depot_root.as_ref());
 
     v.section("Phase 4: Integrity artifacts");
     phase_integrity_artifacts(v);
 
     v.section("Phase 5: Layout standard");
-    phase_layout_standard(v, &depot_root);
+    phase_layout_standard(v, depot_root.as_ref());
 
     let _ = ctx;
 }
@@ -116,7 +116,7 @@ fn phase_depot_discovery(v: &mut ValidationResult) -> Option<PathBuf> {
     depot
 }
 
-fn phase_binary_coverage(v: &mut ValidationResult, depot: &Option<PathBuf>) {
+fn phase_binary_coverage(v: &mut ValidationResult, depot: Option<&PathBuf>) {
     let Some(root) = depot else {
         v.check_skip("depot-std:coverage", "no depot — skipping coverage check");
         return;
@@ -154,7 +154,7 @@ fn phase_binary_coverage(v: &mut ValidationResult, depot: &Option<PathBuf>) {
     );
 }
 
-fn phase_static_linkage(v: &mut ValidationResult, depot: &Option<PathBuf>) {
+fn phase_static_linkage(v: &mut ValidationResult, depot: Option<&PathBuf>) {
     let Some(root) = depot else {
         v.check_skip(
             "depot-std:static_linkage",
@@ -224,6 +224,7 @@ fn elf_has_dynamic_section(data: &[u8]) -> bool {
     }
 }
 
+#[allow(clippy::cast_possible_truncation)]
 fn elf64_has_pt_dynamic(data: &[u8]) -> bool {
     if data.len() < 64 {
         return false;
@@ -302,7 +303,7 @@ fn phase_integrity_artifacts(v: &mut ValidationResult) {
     );
 }
 
-fn phase_layout_standard(v: &mut ValidationResult, depot: &Option<PathBuf>) {
+fn phase_layout_standard(v: &mut ValidationResult, depot: Option<&PathBuf>) {
     let Some(root) = depot else {
         v.check_skip("depot-std:layout", "no depot for layout check");
         return;

@@ -8,8 +8,11 @@ use std::fmt;
 /// A hardware trust anchor — the physical source of entropy or key material.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Anchor {
+    /// What type of trust anchor (FIDO2, `StrongBox`, Audio, etc.).
     pub kind: AnchorKind,
+    /// Human-readable label (e.g. "solokey-east", "pixel-8a").
     pub label: String,
+    /// Device path if applicable (e.g. "/dev/hidraw5").
     pub device_path: Option<String>,
 }
 
@@ -29,6 +32,7 @@ pub enum AnchorKind {
 }
 
 impl Anchor {
+    /// Create a FIDO2 anchor (hardware security key with a device path).
     pub fn fido2(label: impl Into<String>, path: impl Into<String>) -> Self {
         Self {
             kind: AnchorKind::Fido2,
@@ -37,6 +41,7 @@ impl Anchor {
         }
     }
 
+    /// Create a `StrongBox` anchor (hardware-backed keystore, no device path).
     pub fn strongbox(label: impl Into<String>) -> Self {
         Self {
             kind: AnchorKind::StrongBox,
@@ -45,6 +50,7 @@ impl Anchor {
         }
     }
 
+    /// Create an audio anchor (microphone/headset for environmental entropy).
     pub fn audio(label: impl Into<String>) -> Self {
         Self {
             kind: AnchorKind::Audio,
@@ -53,6 +59,7 @@ impl Anchor {
         }
     }
 
+    /// Create an OS entropy anchor (getrandom/urandom — always available).
     #[must_use]
     pub fn os_entropy() -> Self {
         Self {

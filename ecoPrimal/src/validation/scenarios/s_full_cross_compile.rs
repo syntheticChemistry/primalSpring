@@ -31,6 +31,7 @@ const TARGET_ARCHITECTURES: &[&str] = &[
 
 const EXTRA_PRIMALS: &[&str] = &["sourdough"];
 
+/// Scenario registration metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "full-cross-compile",
@@ -43,6 +44,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
+/// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Structural — target matrix declaration");
     phase_structural(v);
