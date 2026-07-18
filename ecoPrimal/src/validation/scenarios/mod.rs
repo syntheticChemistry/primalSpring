@@ -459,13 +459,10 @@ mod tests {
 
     #[test]
     fn registry_all_rust_tier_pass() {
-        // Wave 147c: sporeprint-pure-primal-parity resolved (Wave 147b).
-        // graphenegate-readiness: aarch64 depot directory absent locally (1 check)
+        // Wave 148b: sporeprint-pure-primal-parity passes (composition graph present).
+        // graphenegate-readiness: aarch64 depot directory absent on eastGate
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            // eastGate: deploy_pixel.sh + aarch64 depot absent locally
-            ("graphenegate-readiness", 2),
-            // eastGate: sporePrint composition graph not wired (Phase 2)
-            ("sporeprint-pure-primal-parity", 1),
+            ("graphenegate-readiness", 1),
         ];
 
         let r = build_registry();
