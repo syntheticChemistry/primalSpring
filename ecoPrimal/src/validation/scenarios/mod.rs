@@ -465,12 +465,11 @@ mod tests {
         // On non-depot gates (eastGate), the binaries are absent → 14 failures
         // (13 individual binary checks + 1 aggregate "all_13_present").
         // Wave 150k: eastGate calibration
+        // Wave 150n: sporeprint-pure-primal-parity resolved upstream;
+        //   graphenegate-readiness recalibrated for eastGate depot state (14 aarch64 absent)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            // eastGate: deploy_pixel.sh + aarch64 depot absent locally
-            ("graphenegate-readiness", 2),
+            ("graphenegate-readiness", 14),
             ("composition-access-control", 15),
-            // eastGate: sporeprint_composition.toml deploy graph not present
-            ("sporeprint-pure-primal-parity", 1),
         ];
 
         let r = build_registry();
