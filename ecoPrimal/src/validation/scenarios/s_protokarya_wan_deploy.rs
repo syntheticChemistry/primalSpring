@@ -186,7 +186,11 @@ fn phase_live(v: &mut ValidationResult) {
         fp_redirect,
         &format!(
             "primals.eco/footprint/ → {}",
-            if fp_redirect { "301 redirect (subdomain migration)" } else { "NOT redirecting" }
+            if fp_redirect {
+                "301 redirect (subdomain migration)"
+            } else {
+                "NOT redirecting"
+            }
         ),
     );
 }

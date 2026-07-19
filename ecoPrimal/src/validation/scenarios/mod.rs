@@ -65,6 +65,7 @@ pub mod s_cascade_drift;
 pub mod s_cascade_provenance_match;
 pub mod s_cascade_signing;
 pub mod s_cephalization;
+pub mod s_composition_access_control;
 pub mod s_composition_dispatch_parity;
 pub mod s_composition_lifecycle;
 pub mod s_composition_live_state;
@@ -396,6 +397,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_protokarya_wan_deploy::SCENARIO);
     r.register(s_drawbridge_consumer_parity::SCENARIO);
     r.register(s_gate_enroll_pipeline::SCENARIO);
+    r.register(s_composition_access_control::SCENARIO);
     r
 }
 
@@ -406,7 +408,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 170;
+    const EXPECTED_SCENARIO_COUNT: usize = 171;
 
     #[test]
     fn registry_scenario_count() {
@@ -462,7 +464,10 @@ mod tests {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On non-depot gates (eastGate), the binaries are absent → 14 failures
         // (13 individual binary checks + 1 aggregate "all_13_present").
-        const KNOWN_DEBT: &[(&str, u32)] = &[("graphenegate-readiness", 14)];
+        const KNOWN_DEBT: &[(&str, u32)] = &[
+            ("graphenegate-readiness", 14),
+            ("composition-access-control", 15),
+        ];
 
         let r = build_registry();
         let mut ctx = CompositionContext::discover();
