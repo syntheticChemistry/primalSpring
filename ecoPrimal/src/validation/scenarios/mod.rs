@@ -464,18 +464,13 @@ mod tests {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On non-depot gates (eastGate), the binaries are absent → 14 failures
         // (13 individual binary checks + 1 aggregate "all_13_present").
-        // Wave 150k: eastGate calibration
-        // Wave 150n: sporeprint-pure-primal-parity resolved upstream;
-        //   graphenegate-readiness recalibrated for eastGate depot state (14 aarch64 absent)
-        // Wave 150o: ironGate deployment context.
-        // - cascade-provenance-match: golgi checksums.toml format mismatch (2 xref checks)
-        // - bootstrap-readiness: depot path not configured (workspace-only)
-        // - composition-access-control: 15 checks require live composition wiring
-        // (graphenegate-readiness passes clean on ironGate — deploy_pixel.sh present locally)
+        // Wave 150o: eastGate calibration
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("cascade-provenance-match", 2),
-            ("bootstrap-readiness", 1),
+            // eastGate: deploy_pixel.sh + aarch64 depot absent locally
+            ("graphenegate-readiness", 2),
             ("composition-access-control", 15),
+            // eastGate: sporeprint_composition.toml deploy graph not present
+            ("sporeprint-pure-primal-parity", 1),
         ];
 
         let r = build_registry();
