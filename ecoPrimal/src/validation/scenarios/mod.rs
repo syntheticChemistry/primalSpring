@@ -467,8 +467,14 @@ mod tests {
         // Wave 150k: eastGate calibration
         // Wave 150n: sporeprint-pure-primal-parity resolved upstream;
         //   graphenegate-readiness recalibrated for eastGate depot state (14 aarch64 absent)
+        // Wave 150o: ironGate deployment context.
+        // - cascade-provenance-match: golgi checksums.toml format mismatch (2 xref checks)
+        // - bootstrap-readiness: depot path not configured (workspace-only)
+        // - composition-access-control: 15 checks require live composition wiring
+        // (graphenegate-readiness passes clean on ironGate — deploy_pixel.sh present locally)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 14),
+            ("cascade-provenance-match", 2),
+            ("bootstrap-readiness", 1),
             ("composition-access-control", 15),
         ];
 

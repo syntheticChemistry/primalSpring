@@ -120,11 +120,11 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.41 Wave 147b (July 17, 2026) — 170 scenarios (12 tracks, 3 tiers),
+v0.9.41 Wave 150o (July 20, 2026) — 171 scenarios (12 tracks, 3 tiers),
 492+ registered capability methods, 93 experiments (21 tracks), 102 graph TOMLs
-(16 directories). 1202 lib tests (0 failures, 2 ignored). **Silicon Atheism Phase 2
-COMPLETE (14/14 primals shipped transport abstraction). CAC 6/6 COMPLETE. 59 depot
-binaries across 4 architectures (16+16+13+14).** Config-driven topology
+(16 directories). 1206 lib tests (0 failures, 2 ignored). **5-gate active mesh.
+USB enrollment ready. 43 repos audited (100k+ ecosystem tests). 55 depot binaries,
+re-harvest pending (56 expected).** Config-driven topology
 (`config/mesh_topology.toml` — SSOT for gate roster, zones, mesh addresses).
 Evolution module: CytoplasmZone model (backbone/house2/garage/wan), three-hub
 triangle topology, gate enrollment pipeline, convergence monitoring.
