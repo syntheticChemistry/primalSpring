@@ -2,8 +2,8 @@
 // Copyright (c) 2025-2026 ecoPrimals Collective
 
 //! Scenario: Composition Access Control (CAC) — validates that live compositions
-//! enforce proper access boundaries per the DIDERM_DOMAIN_ARCHITECTURE and
-//! COMPOSITION_ROUTING_STANDARD.
+//! enforce proper access boundaries per the `DIDERM_DOMAIN_ARCHITECTURE` and
+//! `COMPOSITION_ROUTING_STANDARD`.
 //!
 //! The ecoPrimals composition model has three access tiers:
 //! - **Outer membrane** (`*.primals.eco`): public compositions, authenticated write

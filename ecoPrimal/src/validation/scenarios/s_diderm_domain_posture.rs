@@ -5,7 +5,7 @@
 //! model and sovereignty evolution classification.
 //!
 //! Checks that the ecosystem's domain architecture, membrane layers, and
-//! external dependency classifications conform to the DIDERM_DOMAIN_ARCHITECTURE
+//! external dependency classifications conform to the `DIDERM_DOMAIN_ARCHITECTURE`
 //! standard (Wave 150s).
 
 use crate::composition::CompositionContext;
@@ -88,7 +88,7 @@ fn phase_domain_separation(v: &mut ValidationResult) {
 
     let distinct = {
         let mut sorted = DOMAINS.to_vec();
-        sorted.sort();
+        sorted.sort_unstable();
         sorted.dedup();
         sorted.len()
     };
@@ -247,14 +247,17 @@ mod tests {
         let mut v = ValidationResult::new("diderm-domain-posture");
         let mut ctx = CompositionContext::discover();
         run(&mut v, &mut ctx);
-        assert!(v.passed + v.failed + v.skipped > 0, "scenario must produce checks");
+        assert!(
+            v.passed + v.failed + v.skipped > 0,
+            "scenario must produce checks"
+        );
     }
 
     #[test]
     fn domains_are_three_distinct() {
         assert_eq!(DOMAINS.len(), 3);
         let mut sorted = DOMAINS.to_vec();
-        sorted.sort();
+        sorted.sort_unstable();
         sorted.dedup();
         assert_eq!(sorted.len(), 3);
     }

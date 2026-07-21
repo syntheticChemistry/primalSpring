@@ -63,6 +63,7 @@ zone = "House2"
 
 [[gate]]
 name = "southGate"
+address = "10.13.37.9"
 role = "node"
 zone = "House2"
 

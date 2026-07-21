@@ -264,7 +264,7 @@ fn validate_mesh_addresses(v: &mut ValidationResult) {
     }
 
     // Unassigned gates should return None
-    let unpeered = ["strandGate", "southGate", "swiftGate"];
+    let unpeered = ["strandGate", "swiftGate"];
     for gate in &unpeered {
         v.check_bool(
             &format!("mesh:{gate}:unassigned"),

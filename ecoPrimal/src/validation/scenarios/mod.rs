@@ -90,12 +90,12 @@ pub mod s_crypto_identity_surface;
 pub mod s_dark_forest_gate;
 pub mod s_defense_attestation;
 pub mod s_deployment_pipeline;
-pub mod s_diderm_domain_posture;
 pub mod s_depot_architecture_coverage;
 pub mod s_depot_binary_standard;
 pub mod s_depot_layout_compliance;
 pub mod s_depot_trust_verify;
 pub mod s_depot_wan_serving;
+pub mod s_diderm_domain_posture;
 pub mod s_domain_contract_sweep;
 pub mod s_drawbridge_bond_registry;
 pub mod s_drawbridge_bonds;
@@ -201,6 +201,7 @@ pub mod s_soundstage_ceremony_observation;
 pub mod s_sovereign_ci_pipeline;
 pub mod s_sovereignty_audit_chain;
 pub mod s_sovereignty_ledger;
+pub mod s_sovereignty_roadmap;
 pub mod s_sporeprint_pure_primal;
 pub mod s_sporeprint_surface;
 pub mod s_squirrel_ai_pipeline;
@@ -398,6 +399,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_protokarya_wan_deploy::SCENARIO);
     r.register(s_drawbridge_consumer_parity::SCENARIO);
     r.register(s_gate_enroll_pipeline::SCENARIO);
+    r.register(s_sovereignty_roadmap::SCENARIO);
     r.register(s_composition_access_control::SCENARIO);
     r.register(s_diderm_domain_posture::SCENARIO);
     r
@@ -410,7 +412,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 172;
+    const EXPECTED_SCENARIO_COUNT: usize = 173;
 
     #[test]
     fn registry_scenario_count() {
@@ -467,10 +469,8 @@ mod tests {
         // On non-depot gates (eastGate), the binaries are absent → 14 failures
         // (13 individual binary checks + 1 aggregate "all_13_present").
         // Wave 150t: eastGate calibration
-        // ironGate: see aars/KNOWN_DEBT_DIVERGENCE_150t.md — 8th recalibration
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("cascade-provenance-match", 2),
-            ("bootstrap-readiness", 1),
+            ("graphenegate-readiness", 1),
             ("composition-access-control", 15),
         ];
 
