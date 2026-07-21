@@ -21,7 +21,7 @@ protocols. The bonding models are the hypotheses.
 
 - **Composition validation library** — `CompositionContext`, routing,
   mesh topology, parity checks, liveness probing
-- **Certification engine** — guideStone L0-L8 (170 scenarios, 12-track
+- **Certification engine** — guideStone L0-L8 (173 scenarios, 12-track
   validation), `primalspring certify`
 - **Bonding proofs** — multi-gate bonding models, STUN tiers, ionic
   RPC, content distribution federation
@@ -98,7 +98,7 @@ to primalSpring as experiment targets.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 170 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 173 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -120,11 +120,11 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.41 Wave 150t (July 21, 2026) — 171 scenarios (12 tracks, 3 tiers),
-492+ registered capability methods, 93 experiments (21 tracks), 102 graph TOMLs
-(16 directories). 1206 lib tests (0 failures, 2 ignored). **5-gate active mesh.
-USB enrollment ready. 43 repos audited (100k+ ecosystem tests). 55 depot binaries,
-re-harvest pending (56 expected).** Config-driven topology
+v0.9.42 Wave 150t (July 21, 2026) — 173 scenarios (12 tracks, 3 tiers),
+492+ registered capability methods, 96 experiments (21 tracks), 102 graph TOMLs
+(16 directories). 1213 lib tests (0 failures, 2 ignored). **7-gate mesh (5 active +
+2 enrolled). USB enrollment ready. Sovereignty roadmap validated. DNSSEC 3/3.
+43 repos audited (105k+ ecosystem tests).** Config-driven topology
 (`config/mesh_topology.toml` — SSOT for gate roster, zones, mesh addresses).
 Evolution module: CytoplasmZone model (backbone/house2/garage/wan), three-hub
 triangle topology, gate enrollment pipeline, convergence monitoring.
@@ -316,7 +316,7 @@ memoization), wetSpring (data fetch + visualization), neuralSpring
 - **Silicon Atheism Phase 1** (Wave 142a): 14/14 primals cross-compile for 4 architectures
 - **Silicon Atheism Phase 2** (Wave 145a): 14/14 primals shipped platform-agnostic transport
 - **Content-Addressed Convergence** (Wave 144a): 6/6 layers complete
-- 492+ method registry (100% exercised), 170 scenarios, 102 deploy graphs, 1203 lib tests
+- 492+ method registry (100% exercised), 173 scenarios, 102 deploy graphs, 1213 lib tests
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - 59 depot binaries (14 per architecture × 4 targets), all BLAKE3 + Ed25519 signed
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active

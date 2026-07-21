@@ -9,13 +9,13 @@ Structured inventory of known gaps per primal that block or degrade composable d
 > All 13 primals at modern async Rust parity: `async-trait` eliminated (13/13),
 > enum dispatch (13/13), `cargo deny check bans` passes (13/13), Edition 2024 (13/13).
 >
-> **Last updated**: 2026-07-17 (Wave 147b: **v0.9.41.** 170 scenarios, 1203 lib tests (0 failures, 2 ignored), 12 tracks. **Silicon Atheism Phase 2 COMPLETE** (14/14). **CAC 6/6 COMPLETE**. **gate.enroll SHIPPED** — automated 5-phase mesh enrollment (cellMembrane `467560d`). 6-gate mesh LIVE (northGate enrolled at 10.13.37.8). Depot: 59 binaries across 4 architectures (16+16+13+14). Forgejo-first remote standard enforced.)
+> **Last updated**: 2026-07-21 (Wave 150t: **v0.9.42.** 173 scenarios, 1213 lib tests (0 failures, 2 ignored), 12 tracks. **Sovereignty roadmap validated** — Tower Atomic, primal pipeline, rootPulse structural readiness. **7-gate mesh** (southGate enrolled at 10.13.37.9). **DNSSEC 3/3 validated**. Standards reorganized (37 → 4 dirs). 0 pedantic/nursery clippy warnings.)
 >
 > **Full history**: archived in `fossilRecord/primal_gaps_phase60_may2026/PRIMAL_GAPS_FULL_HISTORY.md`
 
 ---
 
-## Ecosystem Status (July 17, 2026 — Wave 147b)
+## Ecosystem Status (July 21, 2026 — Wave 150t)
 
 **270+ PASS, 0 FAIL, 0 KNOWN_DEBT** — projectNUCLEUS Phase 60+ validation, darkforest v0.2.1. primalSpring: **55 scenarios** (10 tracks, 3 tiers), 490+ real methods (100% exercised), **901 lib tests pass** (2 ignored) + **17 doc tests**, zero clippy warnings, zero `#[allow]` in production, 3 binaries (UniBin + IPC server + nucleus_launcher). **16 runtime deps**. Pure Rust crypto for BTSP bootstrap. **Wave 107: ZERO P1. ZERO KNOWN DEBT. ALL UPSTREAM BLOCKERS RESOLVED.** grapheneGate **13/13 structurally ready** — all primal bind-mode fixes shipped: CR-TARPC-01 (coralReef b1ec1f4: tarpc skips bind on tcp_only), BM-UDS-01 (biomeOS v4.20 d35c943e: Neural API skips UDS bind on tcp_only), NG-DOWNCAST-01 (nestGate 7c3fe9a6: `is_platform_constraint()` walks full chain). `PRIMAL_BIND_MODE=tcp_only` adopted **13/13**. Zero-port standard CLEAN: droppable federation ports eliminated. Socket cleanup **5/5 VERIFIED**. songBird M1 SHIPPED (ff86204c): topology-aware mesh routing. barraCuda `method.describe` SHIPPED (v0.4.0). biomeOS auto-register SHIPPED (v4.19). NUCLEUS supervision SHIPPED (v4.17). **5-gate ecosystem** (eastGate↔golgiBody↔ironGate+southGate + grapheneGate standalone). S1-S4 GRADUATED. **Wave 108: grapheneGate 13/13 DEPLOYED AND ALIVE.** aarch64 depot rebuilt on eastGate (cross-compile via cargo+musl). coralReef rebuilt locally from b1ec1f4 (build-primal.sh shallow clone was stale). All 13 primals confirmed via ADB: `pgrep` + TCP probe + JSON-RPC health. biomeOS ADB forward on :19800 (local :9800 occupied by FluidSynth — PB-FORWARD-01). **Ecosystem complete.**
 
@@ -56,7 +56,7 @@ Structured inventory of known gaps per primal that block or degrade composable d
 | coralReef | 3,304+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 107: CR-TARPC-01 **RESOLVED** (b1ec1f4). tarpc skips `bind()` when `PRIMAL_BIND_MODE=tcp_only`. Socket cleanup DONE. TRANSPORT_ENDPOINT works for JSON-RPC TCP. |
 | skunkBat | 389+ | **ADOPTED** | FULL | L2 | **CLEAN** — Wave 47: behavioral items resolved. Wave 107: TCP 9750 DROPPED (federation port eliminated) — zero-port standard fully compliant. 18 methods. |
 
-**13/13 CLEAN — Waves 1-145a. 169 scenarios (12 tracks), 492+ methods (100% exercised), 1202 lib tests (0 failures, 2 ignored), 1 known debt (graphenegate-readiness: 1 on eastGate). Wave 145a: Silicon Atheism Phase 2 COMPLETE — all 14 primals shipped transport abstraction. CAC 6/6 COMPLETE. Depot: 59 binaries (16+16+13+14). Deep debt CLEAN.**
+**13/13 CLEAN — Waves 1-150t. 173 scenarios (12 tracks), 492+ methods (100% exercised), 1213 lib tests (0 failures, 2 ignored), 2 known debt (graphenegate-readiness: 1, composition-access-control: 15 on eastGate). Wave 150t: Sovereignty roadmap validated. 7-gate mesh. DNSSEC 3/3. 0 pedantic/nursery clippy warnings. Standards reorganized.**
 
 ---
 

@@ -10,13 +10,13 @@ been consolidated upstream.
 
 | Item | Current |
 |------|---------|
-| **Wave** | 147b |
-| **Version** | 0.9.41 |
-| **Tests** | 1203 lib + 17 doc (1222 workspace total) |
+| **Wave** | 150t |
+| **Version** | 0.9.42 |
+| **Tests** | 1213 lib + 17 doc (1232 workspace total) |
 | **Experiments** | 96 (21 tracks) |
-| **Scenarios** | 170 (12 tracks, 3 tiers) |
+| **Scenarios** | 173 (12 tracks, 3 tiers) |
 | **Compositions** | 5 fractal profiles + 102 graph TOMLs |
-| **Methods** | 490+ registered capability methods |
+| **Methods** | 492+ registered capability methods |
 
 ## See Also
 

@@ -3,6 +3,25 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.42] — Wave 150t: Sovereignty Roadmap + Standards Reorg (2026-07-21)
+
+### Wave 150t: Sovereignty Evolution Roadmap (July 21)
+- **3 new validation scenarios** — `sovereignty-roadmap` (17 checks: Tower Atomic,
+  primal pipeline, rootPulse, firebreaks), `diderm-domain-posture` (domain
+  architecture validation), `composition-access-control` (15 known debt). 173 total.
+- **1213 lib tests passing** — 0 failures, 2 known debt (graphenegate-readiness: 1,
+  composition-access-control: 15).
+- **Mesh topology updated** — southGate enrolled at 10.13.37.9 (7th node).
+  `zone-topology` scenario updated to reflect southGate's peered status.
+- **Clippy zero** — fixed `doc_markdown` (2), `sort` → `sort_unstable` in
+  upstream `s_diderm_domain_posture`. 0 pedantic+nursery warnings.
+- **KNOWN_DEBT aligned** — composition-access-control (15), graphenegate-readiness (1).
+  Upstream-only entries (cascade-provenance-match, bootstrap-readiness) removed.
+- **Ecosystem context** — DNSSEC 3/3 validated, wateringHole standards reorganized
+  (37 → 4 dirs), sovereignty evolution roadmap active (3-tier: REPLACE / LATE-STAGE /
+  FIREBREAK).
+- **Version bump** to 0.9.42.
+
 ## [0.9.41] — Wave 147b: gate.enroll Pipeline + 6-Gate Mesh (2026-07-17)
 
 ### Wave 147b: Automated Mesh Enrollment (July 17)
