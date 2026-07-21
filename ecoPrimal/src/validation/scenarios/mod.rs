@@ -90,6 +90,7 @@ pub mod s_crypto_identity_surface;
 pub mod s_dark_forest_gate;
 pub mod s_defense_attestation;
 pub mod s_deployment_pipeline;
+pub mod s_diderm_domain_posture;
 pub mod s_depot_architecture_coverage;
 pub mod s_depot_binary_standard;
 pub mod s_depot_layout_compliance;
@@ -398,6 +399,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_drawbridge_consumer_parity::SCENARIO);
     r.register(s_gate_enroll_pipeline::SCENARIO);
     r.register(s_composition_access_control::SCENARIO);
+    r.register(s_diderm_domain_posture::SCENARIO);
     r
 }
 
@@ -408,7 +410,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 171;
+    const EXPECTED_SCENARIO_COUNT: usize = 172;
 
     #[test]
     fn registry_scenario_count() {
