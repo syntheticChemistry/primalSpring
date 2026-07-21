@@ -120,7 +120,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.41 Wave 150o (July 20, 2026) — 171 scenarios (12 tracks, 3 tiers),
+v0.9.41 Wave 150t (July 21, 2026) — 171 scenarios (12 tracks, 3 tiers),
 492+ registered capability methods, 93 experiments (21 tracks), 102 graph TOMLs
 (16 directories). 1206 lib tests (0 failures, 2 ignored). **5-gate active mesh.
 USB enrollment ready. 43 repos audited (100k+ ecosystem tests). 55 depot binaries,
