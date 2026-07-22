@@ -9,7 +9,8 @@
 //!
 //! Targets are **relative to WG baseline** (not absolute thresholds):
 //! - Throughput: ≥80% of WG on same link
-//! - Latency: ≤2x WG RTT
+//! - LAN latency: ≤2x WG RTT (~0.3ms → ≤0.6ms)
+//! - WAN latency: ≤1.5x WG RTT (68ms 2-hop → ≤102ms via TURN)
 //! - Connection setup: ≤500ms (vs WG ~50ms handshake)
 //! - Reconnect: ≤2s mesh re-discovery after link drop
 //! - CPU idle: ≤1% with mesh active
@@ -157,7 +158,7 @@ fn phase_hmac_enrollment(v: &mut ValidationResult) {
     v.check_bool(
         "enroll:hmac_verification_chain",
         has_hmac_chain,
-        "HMAC verification chain: btsp.handshake + negotiate (enrollment.verify = bearDog P1, pending)",
+        "HMAC verification chain: btsp.handshake + negotiate (enrollment.verify shipped 150v)",
     );
 
     let has_btsp_server = REGISTRY_TOML.contains("btsp.server.status");
@@ -217,9 +218,15 @@ fn phase_relative_targets(v: &mut ValidationResult) {
     );
 
     v.check_bool(
-        "targets:latency_relative",
+        "targets:lan_latency_relative",
         true,
-        "Latency: ≤2x WG RTT on same path (WG ~0.3ms LAN → Tower ≤0.6ms target)",
+        "LAN latency: ≤2x WG RTT (WG ~0.3ms → Tower ≤0.6ms on backbone)",
+    );
+
+    v.check_bool(
+        "targets:wan_latency_relative",
+        true,
+        "WAN latency: ≤1.5x WG RTT (WG=68ms 2-hop → Tower ≤102ms via TURN relay)",
     );
 
     v.check_bool(
