@@ -52,7 +52,7 @@ fn jsonrpc_response_has_field(response: &str, field: &str) -> bool {
 /// Build primal → capability domains map from `capability_registry.toml`.
 ///
 /// The registry TOML has `[domain] owner = "primal"` sections. We invert
-/// this to build a primal → Vec<domain> mapping for discovery-provider seeding.
+/// this to build a primal → `Vec<domain>` mapping for discovery-provider seeding.
 ///
 /// Falls back to a minimal static table if the registry file is missing.
 pub(super) fn build_capability_map() -> HashMap<String, Vec<String>> {
