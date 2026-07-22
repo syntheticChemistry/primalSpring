@@ -472,9 +472,8 @@ mod tests {
         // (13 individual binary checks + 1 aggregate "all_13_present").
         // Wave 150u: eastGate calibration
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 2),
+            ("graphenegate-readiness", 1),
             ("composition-access-control", 15),
-            ("sporeprint-pure-primal-parity", 1),
         ];
 
         let r = build_registry();
