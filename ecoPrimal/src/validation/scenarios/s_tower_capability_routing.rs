@@ -5,13 +5,15 @@
 //!
 //! Validates structural readiness for per-capability routing — Tower's
 //! primary advantage over `WireGuard`'s single-tunnel-for-all model.
+//! **PROVEN LIVE** on flockGate (150w): `capability.call` routes to correct
+//! providers. Domain 1 of 6 confirmed.
 //!
 //! `WireGuard` routes all packets through the same tunnel regardless of
 //! purpose. Tower routes by capability, enabling per-capability latency
 //! optimization and throughput isolation.
 //!
 //! Measures: per-capability latency/throughput vs single WG tunnel.
-//! Primary gate: eastGate (code authorship).
+//! Primary gate: eastGate (code authorship), flockGate (live validation).
 
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
@@ -28,7 +30,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Rust,
         provenance_crate: "wave150w_tower_capability_routing",
         provenance_date: "2026-07-23",
-        description: "Tower capability-aware routing — per-capability latency/throughput vs single WG tunnel",
+        description: "Tower capability-aware routing — PROVEN LIVE (150w), per-capability dispatch confirmed",
     },
     run,
 };
