@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml/badge.svg)](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-1225_pass-brightgreen.svg)](#validation-scenarios-182-across-12-tracks)
+[![Tests](https://img.shields.io/badge/tests-1226_pass-brightgreen.svg)](#validation-scenarios-182-across-12-tracks)
 [![Rust](https://img.shields.io/badge/rust-1.87%2B-orange.svg)](https://www.rust-lang.org)
 [![Unsafe: forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance)
 

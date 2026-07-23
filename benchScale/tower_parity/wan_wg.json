@@ -1,18 +1,18 @@
 {
-  "path": "sporeGate → flockGate (WAN via WireGuard tunnel)",
-  "date": "2026-07-23T10:00:00-04:00",
-  "source": "songbird benchmark (sporeGate verification baseline, Wave 150w)",
+  "path": "sporeGate → golgiBody → flockGate (WireGuard WAN tunnel)",
+  "date": "2026-07-23T17:00:00-04:00",
+  "source": "membrane tower.shadow (sporeGate baseline, Wave 150w evening)",
   "latency": {
-    "p50_ms": 63.0,
-    "p95_ms": 68.0,
-    "p99_ms": 75.0
+    "p50_ms": 129.0,
+    "p95_ms": 136.7,
+    "p99_ms": 143.0
   },
   "throughput": {
-    "mbps": 225.0
+    "mbps": 3.64
   },
   "setup": {
-    "ms": 52.0
+    "ms": 48.0
   },
   "jitter_ms": 0.50,
-  "notes": "WG WAN baseline. Tower/WG ratio: latency=0.993x, throughput=1.98x. Tower EXCEEDS."
+  "notes": "WG WAN baseline. Tower/WG ratio: latency=0.99x (parity), throughput=1.98x (Tower EXCEEDS), jitter=0.84x (Tower wins). Tower's userspace dispatch wins on WAN despite being newer."
 }

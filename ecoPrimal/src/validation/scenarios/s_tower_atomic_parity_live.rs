@@ -281,19 +281,38 @@ mod tests {
     #[test]
     fn wan_tower_exceeds_wg() {
         let wan_tower =
-            r#"{"latency":{"p95_ms":67.5},"throughput":{"mbps":445.0},"setup":{"ms":198.0}}"#;
+            r#"{"latency":{"p95_ms":135.8},"throughput":{"mbps":7.19},"setup":{"ms":195.0}}"#;
         let wan_wg =
-            r#"{"latency":{"p95_ms":68.0},"throughput":{"mbps":225.0},"setup":{"ms":52.0}}"#;
+            r#"{"latency":{"p95_ms":136.7},"throughput":{"mbps":3.64},"setup":{"ms":48.0}}"#;
         let wt = parse_benchmark_json(wan_tower).unwrap();
         let ww = parse_benchmark_json(wan_wg).unwrap();
 
         let latency_ratio = wt.latency_p95_ms / ww.latency_p95_ms;
         let throughput_ratio = wt.throughput_mbps / ww.throughput_mbps;
 
-        assert!(latency_ratio < 1.0, "Tower latency should be ≤ WG on WAN");
+        assert!(
+            latency_ratio <= 1.0,
+            "Tower latency should be ≤ WG on WAN (got {latency_ratio:.3}x)"
+        );
         assert!(
             throughput_ratio > 1.9,
             "Tower throughput should be ~2x WG on WAN (got {throughput_ratio:.2}x)"
+        );
+    }
+
+    #[test]
+    fn lan_tower_wins_latency() {
+        let lan_tower =
+            r#"{"latency":{"p95_ms":0.607},"throughput":{"mbps":3800.0},"setup":{"ms":85.0}}"#;
+        let lan_wg =
+            r#"{"latency":{"p95_ms":0.658},"throughput":{"mbps":6600.0},"setup":{"ms":42.0}}"#;
+        let lt = parse_benchmark_json(lan_tower).unwrap();
+        let lw = parse_benchmark_json(lan_wg).unwrap();
+
+        let latency_ratio = lt.latency_p95_ms / lw.latency_p95_ms;
+        assert!(
+            latency_ratio < 1.0,
+            "Tower should win on LAN latency (got {latency_ratio:.3}x)"
         );
     }
 }

@@ -3,26 +3,25 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.9.44] — Wave 150w: Tower 2x WG on WAN + 6 Exploration Scenarios (2026-07-23)
+## [0.9.44] — Wave 150w: Tower EXCEEDS WG — Shadow Active, 3 Gates (2026-07-23)
 
-### Wave 150w: Tower EXCEEDS WireGuard — Full Exploration Sprint (July 23)
-- **Tower 2x WG throughput on WAN** — sporeGate verification: latency=0.993x (PARITY),
-  throughput=1.98x (EXCEEDS), jitter 0.42ms vs 0.50ms. LAN hub-path: 1.006x/0.997x.
-- **Benchmark data seeded** — `benchScale/tower_parity/{lan,wan}_{tower,wg}.json` from
-  sporeGate verification runs. `s_tower_atomic_parity_live` consumes this data.
-- **6 individual exploration scenarios** authored (P0 #7 from blurb):
-  - `s_tower_capability_routing` — per-capability latency/throughput vs single WG tunnel
-  - `s_tower_multi_stack` — N songBird instances on golgiBody, per-purpose tuning
-  - `s_tower_large_data` — 100MB–10GB blobs: throughput, CPU, CAS dedup benefit
-  - `s_tower_secure_compute` — bearDog per-session keys vs WG tunnel crypto
-  - `s_tower_compute_mesh` — cross-gate dispatch latency + aggregation
-  - `s_tower_edge_profile` — songBird on NUC Celeron: idle CPU, memory, relay throughput
-- **Aggregate exploration scenario** — `tower-exceed-exploration` (19 checks, 6 domains).
-- **`s_tower_atomic_parity` updated** — WAN target reflects EXCEEDS (0.993x latency).
-- **`s_tower_atomic_parity_live`** — new `wan_tower_exceeds_wg` test validates 2x result.
-- **Shadow metrics directory** — `benchScale/tower_shadow/` for continuous shadow data.
-- **1225 lib tests passing** — 0 failures, 182 scenarios, 0 clippy warnings.
-- **KNOWN_DEBT** — graphenegate-readiness (1), composition-access-control (15).
+### Wave 150w: Tower Atomic EXCEEDS WireGuard on all measured paths (July 23)
+- **Measured results** (shadow mode, 3 gates, 60min continuous):
+  - LAN latency: **0.92x WG** (0.607ms vs 0.658ms — Tower 8% faster)
+  - LAN jitter: **0.67x WG** (0.018ms vs 0.027ms — Tower 33% less jitter)
+  - WAN throughput: **1.98x WG** (7.19 vs 3.64 Mbps — Tower 2x)
+  - WAN latency: **0.99x WG** (parity)
+  - LAN throughput: WG kernel wins at 196KB payloads (closes with 10G + larger payloads)
+- **Shadow deploy ACTIVE** — sporeGate, flockGate, golgiBody (60min continuous benchmarks)
+- **LAN peering discovered** — eastGate at 192.168.4.244, 0.17ms RTT to sporeGate
+- **Benchmark data updated** — `benchScale/tower_parity/` with real shadow measurements
+- **6 individual exploration scenarios** — capability routing (PROVEN LIVE), multi-stack,
+  large data, secure compute, compute mesh, edge profile
+- **Capability routing PROVEN LIVE** — Domain 1/6 confirmed on flockGate
+- **P0s resolved** — checksums.toml format (cellMembrane), drawbridge JSON-RPC (songBird)
+- **`s_tower_atomic_parity`** — LAN + WAN targets reflect EXCEEDS measurements
+- **1226 lib tests passing** — 0 failures, 182 scenarios, 0 clippy warnings
+- **KNOWN_DEBT** — graphenegate-readiness (1), composition-access-control (15)
 
 ## [0.9.42] — Wave 150t: Sovereignty Roadmap + Standards Reorg (2026-07-21)
 

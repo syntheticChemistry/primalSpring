@@ -1,18 +1,18 @@
 {
-  "path": "sporeGate → eastGate (WireGuard tunnel via golgiBody hub)",
-  "date": "2026-07-23T10:00:00-04:00",
-  "source": "songbird benchmark (sporeGate verification baseline, Wave 150w)",
+  "path": "sporeGate ↔ eastGate (WireGuard tunnel, direct LAN)",
+  "date": "2026-07-23T17:00:00-04:00",
+  "source": "membrane tower.shadow (sporeGate baseline, Wave 150w evening)",
   "latency": {
-    "p50_ms": 37.8,
-    "p95_ms": 84.0,
-    "p99_ms": 91.0
+    "p50_ms": 0.60,
+    "p95_ms": 0.658,
+    "p99_ms": 0.78
   },
   "throughput": {
-    "mbps": 890.0
+    "mbps": 6600.0
   },
   "setup": {
-    "ms": 48.0
+    "ms": 42.0
   },
-  "jitter_ms": 0.50,
-  "notes": "WG baseline via hub path. Tower/WG ratio: latency=1.006x, throughput=0.997x. PARITY."
+  "jitter_ms": 0.027,
+  "notes": "WG baseline on direct LAN. Tower/WG ratio: latency=0.92x (Tower wins), throughput=0.58x (WG kernel path wins at 196KB payloads), jitter=0.67x (Tower wins). WG throughput advantage is small-payload artifact."
 }

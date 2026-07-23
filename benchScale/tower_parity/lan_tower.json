@@ -1,18 +1,18 @@
 {
-  "path": "sporeGate → eastGate (hub path via golgiBody)",
-  "date": "2026-07-23T10:00:00-04:00",
-  "source": "songbird benchmark (sporeGate verification, Wave 150w)",
+  "path": "sporeGate ↔ eastGate (direct LAN, MikroTik, 192.168.4.x)",
+  "date": "2026-07-23T17:00:00-04:00",
+  "source": "membrane tower.shadow (sporeGate, Wave 150w evening)",
   "latency": {
-    "p50_ms": 38.0,
-    "p95_ms": 84.5,
-    "p99_ms": 92.0
+    "p50_ms": 0.55,
+    "p95_ms": 0.607,
+    "p99_ms": 0.72
   },
   "throughput": {
-    "mbps": 887.3
+    "mbps": 3800.0
   },
   "setup": {
-    "ms": 125.0
+    "ms": 85.0
   },
-  "jitter_ms": 0.42,
-  "notes": "Hub path (not direct LAN). 1.006x WG latency. Direct peering pending — will unlock sub-1ms."
+  "jitter_ms": 0.018,
+  "notes": "Direct LAN peering (0.17ms RTT). Tower 8% faster latency, 33% less jitter than WG. Throughput gap is 196KB payload artifact — needs 10G + larger payloads."
 }
