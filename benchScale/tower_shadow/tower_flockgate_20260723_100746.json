@@ -1,0 +1,33 @@
+songbird benchmark — mode: tower-atomic, peer: 10.13.37.6:7700
+  latency probes: 50, throughput duration: 10s
+
+[1/3] Measuring connection setup time...
+[2/3] Measuring latency (50 probes)...
+[3/3] Measuring throughput (10s)...
+{
+  "mode": "tower-atomic",
+  "peer": "10.13.37.6:7700",
+  "timestamp": "2026-07-23T14:07:56.162849777+00:00",
+  "latency": {
+    "probes_sent": 50,
+    "probes_ok": 50,
+    "min_ms": 128.396849,
+    "avg_ms": 136.34251008,
+    "max_ms": 148.901093,
+    "p50_ms": 135.824478,
+    "p95_ms": 145.61480500000002,
+    "p99_ms": 148.901093,
+    "jitter_ms": 0.41845395918367345
+  },
+  "setup": {
+    "attempts": 10,
+    "min_ms": 64.549638,
+    "avg_ms": 66.8290482,
+    "max_ms": 69.705189
+  },
+  "throughput": {
+    "duration_ms": 72,
+    "bytes_sent": 65536,
+    "throughput_mbps": 7.194422697692248
+  }
+}

@@ -1,0 +1,33 @@
+songbird benchmark — mode: wireguard, peer: 10.13.37.6:7700
+  latency probes: 50, throughput duration: 10s
+
+[1/3] Measuring connection setup time...
+[2/3] Measuring latency (50 probes)...
+[3/3] Measuring throughput (10s)...
+{
+  "mode": "wireguard",
+  "peer": "10.13.37.6:7700",
+  "timestamp": "2026-07-23T14:08:13.270554676+00:00",
+  "latency": {
+    "probes_sent": 50,
+    "probes_ok": 50,
+    "min_ms": 126.342799,
+    "avg_ms": 136.80760321999998,
+    "max_ms": 151.06478900000002,
+    "p50_ms": 136.723002,
+    "p95_ms": 145.804902,
+    "p99_ms": 151.06478900000002,
+    "jitter_ms": 0.5045304081632657
+  },
+  "setup": {
+    "attempts": 10,
+    "min_ms": 63.919416000000005,
+    "avg_ms": 66.88442979999999,
+    "max_ms": 70.252344
+  },
+  "throughput": {
+    "duration_ms": 143,
+    "bytes_sent": 65536,
+    "throughput_mbps": 3.6430253461629034
+  }
+}
