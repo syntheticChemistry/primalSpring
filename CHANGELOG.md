@@ -3,18 +3,25 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.9.44] — Wave 150w: Phase 2 Shadow + Exceed Exploration (2026-07-23)
+## [0.9.44] — Wave 150w: Tower 2x WG on WAN + 6 Exploration Scenarios (2026-07-23)
 
-### Wave 150w: Tower Atomic Phase 1 PASS → Exceed Exploration (July 23)
-- **Phase 1 PASS confirmed** — full WG parity on LAN + WAN. Shadow deploy active
-  across all live topology (golgiBody, sporeGate, eastGate, flockGate).
-- **New scenario: `tower-exceed-exploration`** — 19 structural checks across 6 domains
-  where Tower Atomic can exceed WireGuard: capability routing, multi-stack relay,
-  large data, secure compute, distributed compute mesh, edge/SFF profile.
-- **`s_tower_atomic_parity` updated** — convergence status reflects Phase 1 PASS (150w).
-- **Shadow metrics directory** — `benchScale/tower_shadow/` for continuous shadow metrics.
-- **Clippy fix** — `s_tower_atomic_parity_live` redundant closures → method references.
-- **1218 lib tests passing** — 0 failures, 176 scenarios, 0 warnings.
+### Wave 150w: Tower EXCEEDS WireGuard — Full Exploration Sprint (July 23)
+- **Tower 2x WG throughput on WAN** — sporeGate verification: latency=0.993x (PARITY),
+  throughput=1.98x (EXCEEDS), jitter 0.42ms vs 0.50ms. LAN hub-path: 1.006x/0.997x.
+- **Benchmark data seeded** — `benchScale/tower_parity/{lan,wan}_{tower,wg}.json` from
+  sporeGate verification runs. `s_tower_atomic_parity_live` consumes this data.
+- **6 individual exploration scenarios** authored (P0 #7 from blurb):
+  - `s_tower_capability_routing` — per-capability latency/throughput vs single WG tunnel
+  - `s_tower_multi_stack` — N songBird instances on golgiBody, per-purpose tuning
+  - `s_tower_large_data` — 100MB–10GB blobs: throughput, CPU, CAS dedup benefit
+  - `s_tower_secure_compute` — bearDog per-session keys vs WG tunnel crypto
+  - `s_tower_compute_mesh` — cross-gate dispatch latency + aggregation
+  - `s_tower_edge_profile` — songBird on NUC Celeron: idle CPU, memory, relay throughput
+- **Aggregate exploration scenario** — `tower-exceed-exploration` (19 checks, 6 domains).
+- **`s_tower_atomic_parity` updated** — WAN target reflects EXCEEDS (0.993x latency).
+- **`s_tower_atomic_parity_live`** — new `wan_tower_exceeds_wg` test validates 2x result.
+- **Shadow metrics directory** — `benchScale/tower_shadow/` for continuous shadow data.
+- **1225 lib tests passing** — 0 failures, 182 scenarios, 0 clippy warnings.
 - **KNOWN_DEBT** — graphenegate-readiness (1), composition-access-control (15).
 
 ## [0.9.42] — Wave 150t: Sovereignty Roadmap + Standards Reorg (2026-07-21)

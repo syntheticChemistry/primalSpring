@@ -214,9 +214,15 @@ pub mod s_topology_visualization;
 pub mod s_tower_atomic;
 pub mod s_tower_atomic_parity;
 pub mod s_tower_atomic_parity_live;
+pub mod s_tower_capability_routing;
 pub mod s_tower_cns;
+pub mod s_tower_compute_mesh;
+pub mod s_tower_edge_profile;
 pub mod s_tower_exceed_exploration;
 pub mod s_tower_http_gateway;
+pub mod s_tower_large_data;
+pub mod s_tower_multi_stack;
+pub mod s_tower_secure_compute;
 pub mod s_version_skew_detection;
 pub mod s_wan_dispatch_validation;
 pub mod s_wan_ipc_tolerance;
@@ -406,6 +412,12 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_tower_atomic_parity::SCENARIO);
     r.register(s_tower_atomic_parity_live::SCENARIO);
     r.register(s_tower_exceed_exploration::SCENARIO);
+    r.register(s_tower_capability_routing::SCENARIO);
+    r.register(s_tower_multi_stack::SCENARIO);
+    r.register(s_tower_large_data::SCENARIO);
+    r.register(s_tower_secure_compute::SCENARIO);
+    r.register(s_tower_compute_mesh::SCENARIO);
+    r.register(s_tower_edge_profile::SCENARIO);
     r.register(s_composition_access_control::SCENARIO);
     r.register(s_diderm_domain_posture::SCENARIO);
     r
@@ -418,7 +430,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 176;
+    const EXPECTED_SCENARIO_COUNT: usize = 182;
 
     #[test]
     fn registry_scenario_count() {

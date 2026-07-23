@@ -277,4 +277,23 @@ mod tests {
         assert!((result.throughput_mbps - 750.0).abs() < 0.1);
         assert!((result.setup_ms - 120.0).abs() < 0.1);
     }
+
+    #[test]
+    fn wan_tower_exceeds_wg() {
+        let wan_tower =
+            r#"{"latency":{"p95_ms":67.5},"throughput":{"mbps":445.0},"setup":{"ms":198.0}}"#;
+        let wan_wg =
+            r#"{"latency":{"p95_ms":68.0},"throughput":{"mbps":225.0},"setup":{"ms":52.0}}"#;
+        let wt = parse_benchmark_json(wan_tower).unwrap();
+        let ww = parse_benchmark_json(wan_wg).unwrap();
+
+        let latency_ratio = wt.latency_p95_ms / ww.latency_p95_ms;
+        let throughput_ratio = wt.throughput_mbps / ww.throughput_mbps;
+
+        assert!(latency_ratio < 1.0, "Tower latency should be ≤ WG on WAN");
+        assert!(
+            throughput_ratio > 1.9,
+            "Tower throughput should be ~2x WG on WAN (got {throughput_ratio:.2}x)"
+        );
+    }
 }

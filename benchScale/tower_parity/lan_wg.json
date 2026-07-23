@@ -1,0 +1,18 @@
+{
+  "path": "sporeGate → eastGate (WireGuard tunnel via golgiBody hub)",
+  "date": "2026-07-23T10:00:00-04:00",
+  "source": "songbird benchmark (sporeGate verification baseline, Wave 150w)",
+  "latency": {
+    "p50_ms": 37.8,
+    "p95_ms": 84.0,
+    "p99_ms": 91.0
+  },
+  "throughput": {
+    "mbps": 890.0
+  },
+  "setup": {
+    "ms": 48.0
+  },
+  "jitter_ms": 0.50,
+  "notes": "WG baseline via hub path. Tower/WG ratio: latency=1.006x, throughput=0.997x. PARITY."
+}

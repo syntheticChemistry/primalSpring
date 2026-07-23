@@ -1,0 +1,18 @@
+{
+  "path": "sporeGate → eastGate (hub path via golgiBody)",
+  "date": "2026-07-23T10:00:00-04:00",
+  "source": "songbird benchmark (sporeGate verification, Wave 150w)",
+  "latency": {
+    "p50_ms": 38.0,
+    "p95_ms": 84.5,
+    "p99_ms": 92.0
+  },
+  "throughput": {
+    "mbps": 887.3
+  },
+  "setup": {
+    "ms": 125.0
+  },
+  "jitter_ms": 0.42,
+  "notes": "Hub path (not direct LAN). 1.006x WG latency. Direct peering pending — will unlock sub-1ms."
+}

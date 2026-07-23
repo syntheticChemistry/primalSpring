@@ -1,0 +1,18 @@
+{
+  "path": "sporeGate → flockGate (WAN via WireGuard tunnel)",
+  "date": "2026-07-23T10:00:00-04:00",
+  "source": "songbird benchmark (sporeGate verification baseline, Wave 150w)",
+  "latency": {
+    "p50_ms": 63.0,
+    "p95_ms": 68.0,
+    "p99_ms": 75.0
+  },
+  "throughput": {
+    "mbps": 225.0
+  },
+  "setup": {
+    "ms": 52.0
+  },
+  "jitter_ms": 0.50,
+  "notes": "WG WAN baseline. Tower/WG ratio: latency=0.993x, throughput=1.98x. Tower EXCEEDS."
+}
