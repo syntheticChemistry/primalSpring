@@ -213,6 +213,7 @@ pub mod s_token_federation;
 pub mod s_topology_visualization;
 pub mod s_tower_atomic;
 pub mod s_tower_atomic_parity;
+pub mod s_tower_atomic_parity_live;
 pub mod s_tower_cns;
 pub mod s_tower_http_gateway;
 pub mod s_version_skew_detection;
@@ -402,6 +403,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_gate_enroll_pipeline::SCENARIO);
     r.register(s_sovereignty_roadmap::SCENARIO);
     r.register(s_tower_atomic_parity::SCENARIO);
+    r.register(s_tower_atomic_parity_live::SCENARIO);
     r.register(s_composition_access_control::SCENARIO);
     r.register(s_diderm_domain_posture::SCENARIO);
     r
@@ -414,7 +416,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 174;
+    const EXPECTED_SCENARIO_COUNT: usize = 175;
 
     #[test]
     fn registry_scenario_count() {
