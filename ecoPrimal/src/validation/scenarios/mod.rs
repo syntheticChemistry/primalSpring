@@ -215,6 +215,7 @@ pub mod s_tower_atomic;
 pub mod s_tower_atomic_parity;
 pub mod s_tower_atomic_parity_live;
 pub mod s_tower_cns;
+pub mod s_tower_exceed_exploration;
 pub mod s_tower_http_gateway;
 pub mod s_version_skew_detection;
 pub mod s_wan_dispatch_validation;
@@ -404,6 +405,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_sovereignty_roadmap::SCENARIO);
     r.register(s_tower_atomic_parity::SCENARIO);
     r.register(s_tower_atomic_parity_live::SCENARIO);
+    r.register(s_tower_exceed_exploration::SCENARIO);
     r.register(s_composition_access_control::SCENARIO);
     r.register(s_diderm_domain_posture::SCENARIO);
     r
@@ -416,7 +418,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 175;
+    const EXPECTED_SCENARIO_COUNT: usize = 176;
 
     #[test]
     fn registry_scenario_count() {
@@ -474,9 +476,8 @@ mod tests {
         // (13 individual binary checks + 1 aggregate "all_13_present").
         // Wave 150w: eastGate calibration
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 2),
+            ("graphenegate-readiness", 1),
             ("composition-access-control", 15),
-            ("sporeprint-pure-primal-parity", 1),
         ];
 
         let r = build_registry();

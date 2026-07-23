@@ -3,6 +3,20 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.44] — Wave 150w: Phase 2 Shadow + Exceed Exploration (2026-07-23)
+
+### Wave 150w: Tower Atomic Phase 1 PASS → Exceed Exploration (July 23)
+- **Phase 1 PASS confirmed** — full WG parity on LAN + WAN. Shadow deploy active
+  across all live topology (golgiBody, sporeGate, eastGate, flockGate).
+- **New scenario: `tower-exceed-exploration`** — 19 structural checks across 6 domains
+  where Tower Atomic can exceed WireGuard: capability routing, multi-stack relay,
+  large data, secure compute, distributed compute mesh, edge/SFF profile.
+- **`s_tower_atomic_parity` updated** — convergence status reflects Phase 1 PASS (150w).
+- **Shadow metrics directory** — `benchScale/tower_shadow/` for continuous shadow metrics.
+- **Clippy fix** — `s_tower_atomic_parity_live` redundant closures → method references.
+- **1218 lib tests passing** — 0 failures, 176 scenarios, 0 warnings.
+- **KNOWN_DEBT** — graphenegate-readiness (1), composition-access-control (15).
+
 ## [0.9.42] — Wave 150t: Sovereignty Roadmap + Standards Reorg (2026-07-21)
 
 ### Wave 150t: Sovereignty Evolution Roadmap (July 21)

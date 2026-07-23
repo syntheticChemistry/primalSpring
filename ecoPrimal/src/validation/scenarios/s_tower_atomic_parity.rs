@@ -16,10 +16,10 @@
 //! - CPU idle: ≤1% with mesh active
 //! - CPU saturated: ≤20% during throughput test
 //!
-//! Convergence phases: Phase 0 (components live) → Phase 1 (benchmark) →
-//! Phase 2 (shadow mode) → Phase 3 (cutover).
+//! Convergence phases: Phase 0 (components live) → Phase 1 (benchmark, **PASS 150w**) →
+//! Phase 2 (shadow mode, **ACTIVE 150w**) → Phase 3 (cutover).
 //!
-//! Source: songBird Tower Atomic Parity Convergence Brief (Wave 150t).
+//! Source: songBird Tower Atomic Parity Convergence Brief (Wave 150t–150w).
 
 use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
@@ -287,7 +287,7 @@ fn phase_convergence_gate(v: &mut ValidationResult) {
     v.check_bool(
         "convergence:phase0_status",
         true,
-        "Phase 0 CONFIRMED: all Tower components live independently (per convergence brief)",
+        "Phase 0→1 COMPLETE: full WG parity on LAN + WAN (150w). Shadow deploy active.",
     );
 }
 

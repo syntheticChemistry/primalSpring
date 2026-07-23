@@ -36,8 +36,7 @@ pub const SCENARIO: Scenario = Scenario {
         tier: Tier::Live,
         provenance_crate: "wave150v_tower_parity_live",
         provenance_date: "2026-07-23",
-        description:
-            "Tower Atomic parity LIVE — benchmark results vs WG baseline (relative targets)",
+        description: "Tower Atomic parity LIVE — benchmark results vs WG baseline (relative targets)",
     },
     run,
 };
@@ -81,8 +80,14 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     );
 
     let (Some(lt), Some(lw)) = (lan_tower.as_ref(), lan_wg.as_ref()) else {
-        v.check_skip("live:lan_parity", "LAN benchmark data incomplete — cannot assess");
-        v.check_skip("live:wan_parity", "WAN benchmark data incomplete — cannot assess");
+        v.check_skip(
+            "live:lan_parity",
+            "LAN benchmark data incomplete — cannot assess",
+        );
+        v.check_skip(
+            "live:wan_parity",
+            "WAN benchmark data incomplete — cannot assess",
+        );
         return;
     };
 
@@ -97,7 +102,10 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
         assess_throughput_parity(v, "wan", wt, ww);
         assess_setup_time(v, "wan", wt);
     } else {
-        v.check_skip("live:wan_parity", "WAN benchmark data incomplete — skipping");
+        v.check_skip(
+            "live:wan_parity",
+            "WAN benchmark data incomplete — skipping",
+        );
     }
 
     v.section("Phase 4: Convergence verdict");
@@ -205,33 +213,29 @@ fn parse_benchmark_json(json: &str) -> Option<BenchmarkResult> {
     let latency_p95_ms = parsed
         .get("latency")
         .and_then(|l| l.get("p95_ms"))
-        .and_then(|v| v.as_f64())
+        .and_then(serde_json::Value::as_f64)
         .or_else(|| {
             parsed
                 .get("latency_p95_ms")
-                .and_then(|v| v.as_f64())
+                .and_then(serde_json::Value::as_f64)
         })?;
 
     let throughput_mbps = parsed
         .get("throughput")
         .and_then(|t| t.get("mbps"))
-        .and_then(|v| v.as_f64())
+        .and_then(serde_json::Value::as_f64)
         .or_else(|| {
             parsed
                 .get("throughput_mbps")
-                .and_then(|v| v.as_f64())
+                .and_then(serde_json::Value::as_f64)
         })
         .unwrap_or(0.0);
 
     let setup_ms = parsed
         .get("setup")
         .and_then(|s| s.get("ms"))
-        .and_then(|v| v.as_f64())
-        .or_else(|| {
-            parsed
-                .get("setup_ms")
-                .and_then(|v| v.as_f64())
-        })
+        .and_then(serde_json::Value::as_f64)
+        .or_else(|| parsed.get("setup_ms").and_then(serde_json::Value::as_f64))
         .unwrap_or(0.0);
 
     Some(BenchmarkResult {
