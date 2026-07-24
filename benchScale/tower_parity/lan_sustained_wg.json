@@ -1,0 +1,46 @@
+songbird benchmark — mode: wireguard, peer: 10.13.37.5:7700
+  latency probes: 50, throughput duration: 10s
+
+[1/3] Measuring connection setup time...
+[2/3] Measuring latency (50 probes)...
+[3/4] Measuring throughput (10s)...
+[4/4] Sustained streaming (10s, window 1s)...
+{
+  "mode": "wireguard",
+  "peer": "10.13.37.5:7700",
+  "timestamp": "2026-07-24T12:54:07.367528053+00:00",
+  "latency": {
+    "probes_sent": 50,
+    "probes_ok": 50,
+    "min_ms": 150.02488,
+    "avg_ms": 157.1170887,
+    "max_ms": 228.70897100000002,
+    "p50_ms": 155.203355,
+    "p95_ms": 161.81767,
+    "p99_ms": 228.70897100000002,
+    "jitter_ms": 1.6057977755102046
+  },
+  "setup": {
+    "attempts": 10,
+    "min_ms": 76.585448,
+    "avg_ms": 77.16938920000001,
+    "max_ms": 78.666297
+  },
+  "throughput": {
+    "duration_us": 77511,
+    "duration_ms": 77.51198400000001,
+    "bytes_sent": 65536,
+    "throughput_mbps": 6.763960525123443
+  },
+  "sustained": {
+    "total_duration_ms": 154.451385,
+    "total_bytes": 65536,
+    "avg_mbps": 3.3945179578674542,
+    "min_window_mbps": 3.394781779170808,
+    "max_window_mbps": 3.394781779170808,
+    "p50_window_mbps": 3.394781779170808,
+    "p95_window_mbps": 3.394781779170808,
+    "window_count": 1,
+    "window_size_ms": 1000
+  }
+}
