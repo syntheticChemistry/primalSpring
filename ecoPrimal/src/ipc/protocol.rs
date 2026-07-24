@@ -7,6 +7,8 @@
 //! ecosystem `UNIVERSAL_IPC_STANDARD_V3.md`. Method names use
 //! `domain.verb` semantic naming (e.g., `health.check`, `crypto.sign`).
 
+use std::borrow::Cow;
+
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -21,11 +23,16 @@ fn next_id() -> u64 {
     NEXT_REQUEST_ID.fetch_add(1, Ordering::Relaxed)
 }
 
+const fn default_jsonrpc() -> Cow<'static, str> {
+    Cow::Borrowed(JSONRPC_VERSION)
+}
+
 /// JSON-RPC 2.0 request.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JsonRpcRequest {
     /// Protocol version — always `"2.0"`.
-    pub jsonrpc: String,
+    #[serde(default = "default_jsonrpc")]
+    pub jsonrpc: Cow<'static, str>,
     /// Method name in `domain.verb` format (e.g. `"health.check"`).
     pub method: String,
     /// Method parameters (omitted from wire format when null).
@@ -44,7 +51,7 @@ impl JsonRpcRequest {
     #[must_use]
     pub fn new(method: &str, params: serde_json::Value) -> Self {
         Self {
-            jsonrpc: JSONRPC_VERSION.to_owned(),
+            jsonrpc: Cow::Borrowed(JSONRPC_VERSION),
             method: method.to_owned(),
             params,
             id: next_id(),
@@ -73,7 +80,8 @@ impl JsonRpcRequest {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JsonRpcResponse {
     /// Protocol version — always `"2.0"`.
-    pub jsonrpc: String,
+    #[serde(default = "default_jsonrpc")]
+    pub jsonrpc: Cow<'static, str>,
     /// Successful result value (mutually exclusive with `error`).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub result: Option<serde_json::Value>,

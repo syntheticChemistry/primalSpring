@@ -72,12 +72,14 @@ pub fn extract_rpc_dispatch<T: DeserializeOwned>(response: JsonRpcResponse) -> D
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use super::*;
     use crate::ipc::protocol::{JSONRPC_VERSION, JsonRpcError, error_codes};
 
     fn success_response(result: serde_json::Value) -> JsonRpcResponse {
         JsonRpcResponse {
-            jsonrpc: JSONRPC_VERSION.to_owned(),
+            jsonrpc: Cow::Borrowed(JSONRPC_VERSION),
             result: Some(result),
             error: None,
             id: 1,
@@ -86,7 +88,7 @@ mod tests {
 
     fn error_response(code: i64, message: &str) -> JsonRpcResponse {
         JsonRpcResponse {
-            jsonrpc: JSONRPC_VERSION.to_owned(),
+            jsonrpc: Cow::Borrowed(JSONRPC_VERSION),
             result: None,
             error: Some(JsonRpcError {
                 code,
@@ -99,7 +101,7 @@ mod tests {
 
     fn empty_response() -> JsonRpcResponse {
         JsonRpcResponse {
-            jsonrpc: JSONRPC_VERSION.to_owned(),
+            jsonrpc: Cow::Borrowed(JSONRPC_VERSION),
             result: None,
             error: None,
             id: 1,

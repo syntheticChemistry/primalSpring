@@ -15,6 +15,8 @@
 
 #[cfg(test)]
 mod tests {
+    use std::borrow::Cow;
+
     use proptest::prelude::*;
 
     use crate::ipc::discover::extract_capability_names;
@@ -24,7 +26,7 @@ mod tests {
 
     fn success_response(result: serde_json::Value) -> JsonRpcResponse {
         JsonRpcResponse {
-            jsonrpc: JSONRPC_VERSION.to_owned(),
+            jsonrpc: Cow::Borrowed(JSONRPC_VERSION),
             result: Some(result),
             error: None,
             id: 1,
@@ -33,7 +35,7 @@ mod tests {
 
     fn error_response(code: i64, message: &str) -> JsonRpcResponse {
         JsonRpcResponse {
-            jsonrpc: JSONRPC_VERSION.to_owned(),
+            jsonrpc: Cow::Borrowed(JSONRPC_VERSION),
             result: None,
             error: Some(JsonRpcError {
                 code,
