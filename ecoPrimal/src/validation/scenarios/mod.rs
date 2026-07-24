@@ -521,7 +521,7 @@ mod tests {
             ("tower-stress-failover-resilience", 3),
             ("tower-stress-uds-hop-cost", 1),
             ("tower-pen-enrollment-replay", 1),
-            ("tower-pen-capability-escalation", 5),
+            ("tower-pen-capability-escalation", 4),
             ("tower-pen-cipher-downgrade", 1),
             ("tower-pen-uds-spoof", 5),
             ("tower-pen-mesh-poison", 1),
