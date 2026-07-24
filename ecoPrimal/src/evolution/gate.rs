@@ -196,6 +196,10 @@ static MESH_REGISTRY: std::sync::LazyLock<Vec<MeshEntry>> = std::sync::LazyLock:
                 .and_then(|v| v.as_str())
                 .unwrap_or("")
                 .to_owned();
+            let lan_addr = t
+                .get("lan_addr")
+                .and_then(|v| v.as_str())
+                .map(str::to_owned);
             let role = t
                 .get("role")
                 .and_then(|v| v.as_str())
@@ -223,6 +227,7 @@ static MESH_REGISTRY: std::sync::LazyLock<Vec<MeshEntry>> = std::sync::LazyLock:
             Some(MeshEntry {
                 name,
                 address,
+                lan_addr,
                 role,
                 zone,
                 transport,
@@ -239,6 +244,8 @@ pub struct MeshEntry {
     pub name: String,
     /// `WireGuard` overlay address (e.g. `"10.13.37.5"`).
     pub address: String,
+    /// LAN address for direct peering (e.g. `"192.168.4.244"`), if available.
+    pub lan_addr: Option<String>,
     /// Gate role (e.g. `"meta"`, `"hub"`, `"tower"`).
     pub role: String,
     /// K-Derm zone (e.g. `"Backbone"`, `"Wan"`).
@@ -247,6 +254,28 @@ pub struct MeshEntry {
     pub transport: String,
     /// Services running on this gate (e.g. `["nucleus_tower"]`).
     pub services: Vec<String>,
+}
+
+impl MeshEntry {
+    /// Best address for reaching this gate — prefers LAN when available.
+    ///
+    /// Returns `lan_addr` if set (direct L2 peering, sub-ms latency),
+    /// otherwise falls back to the WG overlay address.
+    #[must_use]
+    pub fn preferred_address(&self) -> Option<&str> {
+        self.lan_addr
+            .as_deref()
+            .or(Some(self.address.as_str()))
+            .filter(|a| !a.is_empty())
+    }
+
+    /// Whether this gate has Tower Atomic services running.
+    #[must_use]
+    pub fn has_tower(&self) -> bool {
+        self.services.iter().any(|s| {
+            s == "beardog" || s == "songbird" || s == "skunkbat" || s == "nucleus_tower"
+        })
+    }
 }
 
 /// `WireGuard` mesh address assignments (10.13.37.0/24 overlay).
@@ -261,6 +290,15 @@ pub fn mesh_address(gate_name: &str) -> Option<&'static str> {
         .find(|e| e.name == gate_name)
         .map(|e| e.address.as_str())
         .filter(|addr| !addr.is_empty())
+}
+
+/// Preferred address for a gate — LAN if available, else WG overlay.
+#[must_use]
+pub fn preferred_address(gate_name: &str) -> Option<&'static str> {
+    MESH_REGISTRY
+        .iter()
+        .find(|e| e.name == gate_name)
+        .and_then(|e| e.preferred_address())
 }
 
 /// All gates with assigned mesh addresses.
