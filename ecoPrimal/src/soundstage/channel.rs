@@ -7,8 +7,10 @@
 //! The channel captures every byte that flows through it, timestamped,
 //! so you can see exactly what the hardware produced.
 
-use super::anchor::Anchor;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
+
+use super::anchor::Anchor;
 
 /// A live signal observation from a channel.
 #[derive(Debug, Clone)]
@@ -26,8 +28,8 @@ pub struct Signal {
 /// An event on a channel — something observable happened.
 #[derive(Debug, Clone)]
 pub struct ChannelEvent {
-    /// Which anchor produced this event.
-    pub anchor: Anchor,
+    /// Which anchor produced this event (Arc-shared to avoid per-event String clone).
+    pub anchor: Arc<Anchor>,
     /// What kind of event.
     pub kind: EventKind,
     /// When it happened (relative to session start).
@@ -56,8 +58,8 @@ pub enum EventKind {
 /// A channel — one observable entropy source during a ceremony.
 #[derive(Debug)]
 pub struct Channel {
-    /// The hardware anchor this channel observes.
-    pub anchor: Anchor,
+    /// The hardware anchor this channel observes (Arc-shared with events).
+    pub anchor: Arc<Anchor>,
     events: Vec<ChannelEvent>,
     start: Instant,
 }
@@ -67,7 +69,7 @@ impl Channel {
     #[must_use]
     pub fn new(anchor: Anchor) -> Self {
         Self {
-            anchor,
+            anchor: Arc::new(anchor),
             events: Vec::new(),
             start: Instant::now(),
         }
@@ -76,7 +78,7 @@ impl Channel {
     /// Record a request being sent to the hardware.
     pub fn record_request(&mut self, method: &str, data: &[u8]) {
         self.events.push(ChannelEvent {
-            anchor: self.anchor.clone(),
+            anchor: Arc::clone(&self.anchor),
             kind: EventKind::Request,
             offset: self.start.elapsed(),
             signal: Some(make_signal(data)),
@@ -87,7 +89,7 @@ impl Channel {
     /// Record a response received from the hardware.
     pub fn record_response(&mut self, method: &str, data: &[u8]) {
         self.events.push(ChannelEvent {
-            anchor: self.anchor.clone(),
+            anchor: Arc::clone(&self.anchor),
             kind: EventKind::Response,
             offset: self.start.elapsed(),
             signal: Some(make_signal(data)),
@@ -98,7 +100,7 @@ impl Channel {
     /// Record an entropy contribution flowing to the mix bus.
     pub fn record_contribution(&mut self, data: &[u8]) {
         self.events.push(ChannelEvent {
-            anchor: self.anchor.clone(),
+            anchor: Arc::clone(&self.anchor),
             kind: EventKind::Contribute,
             offset: self.start.elapsed(),
             signal: Some(make_signal(data)),
@@ -109,7 +111,7 @@ impl Channel {
     /// Record an error or timeout.
     pub fn record_error(&mut self, method: &str) {
         self.events.push(ChannelEvent {
-            anchor: self.anchor.clone(),
+            anchor: Arc::clone(&self.anchor),
             kind: EventKind::Error,
             offset: self.start.elapsed(),
             signal: None,
@@ -120,7 +122,7 @@ impl Channel {
     /// Record user acknowledgement (touch, biometric, etc).
     pub fn record_acknowledge(&mut self) {
         self.events.push(ChannelEvent {
-            anchor: self.anchor.clone(),
+            anchor: Arc::clone(&self.anchor),
             kind: EventKind::Acknowledge,
             offset: self.start.elapsed(),
             signal: None,
