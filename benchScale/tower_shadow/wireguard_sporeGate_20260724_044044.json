@@ -1,0 +1,27 @@
+{
+  "mode": "wireguard",
+  "peer": "10.13.37.2:7700",
+  "timestamp": "2026-07-24T08:40:58.736674843+00:00",
+  "latency": {
+    "probes_sent": 20,
+    "probes_ok": 20,
+    "min_ms": 130.53024,
+    "avg_ms": 134.5046553,
+    "max_ms": 142.908671,
+    "p50_ms": 133.38124000000002,
+    "p95_ms": 142.772905,
+    "p99_ms": 142.908671,
+    "jitter_ms": 0.651496368421053
+  },
+  "setup": {
+    "attempts": 10,
+    "min_ms": 61.875965,
+    "avg_ms": 65.36426820000001,
+    "max_ms": 67.522209
+  },
+  "throughput": {
+    "duration_ms": 72,
+    "bytes_sent": 65536,
+    "throughput_mbps": 7.1926174919626185
+  }
+}
