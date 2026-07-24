@@ -173,12 +173,12 @@ pub(super) fn rediscover_clients(
     discovery_paths: &mut BTreeMap<CapabilityDomain, DiscoveryPath>,
 ) -> BTreeMap<CapabilityDomain, bool> {
     for &cap in ALL_CAPS.iter() {
-        if clients.contains_key(cap) {
-            if let Some(client) = clients.get_mut(cap) {
-                if client.health_check().unwrap_or(false) {
-                    continue;
-                }
-            }
+        let needs_rediscovery = clients
+            .get_mut(cap)
+            .is_none_or(|client| !client.health_check().unwrap_or(false));
+
+        if !needs_rediscovery {
+            continue;
         }
         if let Ok(client) = crate::ipc::client::connect_by_capability(cap) {
             tracing::info!(cap, "rediscovered capability after topology change");

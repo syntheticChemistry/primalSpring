@@ -35,6 +35,7 @@ pub use convergence::EcosystemConvergence;
 pub use fitness::{ArchFitness, FitnessScore};
 pub use gate::{
     CytoplasmZone, GateMatrix, GateStatus, MeshEntry, ReadinessLevel, all_mesh_gates, mesh_address,
+    preferred_address,
 };
 pub use pressure::PressureCategory;
 pub use profile::ProfileConstraints;
