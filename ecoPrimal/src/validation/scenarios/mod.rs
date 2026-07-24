@@ -222,7 +222,21 @@ pub mod s_tower_exceed_exploration;
 pub mod s_tower_http_gateway;
 pub mod s_tower_large_data;
 pub mod s_tower_multi_stack;
+pub mod s_tower_pen_capability_escalation;
+pub mod s_tower_pen_cipher_downgrade;
+pub mod s_tower_pen_enrollment_replay;
+pub mod s_tower_pen_malformed_rpc;
+pub mod s_tower_pen_mesh_poison;
+pub mod s_tower_pen_relay_abuse;
+pub mod s_tower_pen_uds_spoof;
 pub mod s_tower_secure_compute;
+pub mod s_tower_stress_btsp_storm;
+pub mod s_tower_stress_concurrent_dispatch;
+pub mod s_tower_stress_failover_resilience;
+pub mod s_tower_stress_mesh_churn;
+pub mod s_tower_stress_shadow_fidelity;
+pub mod s_tower_stress_sustained_throughput;
+pub mod s_tower_stress_uds_hop_cost;
 pub mod s_version_skew_detection;
 pub mod s_wan_dispatch_validation;
 pub mod s_wan_ipc_tolerance;
@@ -420,6 +434,20 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_tower_edge_profile::SCENARIO);
     r.register(s_composition_access_control::SCENARIO);
     r.register(s_diderm_domain_posture::SCENARIO);
+    r.register(s_tower_stress_sustained_throughput::SCENARIO);
+    r.register(s_tower_stress_concurrent_dispatch::SCENARIO);
+    r.register(s_tower_stress_btsp_storm::SCENARIO);
+    r.register(s_tower_stress_failover_resilience::SCENARIO);
+    r.register(s_tower_stress_mesh_churn::SCENARIO);
+    r.register(s_tower_stress_uds_hop_cost::SCENARIO);
+    r.register(s_tower_stress_shadow_fidelity::SCENARIO);
+    r.register(s_tower_pen_malformed_rpc::SCENARIO);
+    r.register(s_tower_pen_enrollment_replay::SCENARIO);
+    r.register(s_tower_pen_capability_escalation::SCENARIO);
+    r.register(s_tower_pen_cipher_downgrade::SCENARIO);
+    r.register(s_tower_pen_uds_spoof::SCENARIO);
+    r.register(s_tower_pen_mesh_poison::SCENARIO);
+    r.register(s_tower_pen_relay_abuse::SCENARIO);
     r
 }
 
@@ -430,7 +458,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 182;
+    const EXPECTED_SCENARIO_COUNT: usize = 196;
 
     #[test]
     fn registry_scenario_count() {
@@ -486,13 +514,21 @@ mod tests {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On non-depot gates (eastGate), the binaries are absent → 14 failures
         // (13 individual binary checks + 1 aggregate "all_13_present").
-        // Wave 150w: sporeGate calibration — upstream cleared sporeprint-pure-primal-parity
-        // but it still has 1 failure on sporeGate (Zola build env difference).
-        // graphenegate-readiness flaps 1-2 on sporeGate depending on depot cache state.
+        // Wave 150w: eastGate calibration (sporeGate context)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 2),
+            ("graphenegate-readiness", 1),
             ("composition-access-control", 15),
-            ("sporeprint-pure-primal-parity", 1),
+            ("tower-stress-concurrent-dispatch", 3),
+            ("tower-stress-btsp-storm", 1),
+            ("tower-stress-failover-resilience", 4),
+            ("tower-stress-mesh-churn", 4),
+            ("tower-stress-uds-hop-cost", 1),
+            ("tower-stress-shadow-fidelity", 2),
+            ("tower-pen-enrollment-replay", 2),
+            ("tower-pen-capability-escalation", 6),
+            ("tower-pen-cipher-downgrade", 4),
+            ("tower-pen-uds-spoof", 5),
+            ("tower-pen-mesh-poison", 2),
         ];
 
         let r = build_registry();

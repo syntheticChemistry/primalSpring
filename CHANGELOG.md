@@ -3,6 +3,22 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.45] — Wave 150x: Dimensional Review + Tower Hardening (2026-07-24)
+
+### Wave 150x: P0 CLEAR — 14 Stress/Pen Scenarios + 30 Known Debt (July 24)
+- **14 new scenarios** — 7 stress tests (sustained throughput, concurrent dispatch,
+  BTSP storm, failover resilience, mesh churn, UDS hop cost, shadow fidelity) +
+  7 pen tests (malformed RPC, enrollment replay, capability escalation, cipher
+  downgrade, UDS spoof, mesh poison, relay abuse).
+- **30 known debt findings** tracked across stress/pen scenarios — teams evolve
+  independently against them. No single blocker.
+- **Clippy fixes** — `doc_markdown` (5 warnings), tautological boolean in relay
+  abuse pen test removed.
+- **196 scenarios total**, 1240 lib tests passing, 0 clippy warnings.
+- **Dimensional review**: 8 GREEN / 1 AMBER (hardware — offline gates).
+- **Fossil pass**: 27 stale docs archived to `fossilRecord/wave150x_cleanup`.
+- **P0 CLEAR** — Tower hardening 9/9 shipped, 4-team convergence complete.
+
 ## [0.9.44] — Wave 150w: Tower EXCEEDS WG — Shadow Active, 3 Gates (2026-07-23)
 
 ### Wave 150w: Tower Atomic EXCEEDS WireGuard on all measured paths (July 23)

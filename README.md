@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml/badge.svg)](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-1226_pass-brightgreen.svg)](#validation-scenarios-182-across-12-tracks)
+[![Tests](https://img.shields.io/badge/tests-1240_pass-brightgreen.svg)](#validation-scenarios-196-across-12-tracks)
 [![Rust](https://img.shields.io/badge/rust-1.87%2B-orange.svg)](https://www.rust-lang.org)
 [![Unsafe: forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance)
 
@@ -15,7 +15,7 @@
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 1213 lib + 17 doc + experiment (1232 workspace total) |
-| **Experiments** | 96 (21 tracks) — 182 validation scenarios (12 tracks, 3 tiers) |
+| **Experiments** | 96 (21 tracks) — 196 validation scenarios (12 tracks, 3 tiers) |
 | **Deploy Graphs** | 102 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 492+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
@@ -69,7 +69,7 @@ primalSpring/
 │   │   ├── primal_names.rs        # Canonical slug constants, display names ↔ discovery slugs (neuralSpring pattern)
 │   │   ├── validation/            # Experiment harness (check_bool, check_skip, check_relative, OrExit, ValidationSink, NdjsonSink, builder .run())
 │   │   ├── validation/helpers.rs  # Shared validation helpers (graph parsing, Dark Forest, capability cross-ref)
-│   │   ├── validation/scenarios/  # 182 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both)
+│   │   ├── validation/scenarios/  # 196 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both)
 │   │   ├── tolerances/            # Named latency and throughput bounds
 │   │   ├── certification/         # Certification engine (absorbed guidestone, L0-L8)
 │   ├── src/bin/
@@ -177,9 +177,9 @@ cargo coverage
 
 This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report. Release gate (`primalspring release`) enforces a **70%** floor. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
 
-## Validation Scenarios (182 across 12 tracks)
+## Validation Scenarios (196 across 12 tracks)
 
-primalSpring ships 182 validation scenarios organized into 12 tracks:
+primalSpring ships 196 validation scenarios organized into 12 tracks:
 
 | Track | Scenarios | Tier |
 |-------|-----------|------|
