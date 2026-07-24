@@ -54,12 +54,11 @@ fn phase_shadow_timer(v: &mut ValidationResult) {
     let has_shadow_script = shadow_dir
         .read_dir()
         .map(|rd| {
-            rd.filter_map(Result::ok)
-                .any(|e| {
-                    let name = e.file_name();
-                    let n = name.to_string_lossy();
-                    n.starts_with("shadow-benchmark") && n.ends_with(".sh")
-                })
+            rd.filter_map(Result::ok).any(|e| {
+                let name = e.file_name();
+                let n = name.to_string_lossy();
+                n.starts_with("shadow-benchmark") && n.ends_with(".sh")
+            })
         })
         .unwrap_or(false);
     v.check_bool(

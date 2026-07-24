@@ -272,9 +272,9 @@ impl MeshEntry {
     /// Whether this gate has Tower Atomic services running.
     #[must_use]
     pub fn has_tower(&self) -> bool {
-        self.services.iter().any(|s| {
-            s == "beardog" || s == "songbird" || s == "skunkbat" || s == "nucleus_tower"
-        })
+        self.services
+            .iter()
+            .any(|s| s == "beardog" || s == "songbird" || s == "skunkbat" || s == "nucleus_tower")
     }
 }
 
