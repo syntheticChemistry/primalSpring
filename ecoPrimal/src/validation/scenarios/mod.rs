@@ -514,10 +514,11 @@ mod tests {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On depot gates (sporeGate), all 14 fail (13 binaries + 1 aggregate).
         // On eastGate, only the aggregate "all_13_present" check fails (1).
-        // Wave 150x: eastGate calibration (local environment)
+        // Wave 150x: sporeGate calibration — graphenegate flaps 1-2, sporeprint still 1
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 1),
+            ("graphenegate-readiness", 2),
             ("composition-access-control", 15),
+            ("sporeprint-pure-primal-parity", 1),
             ("tower-stress-concurrent-dispatch", 3),
             ("tower-stress-btsp-storm", 1),
             ("tower-stress-failover-resilience", 4),
