@@ -514,21 +514,20 @@ mod tests {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On depot gates (sporeGate), all 14 fail (13 binaries + 1 aggregate).
         // On eastGate, only the aggregate "all_13_present" check fails (1).
-        // Wave 150x: sporeGate calibration — graphenegate flaps 1-2, sporeprint still 1
+        // Wave 150x: flockGate calibration (14 aarch64 absent, ironGate DOWN)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 2),
-            ("composition-access-control", 15),
-            ("sporeprint-pure-primal-parity", 1),
-            ("tower-stress-concurrent-dispatch", 3),
+            ("graphenegate-readiness", 14),
+            ("composition-access-control", 13),
+            ("arch-fitness", 1),
+            ("mesh-reachability", 1),
             ("tower-stress-btsp-storm", 1),
-            ("tower-stress-failover-resilience", 4),
-            ("tower-stress-mesh-churn", 4),
+            ("tower-stress-failover-resilience", 3),
             ("tower-stress-uds-hop-cost", 1),
-            ("tower-pen-enrollment-replay", 2),
-            ("tower-pen-capability-escalation", 6),
-            ("tower-pen-cipher-downgrade", 4),
+            ("tower-pen-enrollment-replay", 1),
+            ("tower-pen-capability-escalation", 4),
+            ("tower-pen-cipher-downgrade", 1),
             ("tower-pen-uds-spoof", 5),
-            ("tower-pen-mesh-poison", 2),
+            ("tower-pen-mesh-poison", 1),
         ];
 
         let r = build_registry();

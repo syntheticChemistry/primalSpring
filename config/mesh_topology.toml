@@ -8,6 +8,8 @@
 [mesh]
 subnet = "10.13.37.0/24"
 interface = "wg0"
+peer_ttl = 300
+stale_expiry = 600
 
 # ── Meshed gates (address assigned) ──────────────────────────────────────────
 

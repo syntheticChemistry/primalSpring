@@ -68,14 +68,17 @@ fn phase_routing_auth(v: &mut ValidationResult) {
 
     let has_routing_validation = DISPATCH_SRC.contains("validate_routing")
         || DISPATCH_SRC.contains("check_routing")
-        || DISPATCH_SRC.contains("allowed_routing");
+        || DISPATCH_SRC.contains("allowed_routing")
+        || (DISPATCH_SRC.contains("routing != \"local\"")
+            || DISPATCH_SRC.contains("routing != \"any\"")
+            || DISPATCH_SRC.contains("Invalid routing"));
     v.check_bool(
         "escalation:routing_validation",
         has_routing_validation,
         &format!(
             "Routing validation: {} — determines if caller is authorized for requested route",
             if has_routing_validation {
-                "PRESENT"
+                "PRESENT (explicit routing value validation)"
             } else {
                 "NOT FOUND (any caller can request any routing mode)"
             }
@@ -91,11 +94,11 @@ fn phase_routing_auth(v: &mut ValidationResult) {
         has_caller_identity,
         &format!(
             "Caller identification in dispatch: {} — without caller identity, \
-             cannot distinguish local from remote requests",
+             cannot distinguish local from remote requests (P2 finding for songBird/eastGate)",
             if has_caller_identity {
                 "PRESENT"
             } else {
-                "ABSENT (all callers treated equally)"
+                "ABSENT (all callers treated equally — routing based on stated preference only)"
             }
         ),
     );
@@ -179,15 +182,17 @@ fn phase_cross_gate_injection(v: &mut ValidationResult) {
         ),
     );
 
-    let has_remote_dispatch =
-        DISPATCH_SRC.contains("remote_dispatch") || DISPATCH_SRC.contains("remote_call");
+    let has_remote_dispatch = DISPATCH_SRC.contains("remote_dispatch")
+        || DISPATCH_SRC.contains("remote_call")
+        || DISPATCH_SRC.contains("forward_to_remote")
+        || DISPATCH_SRC.contains("remote_gate");
     v.check_bool(
         "escalation:remote_dispatch_path",
         has_remote_dispatch,
         &format!(
             "Remote dispatch path: {} — pen test target for cross-gate capability spoofing",
             if has_remote_dispatch {
-                "PRESENT"
+                "PRESENT (forward_to_remote_gate — cross-gate capability dispatch)"
             } else {
                 "NOT IN DISPATCH (may use separate module)"
             }

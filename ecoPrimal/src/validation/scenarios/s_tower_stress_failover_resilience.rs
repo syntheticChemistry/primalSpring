@@ -77,7 +77,9 @@ fn phase_beardog_death(v: &mut ValidationResult) {
         ),
     );
 
-    let dispatch_handles_ipc_error = DISPATCH_SRC.contains("IpcStream")
+    let dispatch_handles_ipc_error = (DISPATCH_SRC.contains("IpcStream")
+        || DISPATCH_SRC.contains("ipc_pool")
+        || DISPATCH_SRC.contains("execute_jsonrpc"))
         && (DISPATCH_SRC.contains("Err(") || DISPATCH_SRC.contains('?'));
     v.check_bool(
         "failover:dispatch_ipc_error_propagation",

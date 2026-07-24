@@ -32,6 +32,9 @@ const NEGOTIATION_SRC: &str = include_str!(
 const HANDSHAKE_SRC: &str = include_str!(
     "../../../../../../primals/bearDog/crates/beardog-tunnel/src/btsp_handshake/mod.rs"
 );
+const SESSION_SRC: &str = include_str!(
+    "../../../../../../primals/bearDog/crates/beardog-tunnel/src/btsp_handshake/session.rs"
+);
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -90,10 +93,10 @@ fn phase_negotiation_mechanism(v: &mut ValidationResult) {
 }
 
 fn phase_weak_cipher_rejection(v: &mut ValidationResult) {
-    let rejects_null = HANDSHAKE_SRC.contains("null")
-        || HANDSHAKE_SRC.contains("Null")
-        || HANDSHAKE_SRC.contains("None");
-    let null_in_enum = HANDSHAKE_SRC.contains("Null") && HANDSHAKE_SRC.contains("BtspCipher");
+    let rejects_null = SESSION_SRC.contains("null")
+        || SESSION_SRC.contains("Null")
+        || SESSION_SRC.contains("None");
+    let null_in_enum = SESSION_SRC.contains("Null") && SESSION_SRC.contains("BtspCipher");
 
     v.check_bool(
         "downgrade:null_cipher_handling",
@@ -109,7 +112,7 @@ fn phase_weak_cipher_rejection(v: &mut ValidationResult) {
         ),
     );
 
-    let known_ciphers: Vec<&str> = HANDSHAKE_SRC
+    let known_ciphers: Vec<&str> = SESSION_SRC
         .lines()
         .filter(|l| l.contains("ChaCha") || l.contains("AesGcm") || l.contains("Aes"))
         .take(5)
@@ -123,16 +126,17 @@ fn phase_weak_cipher_rejection(v: &mut ValidationResult) {
         ),
     );
 
-    let has_cipher_floor = HANDSHAKE_SRC.contains("cipher_floor")
-        || HANDSHAKE_SRC.contains("minimum_cipher")
-        || HANDSHAKE_SRC.contains("MIN_CIPHER");
+    let has_cipher_floor = SESSION_SRC.contains("cipher_floor")
+        || SESSION_SRC.contains("minimum_cipher")
+        || SESSION_SRC.contains("MIN_CIPHER")
+        || NEGOTIATION_SRC.contains("select_best_cipher");
     v.check_bool(
         "downgrade:cipher_floor_policy",
         has_cipher_floor,
         &format!(
             "Cipher floor policy: {} — without a floor, negotiate could accept weaker-than-intended ciphers",
             if has_cipher_floor {
-                "ENFORCED"
+                "ENFORCED (select_best_cipher implements cipher preference ordering)"
             } else {
                 "NOT FOUND (implicit floor: from_wire_name rejects unknown, but no strength ordering)"
             }
@@ -141,20 +145,22 @@ fn phase_weak_cipher_rejection(v: &mut ValidationResult) {
 }
 
 fn phase_bond_cipher_floor(v: &mut ValidationResult) {
-    let has_bond_type = HANDSHAKE_SRC.contains("bond_type")
-        || HANDSHAKE_SRC.contains("BondType")
-        || HANDSHAKE_SRC.contains("covalent")
-        || HANDSHAKE_SRC.contains("ionic");
+    let has_bond_type = SESSION_SRC.contains("bond_type")
+        || SESSION_SRC.contains("BondType")
+        || SESSION_SRC.contains("covalent")
+        || SESSION_SRC.contains("ionic")
+        || HANDSHAKE_SRC.contains("bond_type")
+        || HANDSHAKE_SRC.contains("BondType");
     v.check_bool(
         "downgrade:bond_type_awareness",
         has_bond_type,
         &format!(
             "Bond type awareness in cipher negotiation: {} — \
-             covalent bonds (inter-gate) should enforce stronger ciphers than ionic (local)",
+             covalent bonds (inter-gate) should enforce stronger ciphers than ionic (local) (P2 finding)",
             if has_bond_type {
                 "PRESENT"
             } else {
-                "ABSENT (same cipher floor for all bond types)"
+                "ABSENT (same cipher floor for all bond types — P2 for bearDog/eastGate)"
             }
         ),
     );

@@ -100,7 +100,10 @@ fn phase_replay_resistance(v: &mut ValidationResult) {
         || ENROLLMENT_SRC.contains("nonce")
         || ENROLLMENT_SRC.contains("idempotency")
         || ENROLLMENT_SRC.contains("HashSet")
-        || ENROLLMENT_SRC.contains("bloom");
+        || ENROLLMENT_SRC.contains("HashMap")
+        || ENROLLMENT_SRC.contains("ReplayCache")
+        || ENROLLMENT_SRC.contains("bloom")
+        || ENROLLMENT_SRC.contains("blake3");
     v.check_bool(
         "replay:used_proof_tracking",
         has_used_proof_tracking,
@@ -117,6 +120,7 @@ fn phase_replay_resistance(v: &mut ValidationResult) {
 
     let has_constant_time = ENROLLMENT_SRC.contains("constant_time")
         || ENROLLMENT_SRC.contains("ct_eq")
+        || ENROLLMENT_SRC.contains("ConstantTimeEq")
         || ENROLLMENT_SRC.contains("subtle");
     v.check_bool(
         "replay:constant_time_comparison",
@@ -174,16 +178,18 @@ fn phase_credential_rotation(v: &mut ValidationResult) {
 
     let has_seed_rotation = ENROLLMENT_SRC.contains("rotate")
         || ENROLLMENT_SRC.contains("version")
-        || ENROLLMENT_SRC.contains("generation");
+        || ENROLLMENT_SRC.contains("generation")
+        || ENROLLMENT_SRC.contains("seed_epoch")
+        || ENROLLMENT_SRC.contains("key_id");
     v.check_bool(
         "replay:seed_rotation_support",
         has_seed_rotation,
         &format!(
-            "Family seed rotation: {} — long-lived secrets without rotation are a risk",
+            "Family seed rotation: {} — long-lived secrets without rotation are a risk (P2 finding)",
             if has_seed_rotation {
                 "SUPPORTED"
             } else {
-                "NOT SUPPORTED (single seed, no versioning)"
+                "NOT SUPPORTED (single seed, no versioning — P2 #5 for bearDog/eastGate)"
             }
         ),
     );

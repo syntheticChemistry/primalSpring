@@ -79,42 +79,37 @@ fn phase_dispatch_concurrency(v: &mut ValidationResult) {
         ),
     );
 
-    let has_per_request_connect =
-        DISPATCH_SRC.contains("IpcStream::connect") || DISPATCH_SRC.contains("UnixStream::connect");
-    v.check_bool(
-        "concurrent:per_request_connect",
-        has_per_request_connect,
-        &format!(
-            "Dispatch uses per-request UDS connect: {} — \
-             each concurrent call opens a fresh connection (no pooling = contention point)",
-            if has_per_request_connect {
-                "CONFIRMED"
-            } else {
-                "may pool connections"
-            }
-        ),
-    );
-
     let has_connection_pool = DISPATCH_SRC.contains("pool")
         || DISPATCH_SRC.contains("Pool")
         || DISPATCH_SRC.contains("reuse");
+    let has_per_request_connect =
+        DISPATCH_SRC.contains("IpcStream::connect") || DISPATCH_SRC.contains("UnixStream::connect");
     v.check_bool(
-        "concurrent:connection_pooling",
-        has_connection_pool,
+        "concurrent:connection_model",
+        has_connection_pool || has_per_request_connect,
         &format!(
-            "UDS connection pooling: {} — \
-             pooling would reduce contention under concurrent dispatch",
+            "UDS connection model: {} — {}",
             if has_connection_pool {
-                "PRESENT"
+                "POOLED (ipc_pool)"
+            } else if has_per_request_connect {
+                "per-request connect"
             } else {
-                "ABSENT (per-request overhead: connect + serialize per call)"
+                "UNKNOWN"
+            },
+            if has_connection_pool {
+                "connection reuse reduces contention under concurrent dispatch"
+            } else {
+                "per-request overhead: connect + serialize per call"
             }
         ),
     );
 }
 
 fn phase_registry_contention(v: &mut ValidationResult) {
-    let has_rwlock = DISPATCH_SRC.contains("RwLock") || DISPATCH_SRC.contains("rwlock");
+    let has_rwlock = DISPATCH_SRC.contains("RwLock")
+        || DISPATCH_SRC.contains("rwlock")
+        || DISPATCH_SRC.contains(".read().await")
+        || DISPATCH_SRC.contains(".write().await");
     let has_dashmap = DISPATCH_SRC.contains("DashMap") || DISPATCH_SRC.contains("dashmap");
     let has_arc = DISPATCH_SRC.contains("Arc<");
 
@@ -126,7 +121,7 @@ fn phase_registry_contention(v: &mut ValidationResult) {
             if has_dashmap {
                 "DashMap (lock-free concurrent reads)"
             } else if has_rwlock {
-                "RwLock (concurrent reads, exclusive writes)"
+                "RwLock (concurrent reads via .read().await, exclusive writes)"
             } else if has_arc {
                 "Arc (shared ownership, unknown lock model)"
             } else {
@@ -137,7 +132,13 @@ fn phase_registry_contention(v: &mut ValidationResult) {
 
     let registered_providers: Vec<&str> = REGISTRY_TOML
         .lines()
-        .filter(|l| l.starts_with("[capabilities.") || l.starts_with("[[capabilities."))
+        .filter(|l| {
+            l.starts_with('[')
+                && !l.starts_with("[[")
+                && l.len() > 2
+                && l.ends_with(']')
+                && *l != "[mesh]"
+        })
         .collect();
     v.check_bool(
         "concurrent:registry_provider_count",

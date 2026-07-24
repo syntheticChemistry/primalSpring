@@ -325,6 +325,13 @@ methods = [
     "security.scan",
 ]
 
+[enrollment]
+owner = "beardog"
+methods = [
+    "enrollment.verify",
+    "enrollment.rotate_seed",
+]
+
 [auth]
 owner = "primalspring"
 methods = [
@@ -838,6 +845,7 @@ methods = [
     "mesh.capabilities_query",
     "mesh.connect",
     "mesh.discover_remotes",
+    "mesh.enroll",
     "mesh.find_path",
     "mesh.init",
     "mesh.mirror",
