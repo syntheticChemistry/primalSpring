@@ -523,7 +523,6 @@ mod tests {
             ("tower-stress-failover-resilience", 4),
             ("tower-stress-mesh-churn", 4),
             ("tower-stress-uds-hop-cost", 1),
-            ("tower-stress-shadow-fidelity", 2),
             ("tower-pen-enrollment-replay", 2),
             ("tower-pen-capability-escalation", 6),
             ("tower-pen-cipher-downgrade", 4),

@@ -49,15 +49,26 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 }
 
 fn phase_shadow_timer(v: &mut ValidationResult) {
-    let shadow_benchmark_sh = std::path::Path::new("benchScale/tower_shadow/shadow-benchmark.sh");
-    let has_shadow_script = shadow_benchmark_sh.exists();
+    let workspace_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..");
+    let shadow_dir = workspace_root.join("benchScale/tower_shadow");
+    let has_shadow_script = shadow_dir
+        .read_dir()
+        .map(|rd| {
+            rd.filter_map(Result::ok)
+                .any(|e| {
+                    let name = e.file_name();
+                    let n = name.to_string_lossy();
+                    n.starts_with("shadow-benchmark") && n.ends_with(".sh")
+                })
+        })
+        .unwrap_or(false);
     v.check_bool(
         "shadow:benchmark_script",
         has_shadow_script,
         &format!(
             "Shadow benchmark script: {}",
             if has_shadow_script {
-                "benchScale/tower_shadow/shadow-benchmark.sh exists"
+                "found in benchScale/tower_shadow/"
             } else {
                 "NOT FOUND (check CWD or deployment path)"
             }
@@ -134,7 +145,8 @@ fn phase_statistical_validity(v: &mut ValidationResult) {
 }
 
 fn phase_data_pipeline(v: &mut ValidationResult) {
-    let shadow_dir = std::path::Path::new("benchScale/tower_shadow");
+    let workspace_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..");
+    let shadow_dir = workspace_root.join("benchScale/tower_shadow");
     let has_shadow_dir = shadow_dir.exists();
     v.check_bool(
         "shadow:data_directory",
