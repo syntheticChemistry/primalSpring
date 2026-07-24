@@ -294,10 +294,15 @@ methods = [
 
 [tls]
 owner = "beardog"
+stability = "stable"
+integrity = "blake3"
 methods = [
     "tls.derive_handshake_secrets",
     "tls.derive_secrets",
+    "tls.handshake",
+    "tls.renew",
     "tls.sign_handshake",
+    "tls.terminate",
 ]
 
 [birdsong]
@@ -1238,6 +1243,75 @@ methods = []
 owner = "skunkbat"
 stability = "stable"
 methods = []
+
+[agent]
+owner = "biomeos"
+stability = "evolving"
+methods = [
+    "agent.command",
+    "agent.list",
+    "agent.status",
+]
+
+[cas]
+owner = "nestgate"
+stability = "stable"
+integrity = "blake3"
+methods = [
+    "cas.get",
+    "cas.store",
+    "cas.verify",
+]
+
+# ─── Trust Tier Domains ─────────────────────────────────────────────────────
+# The K-Derm membrane model declares three trust boundaries.
+
+[domains.outer]
+description = "Public compositions — authenticated write, anonymous read"
+trust_level = "public"
+dns_pattern = "*.primals.eco"
+compositions = ["footprint", "esotericwebb"]
+
+[domains.inner]
+description = "Sovereign compositions — ceremony-gated, family-only access"
+trust_level = "sovereign"
+dns_pattern = "*.primal.eco"
+compositions = ["sporeprint", "tideglass"]
+
+[domains.data]
+description = "Data service tier — CAS, federated APIs, allowlist-validated"
+trust_level = "validated"
+dns_pattern = "*.nestgate.io"
+primals = ["nestgate", "rhizocrypt", "loamspine"]
+
+# ─── Composition Declarations ──────────────────────────────────────────────
+
+[compositions.footprint]
+tier = "outer"
+primals = ["nestgate", "biomeos", "songbird", "beardog"]
+domain = "content"
+trust_level = "public"
+weak_bond = "ingestion"
+
+[compositions.esotericwebb]
+tier = "outer"
+primals = ["nestgate", "squirrel", "songbird", "beardog"]
+domain = "knowledge"
+trust_level = "public"
+weak_bond = "ingestion"
+
+[compositions.sporeprint]
+tier = "inner"
+primals = ["beardog", "nestgate", "rhizocrypt", "loamspine"]
+domain = "provenance"
+trust_level = "sovereign"
+
+[compositions.tideglass]
+tier = "inner"
+primals = ["biomeos", "beardog", "squirrel", "petaltongue"]
+domain = "visualization"
+trust_level = "sovereign"
+
 
 # Test fixtures — synthetic method names used in unit tests only.
 # These are excluded from drift checking.
