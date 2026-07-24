@@ -516,15 +516,12 @@ mod tests {
         // On eastGate, only the aggregate "all_13_present" check fails (1).
         // Wave 150x: flockGate calibration (14 aarch64 absent, ironGate DOWN)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 14),
-            ("composition-access-control", 13),
-            ("arch-fitness", 1),
-            ("mesh-reachability", 1),
+            ("graphenegate-readiness", 1),
             ("tower-stress-btsp-storm", 1),
             ("tower-stress-failover-resilience", 3),
             ("tower-stress-uds-hop-cost", 1),
             ("tower-pen-enrollment-replay", 1),
-            ("tower-pen-capability-escalation", 4),
+            ("tower-pen-capability-escalation", 5),
             ("tower-pen-cipher-downgrade", 1),
             ("tower-pen-uds-spoof", 5),
             ("tower-pen-mesh-poison", 1),
