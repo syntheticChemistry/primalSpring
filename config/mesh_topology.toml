@@ -20,6 +20,7 @@ zone = "Wan"
 [[gate]]
 name = "sporeGate"
 address = "10.13.37.2"
+lan_addr = "192.168.4.3"
 role = "compute"
 zone = "Backbone"
 
@@ -33,6 +34,7 @@ retired = true
 [[gate]]
 name = "eastGate"
 address = "10.13.37.5"
+lan_addr = "192.168.4.244"
 role = "meta"
 zone = "Backbone"
 
@@ -82,4 +84,4 @@ name = "grapheneGate"
 role = "mobile"
 zone = "Wan"
 transport = "adb"
-services = ["nucleus_tower"]
+services = ["nucleus_tower", "beardog", "songbird", "skunkbat"]
