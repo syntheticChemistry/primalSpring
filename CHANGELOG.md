@@ -3,6 +3,22 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.46] — Wave 150x: Deep Debt Sweep + Idiomatic Rust 2024 (2026-07-24)
+
+### Wave 150x: Deep Debt Sweep — Zero Unsafe, Zero Mocks, Zero Hardcode (July 24)
+- **Idiomatic Rust 2024** — `Option::is_none_or()` in discovery rediscovery,
+  `Arc<Anchor>` in soundstage channel (eliminates per-event String clone).
+- **Zero-alloc JSON-RPC** — `Cow<'static, str>` for protocol version field.
+- **LAN-first routing** — `MeshEntry::preferred_address()` prioritizes LAN over WG.
+- **K-Derm trust tiers** — `capability_registry.toml` gains domain declarations,
+  composition entries, and 4 missing method registrations. Resolves 15 known debt.
+- **26 dependency updates** — clap 4.6.4, libc 0.2.189, zerocopy 0.8.55 (patch-level).
+- **Known debt: 9 entries / 17 expected failures** — all require songBird/bearDog.
+- **Deep audit confirms**: zero unsafe, zero panics in prod, zero todo!/unimplemented!,
+  zero dead_code allows, zero production mocks, zero hardcoded primal names,
+  all deps pure Rust, largest prod file 666L, typed errors (17 thiserror enums).
+- **1239 lib tests passing**, clippy --all-targets clean (lib + bins + 95 experiments).
+
 ## [0.9.45] — Wave 150x: Dimensional Review + Tower Hardening (2026-07-24)
 
 ### Wave 150x: P0 CLEAR — 14 Stress/Pen Scenarios + 30 Known Debt (July 24)
