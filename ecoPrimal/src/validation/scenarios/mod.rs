@@ -516,8 +516,7 @@ mod tests {
         // On eastGate, only the aggregate "all_13_present" check fails (1).
         // Wave 150x: sporeGate calibration — sporeprint-pure-primal-parity persists (Zola env)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 2),
-            ("sporeprint-pure-primal-parity", 1),
+            ("graphenegate-readiness", 1),
             ("tower-stress-btsp-storm", 1),
             ("tower-stress-failover-resilience", 3),
             ("tower-stress-uds-hop-cost", 1),
