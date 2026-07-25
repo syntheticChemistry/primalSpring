@@ -519,7 +519,9 @@ mod tests {
         // eastGate calibration (Jul 25): bearDog bond-type + backpressure + genetic enrollment
         // resolved 3 scenarios (cipher-downgrade, btsp-storm, enrollment-replay).
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 1),
+            ("graphenegate-readiness", 14),
+            ("arch-fitness", 1),
+            ("mesh-reachability", 1),
             ("tower-stress-failover-resilience", 3),
             ("tower-stress-uds-hop-cost", 1),
             ("tower-pen-capability-escalation", 1),

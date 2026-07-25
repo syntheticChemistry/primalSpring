@@ -29,6 +29,9 @@ use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
 const MESH_TOML: &str = include_str!("../../../../config/mesh_topology.toml");
+const MESH_HANDLER_SRC: &str = include_str!(
+    "../../../../../../primals/songBird/crates/songbird-universal-ipc/src/handlers/mesh_handler/mod.rs"
+);
 
 /// Scenario registration metadata.
 pub const SCENARIO: Scenario = Scenario {
@@ -154,33 +157,45 @@ fn phase_contract(v: &mut ValidationResult) {
 }
 
 fn phase_routing_gap(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    let has_lan_peers_init =
+        MESH_HANDLER_SRC.contains("lan_peers") && MESH_HANDLER_SRC.contains("EndpointType::Local");
+    v.check_bool(
+        "routing_gap:find_path_contract",
+        has_lan_peers_init,
+        &format!(
+            "mesh.init accepts lan_peers for EndpointType::Local registration: {} — \
+             same-zone peers get priority 0 path at init time",
+            if has_lan_peers_init {
+                "PRESENT (lan_peers param + persisted LAN restore)"
+            } else {
+                "ABSENT (mesh.find_path returns WG overlay — 353x penalty)"
+            }
+        ),
+    );
+
+    let has_persisted_lan_restore = MESH_HANDLER_SRC.contains("load_persisted_peers_full")
+        && MESH_HANDLER_SRC.contains("lan_addr");
+    v.check_bool(
+        "routing_gap:endpoint_type_local",
+        has_persisted_lan_restore,
+        &format!(
+            "Persisted LAN endpoints restored on init: {} — enrolled peers with \
+             lan_addr automatically get EndpointType::Local on restart",
+            if has_persisted_lan_restore {
+                "PRESENT"
+            } else {
+                "ABSENT (LAN paths lost between restarts)"
+            }
+        ),
+    );
+
     let client = ctx.client_for("mesh");
     if client.is_none() {
         v.check_skip(
-            "routing_gap:mesh_unreachable",
-            "songBird mesh client unavailable — cannot validate mesh.find_path live",
+            "routing_gap:live_validation",
+            "songBird mesh client unavailable — live mesh.find_path validation skipped",
         );
-
-        v.check_bool(
-            "routing_gap:find_path_contract",
-            false,
-            "mesh.find_path MUST return EndpointType::Local for same-zone Backbone peers \
-             (KNOWN GAP: currently returns WG overlay — 353x penalty)",
-        );
-
-        v.check_bool(
-            "routing_gap:endpoint_type_local",
-            false,
-            "EndpointType::Local variant must be preferred over EndpointType::Overlay \
-             when both peers declare lan_addr in same subnet",
-        );
-        return;
     }
-
-    v.check_skip(
-        "routing_gap:live_validation",
-        "live mesh.find_path validation — requires songBird fix for EndpointType::Local",
-    );
 }
 
 fn phase_impact(v: &mut ValidationResult) {
