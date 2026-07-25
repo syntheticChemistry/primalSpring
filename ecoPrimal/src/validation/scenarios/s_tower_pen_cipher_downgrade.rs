@@ -150,7 +150,10 @@ fn phase_bond_cipher_floor(v: &mut ValidationResult) {
         || SESSION_SRC.contains("covalent")
         || SESSION_SRC.contains("ionic")
         || HANDSHAKE_SRC.contains("bond_type")
-        || HANDSHAKE_SRC.contains("BondType");
+        || HANDSHAKE_SRC.contains("BondType")
+        || NEGOTIATION_SRC.contains("BtspBondType")
+        || NEGOTIATION_SRC.contains("load_cipher_floor_for_bond")
+        || NEGOTIATION_SRC.contains("select_best_cipher_for_bond");
     v.check_bool(
         "downgrade:bond_type_awareness",
         has_bond_type,

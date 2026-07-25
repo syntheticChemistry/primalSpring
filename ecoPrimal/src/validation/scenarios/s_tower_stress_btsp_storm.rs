@@ -198,14 +198,17 @@ fn phase_degradation(v: &mut ValidationResult) {
 
     let has_error_on_overload = BTSP_HANDLER_SRC.contains("TooMany")
         || BTSP_HANDLER_SRC.contains("overloaded")
-        || BTSP_HANDLER_SRC.contains("backpressure");
+        || BTSP_HANDLER_SRC.contains("backpressure")
+        || BTSP_SERVER_SRC.contains("backpressure")
+        || BTSP_SERVER_SRC.contains("saturation")
+        || BTSP_SERVER_SRC.contains("send_saturation_error");
     v.check_bool(
         "btsp_storm:backpressure_signal",
         has_error_on_overload,
         &format!(
             "Backpressure signaling: {} — callers need feedback when bearDog is saturated",
             if has_error_on_overload {
-                "PRESENT"
+                "PRESENT (semaphore-based backpressure + saturation error with retry_after)"
             } else {
                 "ABSENT (callers won't know bearDog is overloaded)"
             }

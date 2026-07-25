@@ -516,11 +516,11 @@ mod tests {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On depot gates (sporeGate), all 14 fail (13 binaries + 1 aggregate).
         // On eastGate, only the aggregate "all_13_present" check fails (1).
-        // Wave 150x: sporeGate calibration — sporeprint-pure-primal-parity persists (Zola env)
-        // eastGate calibration: graphenegate-readiness=1 (only aggregate fails),
-        // sporeprint-pure-primal-parity=0 (passes on eastGate, fails on sporeGate/Zola env).
+        // Wave 150x: flockGate calibration (14 aarch64 absent, ironGate DOWN, no LAN peers)
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 1),
+            ("graphenegate-readiness", 14),
+            ("arch-fitness", 1),
+            ("mesh-reachability", 1),
             ("tower-stress-btsp-storm", 1),
             ("tower-stress-failover-resilience", 3),
             ("tower-stress-uds-hop-cost", 1),
