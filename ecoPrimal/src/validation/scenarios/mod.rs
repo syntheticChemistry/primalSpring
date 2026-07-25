@@ -145,6 +145,7 @@ pub mod s_mesh_auto_distribution;
 pub mod s_mesh_capability_propagation;
 pub mod s_mesh_convergence_ops;
 pub mod s_mesh_federation_readiness;
+pub mod s_mesh_lan_path_preference;
 pub mod s_mesh_overlay;
 pub mod s_mesh_peer_trust;
 pub mod s_mesh_reachability;
@@ -371,6 +372,7 @@ pub fn build_registry() -> ScenarioRegistry {
     r.register(s_biomeos_local_composition::SCENARIO);
     r.register(s_relay_forward_transport::SCENARIO);
     r.register(s_songbird_lan_bypass::SCENARIO);
+    r.register(s_mesh_lan_path_preference::SCENARIO);
     r.register(s_pepti_warehouse_deploy::SCENARIO);
     r.register(s_mobile_mesh_init::SCENARIO);
     r.register(s_drawbridge_http_routing::SCENARIO);
@@ -458,7 +460,7 @@ mod tests {
     use crate::validation::ValidationResult;
     use std::collections::HashSet;
 
-    const EXPECTED_SCENARIO_COUNT: usize = 196;
+    const EXPECTED_SCENARIO_COUNT: usize = 197;
 
     #[test]
     fn registry_scenario_count() {
@@ -515,9 +517,10 @@ mod tests {
         // On depot gates (sporeGate), all 14 fail (13 binaries + 1 aggregate).
         // On eastGate, only the aggregate "all_13_present" check fails (1).
         // Wave 150x: sporeGate calibration — sporeprint-pure-primal-parity persists (Zola env)
+        // eastGate calibration: graphenegate-readiness=1 (only aggregate fails),
+        // sporeprint-pure-primal-parity=0 (passes on eastGate, fails on sporeGate/Zola env).
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 2),
-            ("sporeprint-pure-primal-parity", 1),
+            ("graphenegate-readiness", 1),
             ("tower-stress-btsp-storm", 1),
             ("tower-stress-failover-resilience", 3),
             ("tower-stress-uds-hop-cost", 1),
@@ -526,6 +529,7 @@ mod tests {
             ("tower-pen-cipher-downgrade", 1),
             ("tower-pen-uds-spoof", 1),
             ("tower-pen-mesh-poison", 1),
+            ("mesh-lan-path-preference", 2),
         ];
 
         let r = build_registry();
