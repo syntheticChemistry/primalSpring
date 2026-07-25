@@ -145,10 +145,11 @@ fn phase_weak_cipher_rejection(v: &mut ValidationResult) {
 }
 
 fn phase_bond_cipher_floor(v: &mut ValidationResult) {
-    let has_bond_type = SESSION_SRC.contains("bond_type")
+    let has_bond_type = NEGOTIATION_SRC.contains("bond_type")
+        || NEGOTIATION_SRC.contains("BondType")
+        || NEGOTIATION_SRC.contains("BtspBondType")
+        || SESSION_SRC.contains("bond_type")
         || SESSION_SRC.contains("BondType")
-        || SESSION_SRC.contains("covalent")
-        || SESSION_SRC.contains("ionic")
         || HANDSHAKE_SRC.contains("bond_type")
         || HANDSHAKE_SRC.contains("BondType")
         || NEGOTIATION_SRC.contains("BtspBondType")

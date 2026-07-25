@@ -516,16 +516,13 @@ mod tests {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On depot gates (sporeGate), all 14 fail (13 binaries + 1 aggregate).
         // On eastGate, only the aggregate "all_13_present" check fails (1).
-        // Wave 150x: flockGate calibration (14 aarch64 absent, ironGate DOWN, no LAN peers)
+        // eastGate calibration (Jul 25): bearDog bond-type + backpressure + genetic enrollment
+        // resolved 3 scenarios (cipher-downgrade, btsp-storm, enrollment-replay).
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 14),
-            ("arch-fitness", 1),
-            ("mesh-reachability", 1),
-            ("tower-stress-btsp-storm", 1),
+            ("graphenegate-readiness", 1),
             ("tower-stress-failover-resilience", 3),
             ("tower-stress-uds-hop-cost", 1),
             ("tower-pen-capability-escalation", 1),
-            ("tower-pen-cipher-downgrade", 1),
             ("tower-pen-uds-spoof", 1),
             ("tower-pen-mesh-poison", 1),
             ("mesh-lan-path-preference", 2),

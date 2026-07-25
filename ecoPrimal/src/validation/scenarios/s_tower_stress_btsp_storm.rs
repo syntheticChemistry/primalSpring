@@ -199,6 +199,9 @@ fn phase_degradation(v: &mut ValidationResult) {
     let has_error_on_overload = BTSP_HANDLER_SRC.contains("TooMany")
         || BTSP_HANDLER_SRC.contains("overloaded")
         || BTSP_HANDLER_SRC.contains("backpressure")
+        || BTSP_SERVER_SRC.contains("SERVICE_OVERLOADED")
+        || BTSP_SERVER_SRC.contains("overloaded")
+        || BTSP_SERVER_SRC.contains("Retry-After")
         || BTSP_SERVER_SRC.contains("backpressure")
         || BTSP_SERVER_SRC.contains("saturation")
         || BTSP_SERVER_SRC.contains("send_saturation_error");
