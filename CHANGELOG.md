@@ -3,21 +3,22 @@
 All notable changes to primalSpring are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.9.46] — Wave 150x: Deep Debt Sweep + Idiomatic Rust 2024 (2026-07-24)
+## [0.9.46] — Wave 150x: Deep Debt Sweep + LAN Gap + Debt Resolution (2026-07-25)
 
-### Wave 150x: Deep Debt Sweep — Zero Unsafe, Zero Mocks, Zero Hardcode (July 24)
-- **Idiomatic Rust 2024** — `Option::is_none_or()` in discovery rediscovery,
-  `Arc<Anchor>` in soundstage channel (eliminates per-event String clone).
-- **Zero-alloc JSON-RPC** — `Cow<'static, str>` for protocol version field.
+### Wave 150x: 3 Debt Resolved, LAN Gap Scenario, Deep Sweep (July 24–25)
+- **3 scenarios resolved** — upstream bearDog shipped bond-type cipher (`BtspBondType`),
+  backpressure signaling (`SERVICE_OVERLOADED`), and genetic enrollment nonce checking.
+  Resolved: `tower-pen-cipher-downgrade`, `tower-stress-btsp-storm`, `tower-pen-enrollment-replay`.
+- **New scenario: `s_mesh_lan_path_preference`** (197th) — validates P0 LAN routing gap
+  where `mesh.find_path` must prefer `EndpointType::Local` for same-switch peers (1200x penalty).
+- **Known debt: 7 entries / 10 expected failures** — down from 36 at wave start.
+- **Idiomatic Rust 2024** — `Option::is_none_or()`, `Arc<Anchor>` zero-clone,
+  `Cow<'static, str>` zero-alloc JSON-RPC.
 - **LAN-first routing** — `MeshEntry::preferred_address()` prioritizes LAN over WG.
-- **K-Derm trust tiers** — `capability_registry.toml` gains domain declarations,
-  composition entries, and 4 missing method registrations. Resolves 15 known debt.
-- **26 dependency updates** — clap 4.6.4, libc 0.2.189, zerocopy 0.8.55 (patch-level).
-- **Known debt: 9 entries / 17 expected failures** — all require songBird/bearDog.
-- **Deep audit confirms**: zero unsafe, zero panics in prod, zero todo!/unimplemented!,
-  zero dead_code allows, zero production mocks, zero hardcoded primal names,
-  all deps pure Rust, largest prod file 666L, typed errors (17 thiserror enums).
-- **1239 lib tests passing**, clippy --all-targets clean (lib + bins + 95 experiments).
+- **K-Derm trust tiers** — capability_registry.toml domain declarations (resolved 15 debt).
+- **26 dependency updates** — patch-level refresh.
+- **Deep audit**: zero unsafe, zero panics, zero mocks, zero hardcode, all deps pure Rust.
+- **1240 lib tests passing**, clippy clean, 197 scenarios.
 
 ## [0.9.45] — Wave 150x: Dimensional Review + Tower Hardening (2026-07-24)
 
