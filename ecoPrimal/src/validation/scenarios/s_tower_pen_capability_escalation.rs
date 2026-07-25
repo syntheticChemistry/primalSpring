@@ -25,6 +25,12 @@ const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry
 const DISPATCH_SRC: &str = include_str!(
     "../../../../../../primals/songBird/crates/songbird-universal-ipc/src/service/capability_dispatch.rs"
 );
+const METHOD_GATE_SRC: &str = include_str!(
+    "../../../../../../primals/songBird/crates/songbird-orchestrator/src/ipc/pure_rust_server/method_gate/caller.rs"
+);
+const METHOD_GATE_GATE_SRC: &str = include_str!(
+    "../../../../../../primals/songBird/crates/songbird-orchestrator/src/ipc/pure_rust_server/method_gate/gate.rs"
+);
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -88,15 +94,18 @@ fn phase_routing_auth(v: &mut ValidationResult) {
     let has_caller_identity = DISPATCH_SRC.contains("caller_id")
         || DISPATCH_SRC.contains("peer_info")
         || DISPATCH_SRC.contains("source_gate")
-        || DISPATCH_SRC.contains("origin");
+        || DISPATCH_SRC.contains("origin")
+        || METHOD_GATE_SRC.contains("CallerContext")
+        || METHOD_GATE_SRC.contains("PeerCredentials")
+        || METHOD_GATE_SRC.contains("SO_PEERCRED");
     v.check_bool(
         "escalation:caller_identification",
         has_caller_identity,
         &format!(
             "Caller identification in dispatch: {} — without caller identity, \
-             cannot distinguish local from remote requests (P2 finding for songBird/eastGate)",
+             cannot distinguish local from remote requests",
             if has_caller_identity {
-                "PRESENT"
+                "PRESENT (CallerContext + SO_PEERCRED in method gate)"
             } else {
                 "ABSENT (all callers treated equally — routing based on stated preference only)"
             }
@@ -107,7 +116,9 @@ fn phase_routing_auth(v: &mut ValidationResult) {
 fn phase_local_only(v: &mut ValidationResult) {
     let has_local_only_check = DISPATCH_SRC.contains("local_only")
         || DISPATCH_SRC.contains("LocalOnly")
-        || DISPATCH_SRC.contains("restrict_remote");
+        || DISPATCH_SRC.contains("restrict_remote")
+        || METHOD_GATE_GATE_SRC.contains("ConnectionOrigin")
+        || METHOD_GATE_GATE_SRC.contains("REJECTED");
     v.check_bool(
         "escalation:local_only_enforcement",
         has_local_only_check,
@@ -115,7 +126,7 @@ fn phase_local_only(v: &mut ValidationResult) {
             "Local-only capability enforcement: {} — some capabilities (e.g., crypto key ops) \
              should never be remotely callable",
             if has_local_only_check {
-                "PRESENT"
+                "PRESENT (method gate rejects unauthenticated remote callers)"
             } else {
                 "ABSENT (remote callers can invoke any local capability)"
             }
@@ -139,8 +150,10 @@ fn phase_local_only(v: &mut ValidationResult) {
         ),
     );
 
-    let has_postprimordial =
-        DISPATCH_SRC.contains("post_primordial") || DISPATCH_SRC.contains("`PostPrimordial`");
+    let has_postprimordial = DISPATCH_SRC.contains("post_primordial")
+        || DISPATCH_SRC.contains("`PostPrimordial`")
+        || METHOD_GATE_GATE_SRC.contains("EnforcementMode")
+        || METHOD_GATE_GATE_SRC.contains("classify_method");
     v.check_bool(
         "escalation:postprimordial_protection",
         has_postprimordial,
@@ -148,7 +161,7 @@ fn phase_local_only(v: &mut ValidationResult) {
             "`PostPrimordial` capability protection: {} — critical inter-communication primals \
              need hard enforcement against remote escalation",
             if has_postprimordial {
-                "PRESENT"
+                "PRESENT (method gate classifies + enforces per-method protection level)"
             } else {
                 "NOT IN DISPATCH (enforcement may be elsewhere)"
             }

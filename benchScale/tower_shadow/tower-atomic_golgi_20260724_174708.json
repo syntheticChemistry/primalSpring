@@ -1,0 +1,27 @@
+{
+  "mode": "tower-atomic",
+  "peer": "10.13.37.1:7700",
+  "timestamp": "2026-07-24T21:47:11.297903655+00:00",
+  "latency": {
+    "probes_sent": 20,
+    "probes_ok": 20,
+    "min_ms": 53.747227,
+    "avg_ms": 57.10276120000001,
+    "max_ms": 62.992302,
+    "p50_ms": 56.46132,
+    "p95_ms": 60.641949000000004,
+    "p99_ms": 62.992302,
+    "jitter_ms": 0.4865828947368421
+  },
+  "setup": {
+    "attempts": 10,
+    "min_ms": 27.795989,
+    "avg_ms": 29.395090599999996,
+    "max_ms": 30.621642
+  },
+  "throughput": {
+    "duration_ms": 39,
+    "bytes_sent": 65536,
+    "throughput_mbps": 13.17793454033543
+  }
+}

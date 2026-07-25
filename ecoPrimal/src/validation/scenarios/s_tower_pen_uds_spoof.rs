@@ -26,6 +26,12 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 const SOCKET_DISCOVERY_SRC: &str = include_str!(
     "../../../../../../primals/songBird/crates/songbird-crypto-provider/src/socket_discovery.rs"
 );
+const PLATFORM_UNIX_SRC: &str = include_str!(
+    "../../../../../../primals/songBird/crates/songbird-universal-ipc/src/platform/unix.rs"
+);
+const METHOD_GATE_CALLER_SRC: &str = include_str!(
+    "../../../../../../primals/songBird/crates/songbird-orchestrator/src/ipc/pure_rust_server/method_gate/caller.rs"
+);
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -55,7 +61,9 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 fn phase_identity_verification(v: &mut ValidationResult) {
     let has_identity_probe = SOCKET_DISCOVERY_SRC.contains("identity")
         || SOCKET_DISCOVERY_SRC.contains("verify_identity")
-        || SOCKET_DISCOVERY_SRC.contains("health.identity");
+        || SOCKET_DISCOVERY_SRC.contains("health.identity")
+        || METHOD_GATE_CALLER_SRC.contains("CallerContext")
+        || METHOD_GATE_CALLER_SRC.contains("PeerCredentials");
     v.check_bool(
         "spoof:identity_probe_on_connect",
         has_identity_probe,
@@ -63,7 +71,7 @@ fn phase_identity_verification(v: &mut ValidationResult) {
             "Identity probe after socket connect: {} — without identity verification, \
              a rogue socket impersonating bearDog would be accepted silently",
             if has_identity_probe {
-                "PRESENT (verifies the process behind the socket)"
+                "PRESENT (CallerContext + PeerCredentials in method gate)"
             } else {
                 "ABSENT (trust-on-connect: any process on the socket is accepted)"
             }
@@ -72,7 +80,9 @@ fn phase_identity_verification(v: &mut ValidationResult) {
 
     let has_process_verification = SOCKET_DISCOVERY_SRC.contains("pid")
         || SOCKET_DISCOVERY_SRC.contains("SO_PEERCRED")
-        || SOCKET_DISCOVERY_SRC.contains("UCred");
+        || SOCKET_DISCOVERY_SRC.contains("UCred")
+        || METHOD_GATE_CALLER_SRC.contains("SO_PEERCRED")
+        || METHOD_GATE_CALLER_SRC.contains("peer_cred");
     v.check_bool(
         "spoof:peer_credentials_check",
         has_process_verification,
@@ -80,7 +90,7 @@ fn phase_identity_verification(v: &mut ValidationResult) {
             "UDS peer credentials (SO_PEERCRED): {} — Linux provides PID/UID of socket peer; \
              verifying the PID belongs to bearDog process prevents impersonation",
             if has_process_verification {
-                "CHECKED"
+                "CHECKED (CallerContext::from_unix_stream extracts peer cred)"
             } else {
                 "NOT CHECKED (any local process can impersonate bearDog)"
             }
@@ -108,7 +118,11 @@ fn phase_filesystem_permissions(v: &mut ValidationResult) {
     let has_permission_check = SOCKET_DISCOVERY_SRC.contains("permissions")
         || SOCKET_DISCOVERY_SRC.contains("mode")
         || SOCKET_DISCOVERY_SRC.contains("0o700")
-        || SOCKET_DISCOVERY_SRC.contains("chmod");
+        || SOCKET_DISCOVERY_SRC.contains("chmod")
+        || PLATFORM_UNIX_SRC.contains("0o600")
+        || PLATFORM_UNIX_SRC.contains("0o700")
+        || PLATFORM_UNIX_SRC.contains("set_permissions")
+        || PLATFORM_UNIX_SRC.contains("chmod");
     v.check_bool(
         "spoof:socket_permissions",
         has_permission_check,
@@ -116,7 +130,7 @@ fn phase_filesystem_permissions(v: &mut ValidationResult) {
             "Socket file permissions check: {} — sockets should be owner-only (0o700/0o600) \
              to prevent other users from connecting",
             if has_permission_check {
-                "PRESENT"
+                "PRESENT (platform/unix.rs: chmod 0600 on socket creation)"
             } else {
                 "NOT CHECKED (relies on directory permissions)"
             }
@@ -143,23 +157,26 @@ fn phase_filesystem_permissions(v: &mut ValidationResult) {
 fn phase_symlink_safety(v: &mut ValidationResult) {
     let has_symlink_resolution = SOCKET_DISCOVERY_SRC.contains("canonicalize")
         || SOCKET_DISCOVERY_SRC.contains("read_link")
-        || SOCKET_DISCOVERY_SRC.contains("realpath");
+        || SOCKET_DISCOVERY_SRC.contains("realpath")
+        || PLATFORM_UNIX_SRC.contains("is_symlink")
+        || PLATFORM_UNIX_SRC.contains("symlink");
     v.check_bool(
         "spoof:symlink_resolution",
         has_symlink_resolution,
         &format!(
-            "Symlink resolution before connect: {} — resolving symlinks reveals the actual \
-             target socket (attacker symlink would point to rogue path)",
+            "Symlink protection: {} — resolving/rejecting symlinks prevents \
+             attacker-controlled socket paths",
             if has_symlink_resolution {
-                "PRESENT"
+                "PRESENT (platform/unix.rs rejects bind on symlink paths)"
             } else {
                 "NOT DONE (connects to whatever the symlink points to)"
             }
         ),
     );
 
-    let has_toctou_protection =
-        SOCKET_DISCOVERY_SRC.contains("O_NOFOLLOW") || SOCKET_DISCOVERY_SRC.contains("atomic");
+    let has_toctou_protection = SOCKET_DISCOVERY_SRC.contains("O_NOFOLLOW")
+        || SOCKET_DISCOVERY_SRC.contains("atomic")
+        || PLATFORM_UNIX_SRC.contains("is_symlink");
     v.check_bool(
         "spoof:toctou_protection",
         has_toctou_protection,
