@@ -22,6 +22,9 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 
 const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
 const MESH_TOML: &str = include_str!("../../../../config/mesh_topology.toml");
+const CAPABILITY_PROPAGATION_SRC: &str = include_str!(
+    "../../../../../../primals/songBird/crates/songbird-universal-ipc/src/handlers/mesh_handler/capability_propagation.rs"
+);
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -150,11 +153,19 @@ fn phase_poison_detection(v: &mut ValidationResult) {
         ),
     );
 
+    let has_revocation = CAPABILITY_PROPAGATION_SRC.contains("capabilities_revoke")
+        || CAPABILITY_PROPAGATION_SRC.contains("revoke_capabilities");
     v.check_bool(
         "poison:revocation_mechanism",
-        false,
-        "Capability revocation mechanism: ABSENT — once a capability is announced, \
-         there is no mechanism to revoke it mesh-wide (needed for poison cleanup)",
+        has_revocation,
+        &format!(
+            "Capability revocation mechanism: {} — needed for poison cleanup",
+            if has_revocation {
+                "PRESENT (mesh.capabilities_revoke + revoke_capabilities_to_peers)"
+            } else {
+                "ABSENT — once announced, no mesh-wide revocation"
+            }
+        ),
     );
 }
 

@@ -26,6 +26,9 @@ const DISPATCH_SRC: &str = include_str!(
 const SOCKET_DISCOVERY_SRC: &str = include_str!(
     "../../../../../../primals/songBird/crates/songbird-crypto-provider/src/socket_discovery.rs"
 );
+const STARTUP_SRC: &str = include_str!(
+    "../../../../../../primals/songBird/crates/songbird-orchestrator/src/app/startup_orchestration.rs"
+);
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -67,7 +70,9 @@ fn phase_beardog_death(v: &mut ValidationResult) {
 
     let has_retry = SOCKET_DISCOVERY_SRC.contains("retry")
         || SOCKET_DISCOVERY_SRC.contains("Retry")
-        || SOCKET_DISCOVERY_SRC.contains("attempt");
+        || SOCKET_DISCOVERY_SRC.contains("attempt")
+        || DISPATCH_SRC.contains("with_retry")
+        || DISPATCH_SRC.contains("RETRY_DELAYS");
     v.check_bool(
         "failover:beardog_retry",
         has_retry,
@@ -165,7 +170,9 @@ fn phase_recovery_detection(v: &mut ValidationResult) {
 
     let has_inotify_or_poll = SOCKET_DISCOVERY_SRC.contains("notify")
         || SOCKET_DISCOVERY_SRC.contains("watch")
-        || SOCKET_DISCOVERY_SRC.contains("poll");
+        || SOCKET_DISCOVERY_SRC.contains("poll")
+        || STARTUP_SRC.contains("socket_rescan")
+        || STARTUP_SRC.contains("SOCKET_RESCAN");
     v.check_bool(
         "failover:socket_watch",
         has_inotify_or_poll,

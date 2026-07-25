@@ -21,8 +21,17 @@ use crate::composition::CompositionContext;
 use crate::validation::ValidationResult;
 use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track};
 
-const ENROLLMENT_SRC: &str = include_str!(
-    "../../../../../../primals/bearDog/crates/beardog-tunnel/src/unix_socket_ipc/handlers/btsp/enrollment.rs"
+const ENROLLMENT_HANDLER: &str = include_str!(
+    "../../../../../../primals/bearDog/crates/beardog-tunnel/src/unix_socket_ipc/handlers/btsp/enrollment/handler.rs"
+);
+const ENROLLMENT_CONFIG: &str = include_str!(
+    "../../../../../../primals/bearDog/crates/beardog-tunnel/src/unix_socket_ipc/handlers/btsp/enrollment/config.rs"
+);
+const ENROLLMENT_REPLAY: &str = include_str!(
+    "../../../../../../primals/bearDog/crates/beardog-tunnel/src/unix_socket_ipc/handlers/btsp/enrollment/replay_cache.rs"
+);
+const ENROLLMENT_CRYPTO: &str = include_str!(
+    "../../../../../../primals/bearDog/crates/beardog-tunnel/src/unix_socket_ipc/handlers/btsp/enrollment/crypto.rs"
 );
 
 /// Scenario metadata and entry point.
@@ -38,6 +47,13 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
+fn enrollment_contains(pattern: &str) -> bool {
+    ENROLLMENT_HANDLER.contains(pattern)
+        || ENROLLMENT_CONFIG.contains(pattern)
+        || ENROLLMENT_REPLAY.contains(pattern)
+        || ENROLLMENT_CRYPTO.contains(pattern)
+}
+
 /// Execute this scenario's validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Timestamp validation");
@@ -51,18 +67,18 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
 }
 
 fn phase_timestamp_validation(v: &mut ValidationResult) {
-    let has_timestamp_field = ENROLLMENT_SRC.contains("timestamp");
+    let has_timestamp_field = enrollment_contains("timestamp");
     v.check_bool(
         "replay:timestamp_in_proof",
         has_timestamp_field,
         "Enrollment proof includes timestamp field (replay protection basis)",
     );
 
-    let has_timestamp_validation = ENROLLMENT_SRC.contains("SystemTime")
-        || ENROLLMENT_SRC.contains("Utc::now")
-        || ENROLLMENT_SRC.contains("time_window")
-        || ENROLLMENT_SRC.contains("max_age")
-        || ENROLLMENT_SRC.contains("timestamp_check");
+    let has_timestamp_validation = enrollment_contains("SystemTime")
+        || enrollment_contains("Utc::now")
+        || enrollment_contains("time_window")
+        || enrollment_contains("max_age")
+        || enrollment_contains("timestamp_check");
     v.check_bool(
         "replay:timestamp_window_enforced",
         has_timestamp_validation,
@@ -76,10 +92,10 @@ fn phase_timestamp_validation(v: &mut ValidationResult) {
         ),
     );
 
-    let has_explicit_window = ENROLLMENT_SRC.contains("300")
-        || ENROLLMENT_SRC.contains("600")
-        || ENROLLMENT_SRC.contains("MAX_AGE")
-        || ENROLLMENT_SRC.contains("window_secs");
+    let has_explicit_window = enrollment_contains("300")
+        || enrollment_contains("600")
+        || enrollment_contains("MAX_AGE")
+        || enrollment_contains("window_secs");
     v.check_bool(
         "replay:explicit_time_window",
         has_explicit_window,
@@ -95,15 +111,15 @@ fn phase_timestamp_validation(v: &mut ValidationResult) {
 }
 
 fn phase_replay_resistance(v: &mut ValidationResult) {
-    let has_used_proof_tracking = ENROLLMENT_SRC.contains("used_proofs")
-        || ENROLLMENT_SRC.contains("seen_proofs")
-        || ENROLLMENT_SRC.contains("nonce")
-        || ENROLLMENT_SRC.contains("idempotency")
-        || ENROLLMENT_SRC.contains("HashSet")
-        || ENROLLMENT_SRC.contains("HashMap")
-        || ENROLLMENT_SRC.contains("ReplayCache")
-        || ENROLLMENT_SRC.contains("bloom")
-        || ENROLLMENT_SRC.contains("blake3");
+    let has_used_proof_tracking = enrollment_contains("used_proofs")
+        || enrollment_contains("seen_proofs")
+        || enrollment_contains("nonce")
+        || enrollment_contains("idempotency")
+        || enrollment_contains("HashSet")
+        || enrollment_contains("HashMap")
+        || enrollment_contains("ReplayCache")
+        || enrollment_contains("bloom")
+        || enrollment_contains("blake3");
     v.check_bool(
         "replay:used_proof_tracking",
         has_used_proof_tracking,
@@ -118,10 +134,10 @@ fn phase_replay_resistance(v: &mut ValidationResult) {
         ),
     );
 
-    let has_constant_time = ENROLLMENT_SRC.contains("constant_time")
-        || ENROLLMENT_SRC.contains("ct_eq")
-        || ENROLLMENT_SRC.contains("ConstantTimeEq")
-        || ENROLLMENT_SRC.contains("subtle");
+    let has_constant_time = enrollment_contains("constant_time")
+        || enrollment_contains("ct_eq")
+        || enrollment_contains("ConstantTimeEq")
+        || enrollment_contains("subtle");
     v.check_bool(
         "replay:constant_time_comparison",
         has_constant_time,
@@ -135,9 +151,9 @@ fn phase_replay_resistance(v: &mut ValidationResult) {
         ),
     );
 
-    let has_hmac_sha256 = ENROLLMENT_SRC.contains("hmac")
-        || ENROLLMENT_SRC.contains("Hmac")
-        || ENROLLMENT_SRC.contains("HMAC-SHA256");
+    let has_hmac_sha256 = enrollment_contains("hmac")
+        || enrollment_contains("Hmac")
+        || enrollment_contains("HMAC-SHA256");
     v.check_bool(
         "replay:hmac_sha256_algorithm",
         has_hmac_sha256,
@@ -146,7 +162,7 @@ fn phase_replay_resistance(v: &mut ValidationResult) {
 }
 
 fn phase_credential_rotation(v: &mut ValidationResult) {
-    let has_public_key_binding = ENROLLMENT_SRC.contains("public_key");
+    let has_public_key_binding = enrollment_contains("public_key");
     v.check_bool(
         "replay:public_key_in_proof",
         has_public_key_binding,
@@ -154,7 +170,7 @@ fn phase_credential_rotation(v: &mut ValidationResult) {
     );
 
     let has_node_id_uniqueness =
-        ENROLLMENT_SRC.contains("node_id") && ENROLLMENT_SRC.contains("verify");
+        enrollment_contains("node_id") && enrollment_contains("verify");
     v.check_bool(
         "replay:node_id_identity_binding",
         has_node_id_uniqueness,
@@ -162,7 +178,7 @@ fn phase_credential_rotation(v: &mut ValidationResult) {
     );
 
     let has_family_seed_env =
-        ENROLLMENT_SRC.contains("FAMILY_SEED") || ENROLLMENT_SRC.contains("family_seed");
+        enrollment_contains("FAMILY_SEED") || enrollment_contains("family_seed");
     v.check_bool(
         "replay:family_seed_source",
         has_family_seed_env,
@@ -176,11 +192,11 @@ fn phase_credential_rotation(v: &mut ValidationResult) {
         ),
     );
 
-    let has_seed_rotation = ENROLLMENT_SRC.contains("rotate")
-        || ENROLLMENT_SRC.contains("version")
-        || ENROLLMENT_SRC.contains("generation")
-        || ENROLLMENT_SRC.contains("seed_epoch")
-        || ENROLLMENT_SRC.contains("key_id");
+    let has_seed_rotation = enrollment_contains("rotate")
+        || enrollment_contains("version")
+        || enrollment_contains("generation")
+        || enrollment_contains("seed_epoch")
+        || enrollment_contains("key_id");
     v.check_bool(
         "replay:seed_rotation_support",
         has_seed_rotation,

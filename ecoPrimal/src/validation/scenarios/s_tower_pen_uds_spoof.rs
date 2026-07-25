@@ -32,6 +32,9 @@ const PLATFORM_UNIX_SRC: &str = include_str!(
 const METHOD_GATE_CALLER_SRC: &str = include_str!(
     "../../../../../../primals/songBird/crates/songbird-orchestrator/src/ipc/pure_rust_server/method_gate/caller.rs"
 );
+const BEARDOG_SERVER_SRC: &str = include_str!(
+    "../../../../../../primals/bearDog/crates/beardog-tunnel/src/unix_socket_ipc/server.rs"
+);
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -97,8 +100,9 @@ fn phase_identity_verification(v: &mut ValidationResult) {
         ),
     );
 
-    let has_btsp_on_local =
-        SOCKET_DISCOVERY_SRC.contains("btsp") || SOCKET_DISCOVERY_SRC.contains("handshake");
+    let has_btsp_on_local = SOCKET_DISCOVERY_SRC.contains("btsp")
+        || SOCKET_DISCOVERY_SRC.contains("handshake")
+        || BEARDOG_SERVER_SRC.contains("require_btsp");
     v.check_bool(
         "spoof:btsp_on_local_sockets",
         has_btsp_on_local,

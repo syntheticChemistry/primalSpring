@@ -31,6 +31,9 @@ const METHOD_GATE_SRC: &str = include_str!(
 const METHOD_GATE_GATE_SRC: &str = include_str!(
     "../../../../../../primals/songBird/crates/songbird-orchestrator/src/ipc/pure_rust_server/method_gate/gate.rs"
 );
+const CAPABILITY_PROPAGATION_SRC: &str = include_str!(
+    "../../../../../../primals/songBird/crates/songbird-universal-ipc/src/handlers/mesh_handler/capability_propagation.rs"
+);
 
 /// Scenario metadata and entry point.
 pub const SCENARIO: Scenario = Scenario {
@@ -180,7 +183,9 @@ fn phase_cross_gate_injection(v: &mut ValidationResult) {
 
     let has_announcement_validation = DISPATCH_SRC.contains("validate_announce")
         || DISPATCH_SRC.contains("trust_announce")
-        || DISPATCH_SRC.contains("verify_capability");
+        || DISPATCH_SRC.contains("verify_capability")
+        || CAPABILITY_PROPAGATION_SRC.contains("challenge_verify")
+        || CAPABILITY_PROPAGATION_SRC.contains("is_known_peer");
     v.check_bool(
         "escalation:announcement_validation",
         has_announcement_validation,

@@ -63,15 +63,21 @@ fn phase_hop_anatomy(v: &mut ValidationResult) {
         "JSON serialization per UDS hop (serde_json::to_string + parse on each call)",
     );
 
+    let uses_pool = DISPATCH_SRC.contains("ipc_pool")
+        || DISPATCH_SRC.contains("execute_jsonrpc");
     let has_connect_per_call =
         DISPATCH_SRC.contains("IpcStream::connect") || DISPATCH_SRC.contains("UnixStream::connect");
+    let pooled = uses_pool && !has_connect_per_call;
     v.check_bool(
         "uds_cost:connect_per_call",
-        has_connect_per_call,
+        pooled,
         &format!(
-            "UDS connect per call: {} — each hop pays socket connect + shutdown cost. \
-             Persistent connections would eliminate this",
-            if has_connect_per_call { "YES" } else { "NO" }
+            "UDS connection pooling: {} — persistent connections eliminate per-call overhead",
+            if pooled {
+                "POOLED (ipc_pool wired into dispatch)"
+            } else {
+                "PER-CALL (each hop pays connect + shutdown cost)"
+            }
         ),
     );
 
