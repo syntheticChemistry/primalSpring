@@ -520,8 +520,7 @@ mod tests {
         // eastGate calibration: graphenegate-readiness=1 (only aggregate fails),
         // sporeprint-pure-primal-parity=0 (passes on eastGate, fails on sporeGate/Zola env).
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 14),
-            ("arch-fitness", 1),
+            ("graphenegate-readiness", 1),
             ("tower-stress-btsp-storm", 1),
             ("tower-stress-failover-resilience", 3),
             ("tower-stress-uds-hop-cost", 1),
