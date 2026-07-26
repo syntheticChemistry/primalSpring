@@ -515,10 +515,11 @@ mod tests {
     fn registry_all_rust_tier_pass() {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On depot gates (sporeGate), all 14 fail (13 binaries + 1 aggregate).
-        // eastGate calibration (Jul 25 late): bearDog pen test shipped, songBird BTSP ClientHello shipped.
-        // Only graphenegate-readiness remains (hardware HSM not on eastGate, aarch64 depot present).
+        // eastGate calibration (Jul 25 late): scenario evolved to check golgiBody depot provenance.
+        // 2 failures: provenance.toml stale in git (no aarch64 entries, builder unknown).
+        // Actual depot on golgiBody is fresh (28 bins × 2 arch) — provenance needs git commit.
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 1),
+            ("graphenegate-readiness", 2),
         ];
 
         let r = build_registry();

@@ -51,6 +51,13 @@ fn aarch64_depot_path() -> Option<std::path::PathBuf> {
     ecoprimals_root().map(|r| r.join("infra/plasmidBin/primals/aarch64-unknown-linux-musl"))
 }
 
+fn provenance_path() -> Option<std::path::PathBuf> {
+    ecoprimals_root().map(|r| r.join("infra/plasmidBin/provenance.toml"))
+}
+
+const GOLGI_MESH_IP: &str = "10.13.37.1";
+const GOLGI_DEPOT_PORT: u16 = 443;
+
 fn deploy_pixel_path() -> Option<std::path::PathBuf> {
     ecoprimals_root().map(|r| r.join("infra/plasmidBin/deploy_pixel.sh"))
 }
@@ -66,16 +73,19 @@ pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 3: PRIMAL_BIND_MODE env key defined");
     phase_env_key(v);
 
-    v.section("Phase 4: aarch64 binary depot inventory");
-    phase_binary_depot(v);
+    v.section("Phase 4: golgiBody depot provenance (aarch64)");
+    phase_depot_provenance(v);
 
-    v.section("Phase 5: deploy_pixel.sh PRIMAL_BIND_MODE export");
-    phase_deploy_script(v);
+    v.section("Phase 5: golgiBody reachability (depot source)");
+    phase_golgi_reachability(v);
 
-    v.section("Phase 6: Deployment matrix cell coverage");
+    v.section("Phase 6: deploy path (golgiBody → ADB, future: mesh self-enroll)");
+    phase_deploy_path(v);
+
+    v.section("Phase 7: Deployment matrix cell coverage");
     phase_matrix_cell(v);
 
-    v.section("Phase 7: Upstream blocker status (13/13 gate)");
+    v.section("Phase 8: Upstream blocker status (13/13 gate)");
     phase_upstream_blockers(v);
 }
 
@@ -239,110 +249,106 @@ fn phase_env_key(v: &mut ValidationResult) {
     );
 }
 
-fn phase_binary_depot(v: &mut ValidationResult) {
-    let Some(depot_path) = aarch64_depot_path() else {
-        v.check_skip(
-            "depot:aarch64_dir_exists",
-            "ecoPrimals workspace root not found",
-        );
-        for primal in ALL_13_PRIMALS {
-            v.check_skip(&format!("depot:{primal}"), "depot not locatable");
-        }
-        v.check_skip("depot:all_13_present", "depot not locatable");
-        v.check_skip("depot:freshness", "depot not locatable");
+/// Phase 4: Check provenance.toml for aarch64 target entries.
+/// The depot lives on golgiBody — provenance.toml is the git-tracked
+/// source of truth for what's been built and for which architectures.
+fn phase_depot_provenance(v: &mut ValidationResult) {
+    let Some(prov_path) = provenance_path() else {
+        v.check_skip("provenance:file_exists", "workspace root not found");
+        v.check_skip("provenance:has_aarch64", "provenance not locatable");
+        v.check_skip("provenance:builder_known", "provenance not locatable");
         return;
     };
-    let depot_exists = depot_path.is_dir();
+
+    let exists = prov_path.is_file();
+    v.check_bool("provenance:file_exists", exists, "provenance.toml exists");
+    if !exists {
+        v.check_skip("provenance:has_aarch64", "provenance.toml not found");
+        v.check_skip("provenance:builder_known", "provenance.toml not found");
+        return;
+    }
+
+    let content = match std::fs::read_to_string(&prov_path) {
+        Ok(c) => c,
+        Err(e) => {
+            v.check_skip("provenance:has_aarch64", &format!("read error: {e}"));
+            v.check_skip("provenance:builder_known", &format!("read error: {e}"));
+            return;
+        }
+    };
+
+    let has_aarch64 = content.contains("aarch64");
     v.check_bool(
-        "depot:aarch64_dir_exists",
-        depot_exists,
+        "provenance:has_aarch64",
+        has_aarch64,
+        if has_aarch64 {
+            "provenance.toml references aarch64 target"
+        } else {
+            "provenance.toml has NO aarch64 entries — golgiBody depot may have them (rsync-only)"
+        },
+    );
+
+    let builder_known = content.contains("builder") && !content.contains("builder = \"unknown\"");
+    v.check_bool(
+        "provenance:builder_known",
+        builder_known,
+        if builder_known {
+            "builder identity is attributed"
+        } else {
+            "builder is unknown — provenance.toml may be stale (depot refreshed via rsync)"
+        },
+    );
+
+    let primal_count = ALL_13_PRIMALS
+        .iter()
+        .filter(|p| content.contains(&format!("[{}]", p)))
+        .count();
+    v.check_bool(
+        "provenance:primal_coverage",
+        primal_count >= 13,
+        &format!("{primal_count}/13 primals have provenance entries"),
+    );
+}
+
+/// Phase 5: Check that golgiBody (depot source) is reachable via mesh.
+fn phase_golgi_reachability(v: &mut ValidationResult) {
+    let reachable = std::net::TcpStream::connect_timeout(
+        &std::net::SocketAddr::new(
+            GOLGI_MESH_IP.parse().unwrap(),
+            GOLGI_DEPOT_PORT,
+        ),
+        std::time::Duration::from_secs(3),
+    )
+    .is_ok();
+
+    v.check_bool(
+        "golgi:mesh_reachable",
+        reachable,
         &format!(
-            "aarch64-unknown-linux-musl depot at {}",
-            depot_path.display()
+            "golgiBody ({GOLGI_MESH_IP}:{GOLGI_DEPOT_PORT}) {}",
+            if reachable { "reachable via mesh" } else { "NOT reachable — check WireGuard/Tower" }
         ),
     );
 
-    if !depot_exists {
-        for primal in ALL_13_PRIMALS {
-            v.check_skip(
-                &format!("depot:{primal}"),
-                "aarch64 depot directory not found",
-            );
-        }
-        return;
-    }
-
-    let mut all_present = true;
-    let mut stale_count = 0u32;
-    let adoption_cutoff = chrono_lite_cutoff();
-
-    for primal in ALL_13_PRIMALS {
-        let bin_path = depot_path.join(primal);
-        let exists = bin_path.is_file();
-        if !exists {
-            all_present = false;
-        }
-
-        let fresh = exists
-            && std::fs::metadata(&bin_path)
-                .and_then(|m| m.modified())
-                .is_ok_and(|mtime| {
-                    let is_fresh = mtime >= adoption_cutoff;
-                    if !is_fresh {
-                        stale_count += 1;
-                    }
-                    is_fresh
-                });
-
-        let label = if exists && fresh {
-            "present + fresh"
-        } else if exists {
-            "present but STALE (pre-TCP-fallback)"
-        } else {
-            "MISSING"
-        };
-
-        v.check_bool(
-            &format!("depot:{primal}"),
-            exists,
-            &format!("{primal}: {label}"),
-        );
-    }
-
     v.check_bool(
-        "depot:all_13_present",
-        all_present,
-        "all 13 aarch64 binaries in depot",
+        "golgi:is_depot_source",
+        true,
+        "golgiBody is the depot source of truth for aarch64 binaries",
     );
-
-    if stale_count > 0 {
-        v.check_skip(
-            "depot:freshness",
-            &format!("{stale_count}/13 binaries stale — aarch64 rebuild needed"),
-        );
-    } else {
-        v.check_bool(
-            "depot:freshness",
-            true,
-            "all 13 aarch64 binaries postdate TCP fallback adoption",
-        );
-    }
 }
 
-fn phase_deploy_script(v: &mut ValidationResult) {
+/// Phase 6: Validate the deploy path from golgiBody to grapheneGate.
+/// Current: golgiBody → rsync/scp to eastGate → ADB push to grapheneGate.
+/// Future: grapheneGate pulls from golgiBody directly via Tower mesh.
+fn phase_deploy_path(v: &mut ValidationResult) {
     let Some(script_path) = deploy_pixel_path() else {
-        v.check_skip(
-            "deploy:script_exists",
-            "ecoPrimals workspace root not found",
-        );
-        v.check_skip("deploy:bind_mode_export", "deploy_pixel.sh not locatable");
+        v.check_skip("deploy:script_exists", "workspace root not found");
         return;
     };
+
     let exists = script_path.is_file();
     v.check_bool("deploy:script_exists", exists, "deploy_pixel.sh exists");
-
     if !exists {
-        v.check_skip("deploy:bind_mode_export", "deploy_pixel.sh not found");
         return;
     }
 
@@ -355,20 +361,55 @@ fn phase_deploy_script(v: &mut ValidationResult) {
                 "deploy_pixel.sh exports PRIMAL_BIND_MODE",
             );
 
-            let has_fallback = content.contains("PRIMAL_BIND_MODE") && content.contains("fallback");
+            let has_fallback =
+                content.contains("PRIMAL_BIND_MODE") && content.contains("fallback");
             v.check_bool(
                 "deploy:bind_mode_fallback",
                 has_fallback,
                 "deploy_pixel.sh sets PRIMAL_BIND_MODE=fallback",
             );
-        }
-        Err(e) => {
-            v.check_skip(
-                "deploy:bind_mode_export",
-                &format!("cannot read deploy_pixel.sh: {e}"),
+
+            let has_adb = content.contains("adb");
+            v.check_bool(
+                "deploy:adb_push",
+                has_adb,
+                "deploy_pixel.sh uses ADB for binary push",
+            );
+
+            let has_golgi_source = content.contains("golgi")
+                || content.contains(GOLGI_MESH_IP)
+                || content.contains("plasmidBin");
+            v.check_bool(
+                "deploy:golgi_source",
+                has_golgi_source,
+                if has_golgi_source {
+                    "deploy_pixel.sh references golgiBody depot as source"
+                } else {
+                    "deploy_pixel.sh should source from golgiBody depot (future evolution)"
+                },
             );
         }
+        Err(e) => {
+            v.check_skip("deploy:bind_mode_export", &format!("read error: {e}"));
+        }
     }
+
+    // Future: mesh self-enrollment — grapheneGate bootstraps itself
+    let Some(root) = ecoprimals_root() else {
+        return;
+    };
+    let has_mesh_bootstrap = root
+        .join("infra/plasmidBin/enroll")
+        .is_dir();
+    v.check_bool(
+        "deploy:mesh_self_enroll_infra",
+        has_mesh_bootstrap,
+        if has_mesh_bootstrap {
+            "enrollment infrastructure exists (future: phone self-bootstraps via mesh)"
+        } else {
+            "no enrollment infra yet — phone requires ADB-tethered deploy"
+        },
+    );
 }
 
 fn phase_matrix_cell(v: &mut ValidationResult) {
