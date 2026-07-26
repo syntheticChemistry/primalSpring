@@ -515,15 +515,10 @@ mod tests {
     fn registry_all_rust_tier_pass() {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On depot gates (sporeGate), all 14 fail (13 binaries + 1 aggregate).
-        // eastGate calibration (Jul 25): bearDog BTSP defense-in-depth + enrollment decomposition,
-        // songBird 6/7 Tower debt (retry, health, socket watch, capability trust, revocation, pool).
-        // primalSpring scenarios updated to detect new source locations.
-        // Only graphenegate-readiness remains (hardware HSM not present on eastGate).
-        // flockGate calibration: 14 aarch64 absent (x86_64 gate), ironGate DOWN
+        // eastGate calibration (Jul 25 late): bearDog pen test shipped, songBird BTSP ClientHello shipped.
+        // Only graphenegate-readiness remains (hardware HSM not on eastGate, aarch64 depot present).
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 14),
-            ("arch-fitness", 1),
-            ("mesh-reachability", 1),
+            ("graphenegate-readiness", 1),
         ];
 
         let r = build_registry();
