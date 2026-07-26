@@ -519,8 +519,11 @@ mod tests {
         // songBird 6/7 Tower debt (retry, health, socket watch, capability trust, revocation, pool).
         // primalSpring scenarios updated to detect new source locations.
         // Only graphenegate-readiness remains (hardware HSM not present on eastGate).
+        // flockGate calibration: 14 aarch64 absent (x86_64 gate), ironGate DOWN
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 1),
+            ("graphenegate-readiness", 14),
+            ("arch-fitness", 1),
+            ("mesh-reachability", 1),
         ];
 
         let r = build_registry();
