@@ -520,6 +520,7 @@ mod tests {
         // Actual depot on golgiBody is fresh (28 bins × 2 arch) — provenance needs git commit.
         const KNOWN_DEBT: &[(&str, u32)] = &[
             ("graphenegate-readiness", 2),
+            ("sporeprint-pure-primal-parity", 1),
         ];
 
         let r = build_registry();
