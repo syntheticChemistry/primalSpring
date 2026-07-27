@@ -62,19 +62,34 @@ zone = "Backbone"
 
 [[gate]]
 name = "strandGate"
-role = "node"
+role = "compute"
 zone = "House2"
+notes = "Dual EPYC 7452, Tower Atomic workhouse, bioinformatics"
 
 [[gate]]
 name = "southGate"
 address = "10.13.37.9"
 role = "node"
 zone = "House2"
+notes = "Full NUCLEUS, second sovereign site"
+
+[[gate]]
+name = "westGate"
+role = "storage"
+zone = "House2"
+notes = "76TB ZFS NAS, Nest composition, outer membrane exposed"
+
+[[gate]]
+name = "blueGate"
+role = "build"
+zone = "House2"
+notes = "Distributed builder (sporeGate foreman), Tower workhouse, media/gaming"
 
 [[gate]]
 name = "swiftGate"
-role = "ap_bridge"
+role = "workstation"
 zone = "House2"
+notes = "Hobby/consumer (like northGate), full NUCLEUS"
 
 [[gate]]
 name = "fieldGate"
