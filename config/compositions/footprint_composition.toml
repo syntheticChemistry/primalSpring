@@ -30,27 +30,27 @@ framework = "vanilla"
 
 [surfaces.spa]
 type = "static"
-url = "https://primals.eco/footprint/"
-served_by = "caddy"
-gate = "golgi"
+url = "https://footprint.primals.eco/"
+served_by = "petaltongue"
+gate = "ironGate"
 build_output = "dist/client/"
-status = "LIVE"
+status = "PLANNED"
 
 [surfaces.api]
 type = "http"
-url = "https://primals.eco/api/"
-served_by = "express"
-gate = "sporeGate"
-port = 3000
-status = "NOT_DEPLOYED"
+url = "https://footprint.primals.eco/api/"
+served_by = "nestgate"
+gate = "ironGate"
+port = 8080
+status = "PLANNED"
 
 [surfaces.websocket]
 type = "ws"
-url = "wss://primals.eco/ws"
-served_by = "express"
-gate = "sporeGate"
+url = "wss://footprint.primals.eco/ws"
+served_by = "petaltongue"
+gate = "ironGate"
 path = "/ws"
-status = "NOT_DEPLOYED"
+status = "PLANNED"
 
 # ═══════════════════════════════════════════════════════════════
 # Capability dependencies — what footPrint consumes from primals
@@ -137,10 +137,10 @@ what = "Drawbridge port 7780, songBird ownership"
 name = "footprint-drawbridge-live"
 status = "MISSING"
 what = "E2E: USGS/FEMA via drawbridge → NestGate CAS"
-blocked_by = "Express server deployment on sporeGate"
+blocked_by = "biomeOS live deploy on ironGate + Caddy routing"
 
 [[scenarios]]
 name = "protokarya-wan-deploy"
 status = "MISSING"
-what = "Caddy route + live composition on *.primals.eco"
-blocked_by = "Express server deployment on sporeGate"
+what = "Caddy route + live composition on footprint.primals.eco"
+blocked_by = "biomeOS live deploy on ironGate + DNS/Caddy routing"
