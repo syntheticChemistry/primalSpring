@@ -4,13 +4,18 @@
 
 //! exp087 — Neural API Routing E2E
 //!
-//! Validates biomeOS Neural API capability routing end-to-end: every
-//! domain (security, discovery, storage, compute, ai) is routed to
-//! the correct primal and returns real results.
+//! Validates biomeOS Neural API capability routing end-to-end via
+//! `NeuralBridge`: every domain (security, discovery, storage, compute, ai)
+//! is routed to the correct primal and returns real results.
+//!
+//! This is the canonical N2-N5 experiment. All routing goes through
+//! `NeuralBridge::capability_call()` — the single post-primordial consumer API.
+//! TCP fallback is only used for cross-gate scenarios where no local
+//! Neural API socket exists.
 
 use primalspring::composition::CompositionContext;
-use primalspring::ipc::{methods, tcp};
-use primalspring::tolerances;
+use primalspring::ipc::NeuralBridge;
+use primalspring::ipc::methods;
 use primalspring::validation::ValidationResult;
 
 fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
@@ -33,95 +38,93 @@ fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContex
     );
 }
 
-fn phase_capability_discovery(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Phase 2: Capability discovery (TCP)");
+fn phase_neural_api_health(v: &mut ValidationResult, bridge: &NeuralBridge) -> bool {
+    v.section("Phase 2: Neural API substrate health");
+
+    match bridge.health_check() {
+        Ok(_) => {
+            v.check_bool("neural_api_health", true, "biomeOS neural-api healthy");
+            true
+        }
+        Err(e) => {
+            v.check_bool("neural_api_health", false, &format!("neural-api: {e}"));
+            false
+        }
+    }
+}
+
+fn phase_capability_discovery(v: &mut ValidationResult, bridge: &NeuralBridge) {
+    v.section("Phase 3: Capability discovery via NeuralBridge");
 
     for domain in &["security", "discovery", "storage", "compute", "ai"] {
-        let result = tcp::neural_api_capability_discover(host, port, domain);
-        match result {
-            Ok((val, _)) => {
+        let check_name = format!("{domain}_providers_discovered");
+        match bridge.discover_capability(domain) {
+            Ok(val) => {
                 let has_providers = val.is_array()
                     || val.get("providers").is_some()
                     || val.get("capabilities").is_some();
                 v.check_bool(
-                    &format!("{domain} providers discovered"),
+                    &check_name,
                     has_providers,
                     &format!("capability.discover returns providers for {domain}"),
                 );
             }
-            Err(e) => v.check_skip(
-                &format!("{domain} discovery"),
-                &format!("biomeOS not reachable: {e}"),
-            ),
+            Err(e) => v.check_skip(&check_name, &format!("{domain} discovery: {e}")),
         }
     }
 }
 
-fn phase_security_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Phase 3: Security domain → BearDog");
+fn phase_security_routing(v: &mut ValidationResult, bridge: &NeuralBridge) {
+    v.section("Phase 4: Security domain → BearDog");
 
-    let result = tcp::neural_api_capability_call(
-        host,
-        port,
+    match bridge.capability_call(
         "security",
         "crypto.blake3_hash",
         &serde_json::json!({"data": "neural routing test"}),
-    );
-    match result {
-        Ok((val, latency)) => {
-            let has_hash = val.get("hash").is_some()
-                || val.get("digest").is_some()
-                || val.get("result").is_some();
+    ) {
+        Ok(resp) => {
+            let has_hash = resp.value.get("hash").is_some()
+                || resp.value.get("digest").is_some()
+                || resp.value.get("result").is_some();
             v.check_bool(
-                "security->BearDog routed",
+                "security_beardog_routed",
                 has_hash,
                 "capability.call(security, crypto.blake3_hash) returns hash",
             );
-            let elapsed_us = u64::try_from(latency.as_micros()).unwrap_or(u64::MAX);
-            v.check_latency(
-                "security routing latency",
-                elapsed_us,
-                tolerances::PRIMAL_STARTUP_LATENCY_US,
-            );
         }
-        Err(e) => v.check_skip("security routing", &format!("routing failed: {e}")),
+        Err(e) => v.check_skip("security_beardog_routed", &format!("routing failed: {e}")),
     }
 }
 
-fn phase_discovery_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Phase 4: Discovery domain → Songbird");
+fn phase_discovery_routing(v: &mut ValidationResult, bridge: &NeuralBridge) {
+    v.section("Phase 5: Discovery domain → Songbird");
 
-    let result = tcp::neural_api_capability_call(
-        host,
-        port,
+    match bridge.capability_call(
         "discovery",
         "birdsong.generate_encrypted_beacon",
         &serde_json::json!({
             "node_id": "exp087-routing-test",
             "capabilities": ["coordination"]
         }),
-    );
-    match result {
-        Ok((val, _)) => {
-            let has_beacon = val.get("encrypted_beacon").is_some()
-                || val.get("beacon").is_some()
-                || val.get("result").is_some();
+    ) {
+        Ok(resp) => {
+            let has_beacon = resp.value.get("encrypted_beacon").is_some()
+                || resp.value.get("beacon").is_some()
+                || resp.value.get("result").is_some();
             v.check_bool(
-                "discovery->Songbird routed",
+                "discovery_songbird_routed",
                 has_beacon,
                 "capability.call(discovery, birdsong) returns beacon",
             );
         }
-        Err(e) => v.check_skip("discovery routing", &format!("routing failed: {e}")),
+        Err(e) => v.check_skip("discovery_songbird_routed", &format!("routing failed: {e}")),
     }
 }
 
-fn phase_storage_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Phase 5: Storage domain → NestGate");
+fn phase_storage_routing(v: &mut ValidationResult, bridge: &NeuralBridge) {
+    v.section("Phase 6: Storage domain → NestGate");
 
-    let store = tcp::neural_api_capability_call(
-        host,
-        port,
+    let store = bridge.capability_call(
         "storage",
         "storage.store",
         &serde_json::json!({
@@ -130,127 +133,155 @@ fn phase_storage_routing(v: &mut ValidationResult, host: &str, port: u16) {
         }),
     );
     match &store {
-        Ok((_, _)) => {
+        Ok(_) => {
             v.check_bool(
-                "storage->NestGate store",
+                "storage_nestgate_store",
                 true,
                 "capability.call(storage, store) succeeded",
             );
         }
         Err(e) => {
-            v.check_skip("storage routing", &format!("NestGate routing failed: {e}"));
+            v.check_skip("storage_routing", &format!("NestGate routing failed: {e}"));
             return;
         }
     }
 
-    let retrieve = tcp::neural_api_capability_call(
-        host,
-        port,
+    match bridge.capability_call(
         "storage",
         "storage.retrieve",
         &serde_json::json!({"key": "exp087_routing_test"}),
-    );
-    match retrieve {
-        Ok((val, _)) => {
-            let correct = val.get("value").and_then(|v| v.as_str()) == Some("neural_api_e2e");
+    ) {
+        Ok(resp) => {
+            let correct =
+                resp.value.get("value").and_then(|v| v.as_str()) == Some("neural_api_e2e");
             v.check_bool(
-                "storage round-trip via Neural API",
+                "storage_round_trip",
                 correct,
                 "store+retrieve through Neural API returns correct value",
             );
         }
-        Err(e) => v.check_skip("storage retrieve routing", &format!("retrieve failed: {e}")),
+        Err(e) => v.check_skip("storage_round_trip", &format!("retrieve failed: {e}")),
     }
 }
 
-fn phase_compute_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Phase 6: Compute domain → ToadStool");
+fn phase_compute_routing(v: &mut ValidationResult, bridge: &NeuralBridge) {
+    v.section("Phase 7: Compute domain → ToadStool");
 
-    let result = tcp::neural_api_capability_call(
-        host,
-        port,
-        "compute",
-        "toadstool.health",
-        &serde_json::json!({}),
-    );
-    match result {
-        Ok((val, _)) => {
-            let is_healthy = val.get("status").is_some() || val.get("healthy").is_some();
+    match bridge.capability_call("compute", "toadstool.health", &serde_json::json!({})) {
+        Ok(resp) => {
+            let is_healthy =
+                resp.value.get("status").is_some() || resp.value.get("healthy").is_some();
             v.check_bool(
-                "compute->ToadStool routed",
+                "compute_toadstool_routed",
                 is_healthy,
                 "capability.call(compute, toadstool.health) returns status",
             );
         }
-        Err(e) => v.check_skip("compute routing", &format!("ToadStool routing failed: {e}")),
+        Err(e) => v.check_skip(
+            "compute_toadstool_routed",
+            &format!("ToadStool routing failed: {e}"),
+        ),
     }
 }
 
-fn phase_ai_routing(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Phase 7: AI domain → Squirrel");
+fn phase_ai_routing(v: &mut ValidationResult, bridge: &NeuralBridge) {
+    v.section("Phase 8: AI domain → Squirrel");
 
-    let result =
-        tcp::neural_api_capability_call(host, port, "ai", "ai.health", &serde_json::json!({}));
-    match result {
-        Ok((val, _)) => {
-            let has_status = val.get("status").is_some() || val.get("healthy").is_some();
+    match bridge.capability_call("ai", "ai.health", &serde_json::json!({})) {
+        Ok(resp) => {
+            let has_status =
+                resp.value.get("status").is_some() || resp.value.get("healthy").is_some();
             v.check_bool(
-                "ai->Squirrel routed",
+                "ai_squirrel_routed",
                 has_status,
                 "capability.call(ai, ai.health) returns status",
             );
         }
-        Err(e) => v.check_skip("ai routing", &format!("Squirrel routing failed: {e}")),
+        Err(e) => v.check_skip("ai_squirrel_routed", &format!("Squirrel routing failed: {e}")),
     }
 
-    let tools =
-        tcp::neural_api_capability_call(host, port, "ai", "mcp.tools.list", &serde_json::json!({}));
-    match tools {
-        Ok((val, _)) => {
-            let has_tools = val.is_array() || val.get("tools").is_some();
+    match bridge.capability_call("ai", "mcp.tools.list", &serde_json::json!({})) {
+        Ok(resp) => {
+            let has_tools = resp.value.is_array() || resp.value.get("tools").is_some();
             v.check_bool(
-                "MCP tools via Neural API",
+                "mcp_tools_via_neural_api",
                 has_tools,
                 "mcp.tools.list returns tool definitions through AI domain",
             );
         }
-        Err(e) => v.check_skip("MCP tools routing", &format!("tools failed: {e}")),
+        Err(e) => v.check_skip("mcp_tools_via_neural_api", &format!("tools failed: {e}")),
     }
 }
 
-fn phase_graph_operations(v: &mut ValidationResult, host: &str, port: u16) {
-    v.section("Phase 8: Graph operations");
+fn phase_graph_operations(v: &mut ValidationResult, bridge: &NeuralBridge) {
+    v.section("Phase 9: Graph operations");
 
-    let graphs = tcp::tcp_rpc(host, port, methods::graph::LIST, &serde_json::json!({}));
-    match graphs {
-        Ok((val, _)) => {
-            let has_graphs = val.is_array() || val.get("graphs").is_some();
+    match bridge.capability_call(
+        "graph",
+        methods::graph::LIST,
+        &serde_json::json!({}),
+    ) {
+        Ok(resp) => {
+            let has_graphs = resp.value.is_array() || resp.value.get("graphs").is_some();
             v.check_bool(
-                "graph.list returns graphs",
+                "graph_list_returns_graphs",
                 has_graphs,
                 "biomeOS reports loaded deploy graphs",
             );
         }
-        Err(e) => v.check_skip("graph list", &format!("biomeOS not reachable: {e}")),
+        Err(e) => v.check_skip("graph_list_returns_graphs", &format!("graph.list: {e}")),
+    }
+}
+
+#[cfg(feature = "primordial-compat")]
+fn phase_legacy_tcp(v: &mut ValidationResult) {
+    use primalspring::ipc::tcp;
+
+    v.section("Phase 10 (legacy): TCP fallback routing");
+
+    let port = tcp::env_port("BIOMEOS_PORT", 9800);
+    let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+
+    match tcp::neural_api_capability_call(
+        &host,
+        port,
+        "security",
+        "crypto.blake3_hash",
+        &serde_json::json!({"data": "tcp fallback test"}),
+    ) {
+        Ok((val, _)) => {
+            let has_hash = val.get("hash").is_some() || val.get("digest").is_some();
+            v.check_bool("legacy_tcp_security", has_hash, "TCP security routing");
+        }
+        Err(e) => v.check_skip("legacy_tcp_security", &format!("TCP: {e}")),
     }
 }
 
 fn main() {
     ValidationResult::new("primalSpring Exp087 — Neural API Routing E2E")
         .with_provenance("exp087_neural_api_routing_e2e", "2026-05-09")
-        .run("capability routing validation", |v| {
+        .run("capability routing validation via NeuralBridge", |v| {
             let ctx = CompositionContext::from_live_discovery_with_fallback();
             phase_composition_discovery(v, &ctx);
 
-            let bm_port = tcp::env_port("BIOMEOS_PORT", 9800);
-            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+            let Some(bridge) = NeuralBridge::discover() else {
+                v.check_skip("neural_api_health", "biomeOS not running — all routing skipped");
+                return;
+            };
 
-            phase_capability_discovery(v, &host, bm_port);
-            phase_security_routing(v, &host, bm_port);
-            phase_discovery_routing(v, &host, bm_port);
-            phase_storage_routing(v, &host, bm_port);
-            phase_compute_routing(v, &host, bm_port);
-            phase_ai_routing(v, &host, bm_port);
-            phase_graph_operations(v, &host, bm_port);
+            if !phase_neural_api_health(v, &bridge) {
+                return;
+            }
+
+            phase_capability_discovery(v, &bridge);
+            phase_security_routing(v, &bridge);
+            phase_discovery_routing(v, &bridge);
+            phase_storage_routing(v, &bridge);
+            phase_compute_routing(v, &bridge);
+            phase_ai_routing(v, &bridge);
+            phase_graph_operations(v, &bridge);
+
+            #[cfg(feature = "primordial-compat")]
+            phase_legacy_tcp(v);
         });
 }

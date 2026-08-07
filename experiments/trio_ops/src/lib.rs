@@ -2,17 +2,34 @@
 
 #![forbid(unsafe_code)]
 
-//! Provenance trio Neural API call sites for **experiments** and integration tests.
+//! Shared experiment utilities and provenance trio Neural API call sites.
 //!
 //! This crate holds capability routing for the provenance trio so the
 //! `primalspring` library [`provenance`](primalspring::ipc::provenance) module
 //! stays limited to shared JSON types.
+//!
+//! ## Session-Scoped Provenance Model
+//!
+//! The canonical provenance flow is session-scoped (not per-operation):
+//!
+//! 1. `session.create` → rhizoCrypt allocates ephemeral DAG session
+//! 2. Per step: `dag.event.append` → rhizoCrypt ephemeral DAG (~4ms each)
+//! 3. `session.commit` → rhizoCrypt dehydrates DAG → Merkle root
+//! 4. `session.commit` → loamSpine permanent spine entry (immutable)
+//! 5. `crypto.sign` → bearDog Ed25519 signs commit
+//! 6. `braid.create` → sweetGrass W3C PROV-O attribution braid
+//!
+//! Steps 1-2 are per-event (fast, lock-free). Steps 3-6 are per-session
+//! (one-time cost amortized across all events in the session).
 
 #![allow(
     clippy::expect_used,
     clippy::unwrap_used,
     reason = "experiment helper — panics acceptable"
 )]
+
+pub mod census;
+pub mod experiment;
 
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
@@ -207,7 +224,15 @@ pub fn record_experiment_step(session_id: &str, step: &serde_json::Value) -> Pro
     )
 }
 
-/// Complete a provenance pipeline: dehydrate → commit → attribute.
+/// Complete a provenance pipeline using the session-scoped model:
+/// dehydrate → spine commit → sign → braid.
+///
+/// This implements the canonical 4-phase session boundary from
+/// `specs/COMPOSITION_BROKER.md`:
+/// 1. `dag.dehydrate` → rhizoCrypt collapses DAG to Merkle root
+/// 2. `session.commit` → loamSpine permanent immutable entry
+/// 3. `crypto.sign` → bearDog Ed25519 signature (if available)
+/// 4. `braid.create` → sweetGrass W3C PROV-O attribution
 #[must_use]
 pub fn complete_experiment(session_id: &str) -> PipelineResult {
     let empty_pipeline = |status| PipelineResult {
@@ -218,6 +243,7 @@ pub fn complete_experiment(session_id: &str) -> PipelineResult {
         braid_id: String::new(),
     };
 
+    // Phase 1: Dehydrate DAG → Merkle root (rhizoCrypt)
     let Some(dehydration) = resilient_capability_call(
         "dag",
         "dehydrate",
@@ -232,14 +258,27 @@ pub fn complete_experiment(session_id: &str) -> PipelineResult {
         .unwrap_or("")
         .to_owned();
 
-    let Some(commit_result) = resilient_capability_call(
+    // Phase 2: Session commit → spine entry (loamSpine)
+    let commit_result = resilient_capability_call(
         "commit",
-        "session",
+        "session.commit",
         &serde_json::json!({
             "summary": dehydration,
             "content_hash": merkle_root,
         }),
-    ) else {
+    )
+    .or_else(|| {
+        resilient_capability_call(
+            "commit",
+            "session",
+            &serde_json::json!({
+                "summary": dehydration,
+                "content_hash": merkle_root,
+            }),
+        )
+    });
+
+    let Some(commit_result) = commit_result else {
         return PipelineResult {
             status: ProvenanceStatus::Partial,
             session_id: session_id.to_owned(),
@@ -251,9 +290,20 @@ pub fn complete_experiment(session_id: &str) -> PipelineResult {
 
     let commit_id = extract_id(&commit_result, "commit_id", "entry_id");
 
+    // Phase 3: Sign commit (bearDog) — best-effort, doesn't block pipeline
+    let _signature = resilient_capability_call(
+        "security",
+        "crypto.sign",
+        &serde_json::json!({
+            "data": commit_id,
+            "algorithm": "ed25519",
+        }),
+    );
+
+    // Phase 4: Attribution braid (sweetGrass)
     let braid_id = resilient_capability_call(
         "provenance",
-        "create_braid",
+        "braid.create",
         &serde_json::json!({
             "commit_ref": commit_id,
             "agents": [{
@@ -263,6 +313,20 @@ pub fn complete_experiment(session_id: &str) -> PipelineResult {
             }],
         }),
     )
+    .or_else(|| {
+        resilient_capability_call(
+            "provenance",
+            "create_braid",
+            &serde_json::json!({
+                "commit_ref": commit_id,
+                "agents": [{
+                    "did": "did:key:primalspring",
+                    "role": "validator",
+                    "contribution": 1.0,
+                }],
+            }),
+        )
+    })
     .and_then(|r| {
         r.get("braid_id")
             .or_else(|| r.get("id"))

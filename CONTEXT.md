@@ -21,7 +21,7 @@ protocols. The bonding models are the hypotheses.
 
 - **Composition validation library** — `CompositionContext`, routing,
   mesh topology, parity checks, liveness probing
-- **Certification engine** — guideStone L0-L8 (173 scenarios, 12-track
+- **Certification engine** — guideStone L0-L8 (197 scenarios, 14-track
   validation), `primalspring certify`
 - **Bonding proofs** — multi-gate bonding models, STUN tiers, ionic
   RPC, content distribution federation
@@ -74,7 +74,7 @@ to primalSpring as experiment targets.
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries:
   `primalspring` (eukaryotic UniBin: certify + validate + status + checksums + registry + version),
   `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status with PID tracking + federation)
-- **experiments/** — 96 validation binaries covering 21 tracks
+- **experiments/** — 93 validation binaries covering 21 tracks
 - **graphs/** — ~102 deploy graph TOMLs + 33 atomic composition graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
@@ -98,7 +98,7 @@ to primalSpring as experiment targets.
 | `btsp` | BTSP Phase 1–3: handshake, cipher negotiation, encrypted channels |
 | `validation` | Experiment harness with structured output (`ValidationResult`, `ValidationSink`) |
 | `validation/helpers` | Shared graph parsing, Dark Forest, capability cross-ref helpers |
-| `validation/scenarios` | 173 validation scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios` | 197 validation scenarios (14 tracks, 3 tiers: Rust/Live/Both) |
 | `composition/neural_routing` | NeuralRoutingTable — Arc\<str\>-interned model of 490+ method routing surface |
 | `composition/neural_dispatch` | NeuralDispatcher — dispatch surface with metrics + bridge outcome ingestion |
 | `tolerances` | Named latency and throughput bounds |
@@ -120,16 +120,19 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.42 Wave 150t (July 21, 2026) — 173 scenarios (12 tracks, 3 tiers),
-492+ registered capability methods, 96 experiments (21 tracks), 102 graph TOMLs
-(16 directories). 1213 lib tests (0 failures, 2 ignored). **7-gate mesh (5 active +
-2 enrolled). USB enrollment ready. Sovereignty roadmap validated. DNSSEC 3/3.
-43 repos audited (105k+ ecosystem tests).** Config-driven topology
-(`config/mesh_topology.toml` — SSOT for gate roster, zones, mesh addresses).
-Evolution module: CytoplasmZone model (backbone/house2/garage/wan), three-hub
-triangle topology, gate enrollment pipeline, convergence monitoring.
-Zero clippy warnings, zero unsafe blocks, zero hardcoded primal assumptions in
-production paths (mesh addresses, zones, ports all TOML-driven).
+v0.9.46 Wave 157a (Aug 7, 2026) — 197 scenarios (14 tracks, 3 tiers),
+490+ registered capability methods, 95 experiments (21 tracks), 102 graph TOMLs
+(16 directories). 1,263 workspace tests. **11-gate mesh (6 NUCLEUS +
+5 active). G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
+G67 ACTIVE (Neural API Stage 2 activation — N1 DONE, N2-N5 validated, N6 pending).
+140K+ ecosystem tests across 15 primals.** Post-primordial reshape complete:
+capability-first discovery (NeuralBridge → CompositionContext), session-scoped
+provenance model, primordial debt feature-gated behind `primordial-compat`,
+TOML-driven routing throughout (no hardcoded primal slugs in production paths).
+Config-driven topology (`config/mesh_topology.toml` — SSOT for gate roster,
+zones, mesh addresses). Evolution module: CytoplasmZone model
+(backbone/house2/garage/wan), three-hub triangle topology, gate enrollment
+pipeline, convergence monitoring. Zero clippy warnings, zero unsafe blocks.
 Role formalized: composition experimentation laboratory. Deployment ops handed
 to cellMembrane, workload packaging to projectNUCLEUS.
 **Wave 82c Deep Debt Sprint COMPLETE**: 3 fossil tool scripts deleted,
@@ -309,16 +312,29 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data fetch + visualization), neuralSpring
 (agentic composition), tideGlass (gen5 drug repurposing via NUCLEUS).
 
-## Glacial Checkpoint — Current and Remaining (July 16, 2026 — Wave 145a)
+## Glacial Checkpoint — Current and Remaining (Aug 7, 2026 — Wave 157a)
 
-### Completed
+### Cephalization Trilogy COMPLETE (G64+G65+G66)
+- **G64 Cephalization** — tarpc convergent evolution **15/15** primals
+- **G65 Protocol Negotiation** — single-socket dual-protocol **15/15**
+- **G66 Transport Abstraction** — silicon-agnostic IPC **15/15** cross-arch
+- **G67 Neural API Activation** — N1 forwarding fix DONE (`ffed2c5b`), N2-N6 pending
+
+### Stage 2 Activation (G67 — ACTIVE)
+- Composition broker threshold CROSSED: 704+ capabilities, COORDINATED mode
+- 27+ atomic signal graphs, Phase A (signal collapse) complete
+- Provenance E2E 7/7 validated on westGate + blueGate
+- Session-scoped provenance model proven (westGate convoy: 0.3 → 217 files/sec)
+- See `specs/STAGE2_ACTIVATION.md` and `specs/COMPOSITION_BROKER.md`
+
+### Previously Completed
 - **Waves 1–49 complete**: 13/13 primals stadial-gate absorbed, all upstream blockers shipped
 - **Silicon Atheism Phase 1** (Wave 142a): 14/14 primals cross-compile for 4 architectures
 - **Silicon Atheism Phase 2** (Wave 145a): 14/14 primals shipped platform-agnostic transport
 - **Content-Addressed Convergence** (Wave 144a): 6/6 layers complete
-- 492+ method registry (100% exercised), 173 scenarios, 102 deploy graphs, 1213 lib tests
+- 490+ method registry (100% exercised), 197 scenarios, 102 deploy graphs, 1,277 tests
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
-- 59 depot binaries (14 per architecture × 4 targets), all BLAKE3 + Ed25519 signed
+- 52 depot builds (16 musl + 15 gnu + 15 windows + aarch64), BLAKE3 verified
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
 - 45+ handoffs fossilized, zero local debt across all springs
 - Wave 20-21 detail (per-spring PM items, garden absorption) fossilized to `fossilRecord/`

@@ -17,9 +17,9 @@ NUCLEUS deployments from the outside.
 │  │  Certification    │  │  Validation      │  │  IPC Client  │  │
 │  │  Engine           │  │  Scenarios       │  │  (probing)   │  │
 │  │                   │  │                  │  │              │  │
-│  │  L0: Bare         │  │  74 absorbed     │  │  JSON-RPC    │  │
-│  │  L0.5: Seed       │  │  experiments     │  │  2.0 client  │  │
-│  │  L1: Discovery    │  │  across 12 tracks│  │              │  │
+│  │  L0: Bare         │  │  197 scenarios   │  │  JSON-RPC    │  │
+│  │  L0.5: Seed       │  │  across 14 tracks│  │  2.0 client  │  │
+│  │  L1: Discovery    │  │  (3 tiers)       │  │              │  │
 │  │  L1.5: BTSP       │  │                  │  │  Composition │  │
 │  │  L2: Health       │  │  Tier 1: Rust    │  │  Context     │  │
 │  │  L3: Parity       │  │  Tier 2: Live    │  │              │  │
@@ -90,7 +90,7 @@ Runs with `biomeOS` orchestrating the full composition.
 | `certification/entropy.rs` | Seed provenance, fingerprint verification |
 | `validation/` | `ValidationResult` harness, check_bool/check_skip/section API |
 | `validation/helpers.rs` | Shared graph parsing, Dark Forest invariants, capability cross-ref |
-| `validation/scenarios/` | 74 absorbed experiment scenarios (12 tracks, 3 tiers: Rust/Live/Both) |
+| `validation/scenarios/` | 197 validation scenarios (14 tracks, 3 tiers: Rust/Live/Both) |
 | `validation/scenarios/registry.rs` | `ScenarioMeta`, `ScenarioRegistry`, `Tier`, `Track` |
 | `composition/` | `CompositionContext` — 5-tier discovery, IPC calls, BTSP |
 | `coordination/` | `AtomicType`, composition validation (legacy probes removed Wave 32) |
@@ -127,13 +127,13 @@ Runs with `biomeOS` orchestrating the full composition.
 
 ## IPC Discovery
 
-`CompositionContext::discover()` uses 5-tier escalation:
+`CompositionContext::discover()` uses 5-tier escalation — **capability-first**:
 
-1. **Songbird routing** — `ipc.resolve` via the discovery primal
-2. **Neural API** — `capability.call` via biomeOS (signal-tier calls transparently dispatch graph execution since v3.55)
+1. **Songbird routing** — `ipc.resolve({"capability": cap})` with `primal_id` fallback
+2. **Neural API** — `NeuralBridge::capability_call()` via biomeOS (the canonical post-primordial consumer API)
 3. **UDS convention** — `$XDG_RUNTIME_DIR/biomeos/{primal}-{fid}.sock`
 4. **Socket registry scan** — enumerate known socket paths
-5. **TCP probing** — opt-in, covalent mesh only
+5. **TCP probing** — opt-in debug-only (`PRIMALSPRING_TCP_TIER5=1`), disabled in release builds
 
 Atomic signals use `signal.dispatch` (biomeOS v3.55+) as the preferred path,
 with `capability.call` fallback. `primal.announce` (v3.57) replaces separate
@@ -229,6 +229,36 @@ Historical snapshots are preserved in the [fossilRecord repository](https://gith
 | `experiments_prokaryotic_may2026/` | 20 absorbed experiment sources before UniBin |
 | `primal_gaps_phase60_may2026/` | Gap registry at Phase 60 ship |
 
+## Neural API Dispatch Architecture (Stage 2)
+
+G64+G65+G66 COMPLETE. G67 Neural API activation in progress (N1 DONE).
+
+```
+Consumer / experiment
+    │
+    ├── CompositionContext.call(domain, method, params)
+    │       │
+    │       ├── signal.dispatch (preferred — atomic composition)
+    │       └── capability.call (fallback — single method)
+    │               │
+    │               └── NeuralBridge → biomeos-neural.sock
+    │                       │
+    │                       └── Neural API Router
+    │                           ├── Routing table (490+ methods)
+    │                           ├── Translation registry
+    │                           └── Graph executor (for composition signals)
+    │                                   │
+    │                                   └── Primal sockets (UDS)
+    │
+    └── NeuralDispatcher.dispatch(method, params)
+            │
+            ├── Tier-aware routing (Tower/Node/Nest/Nucleus/Meta)
+            ├── Metrics collection (latency, success, route path)
+            └── Bridge outcome ingestion → adaptive routing weights
+```
+
+See `specs/STAGE2_ACTIVATION.md` for the N1-N6 validation contract.
+
 ## Evolution Path
 
 ```
@@ -242,4 +272,6 @@ Python baseline
               → NUCLEUS deployment (biomeOS Neural API)
               → composition collapse (signal.dispatch + primal.announce)
                 → sovereignty layer (membrane composition + content routing)
+                  → G64-G66 cephalization trilogy (COMPLETE)
+                    → G67 Stage 2 activation (ACTIVE — N1 DONE)
 ```

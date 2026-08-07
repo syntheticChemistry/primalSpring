@@ -55,39 +55,33 @@ pub enum CompositionTier {
 
 impl CompositionTier {
     fn from_domain(domain: &str, owner: &str) -> Self {
+        if let Some(tier) = Self::from_owner_tier_opt(owner) {
+            return tier;
+        }
+        if owner.ends_with("spring") || owner.ends_with("Spring") {
+            return Self::Meta;
+        }
         match domain {
-            "crypto" | "security" | "auth" | "btsp" | "fido2" | "genetic" | "beacon"
-            | "lineage" | "tls" | "birdsong" | "identity" | "discovery" | "network" | "stun"
-            | "onion" | "tor" | "mesh" | "defense" | "recon" | "threat" => Self::Tower,
-            "compute" | "dispatch" | "sovereign" | "tensor" | "math" | "ode" | "ml"
-            | "nautilus" | "rng" | "stats" | "linalg" | "spectral" | "noise" | "shader" => {
-                Self::Node
-            }
-            "storage" | "content" | "secrets" | "dag" | "spine" | "event" | "entry" | "session"
-            | "certificate" | "permanence" | "proof" | "braid" | "anchoring" | "provenance"
-            | "attribution" | "contribution" | "anchor" => Self::Nest,
-            "visualization" | "render" | "viz" | "interaction" | "proprioception" | "ai"
-            | "inference" | "context" | "science" => Self::Meta,
-            "orchestration" | "federation" | "primal" | "signal" | "topology" | "route"
-            | "health" | "capabilities" | "lifecycle" | "mcp" | "tool" | "tools" | "rpc"
-            | "system" | "coordination" | "composition" | "graph" | "nucleus" => {
-                Self::Orchestration
-            }
             "bonding" | "ionic" | "game" | "webb" => Self::Standalone,
-            _ => Self::from_owner_tier(owner),
+            _ => Self::Orchestration,
         }
     }
 
     /// Derive tier from the primal owner using the TOML-derived
     /// `[compositions.*].primals` map (0=Tower..4=Orchestration).
     fn from_owner_tier(owner: &str) -> Self {
+        Self::from_owner_tier_opt(owner).unwrap_or(Self::Standalone)
+    }
+
+    /// Try to resolve tier from TOML; returns `None` for unknown owners.
+    fn from_owner_tier_opt(owner: &str) -> Option<Self> {
         match super::routing::primal_home_tier_priority(owner) {
-            Some(0) => Self::Tower,
-            Some(1) => Self::Node,
-            Some(2) => Self::Nest,
-            Some(3) => Self::Meta,
-            Some(_) => Self::Orchestration,
-            None => Self::Standalone,
+            Some(0) => Some(Self::Tower),
+            Some(1) => Some(Self::Node),
+            Some(2) => Some(Self::Nest),
+            Some(3) => Some(Self::Meta),
+            Some(_) => Some(Self::Orchestration),
+            None => None,
         }
     }
 }

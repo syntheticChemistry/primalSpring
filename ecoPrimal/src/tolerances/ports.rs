@@ -66,15 +66,35 @@ struct PortEntryOwned {
     _env_key: String,
 }
 
-/// Look up a primal's port entry from the static registry.
+/// Look up a primal's port entry.
 ///
-/// Static registry is the primary lookup path for callers needing
-/// `&'static PortEntry`. TOML drift is caught by compile-time tests.
+/// Prefers TOML-derived registry; falls back to the deprecated static
+/// `PORT_REGISTRY` for backward compatibility. Callers needing only the
+/// port should use [`default_port_for`] instead.
 #[must_use]
-#[expect(deprecated)]
 pub fn port_entry_for(primal: &str) -> Option<&'static PortEntry> {
-    PORT_REGISTRY.iter().find(|e| e.slug == primal)
+    TOML_PORT_ENTRY_CACHE
+        .iter()
+        .find(|e| e.slug == primal)
+        .or_else(|| {
+            #[expect(deprecated)]
+            PORT_REGISTRY.iter().find(|e| e.slug == primal)
+        })
 }
+
+/// TOML-derived `PortEntry` cache with `'static` lifetime for callers
+/// that need `&'static PortEntry` (validation scenarios, BTSP fallback).
+static TOML_PORT_ENTRY_CACHE: std::sync::LazyLock<Vec<PortEntry>> =
+    std::sync::LazyLock::new(|| {
+        TOML_PORT_REGISTRY
+            .iter()
+            .map(|e| PortEntry {
+                slug: Box::leak(e.slug.clone().into_boxed_str()),
+                port: e.port,
+                env_key: Box::leak(e._env_key.clone().into_boxed_str()),
+            })
+            .collect()
+    });
 
 #[expect(deprecated)]
 fn slug_list_fallback_from_static_registry() -> Vec<String> {

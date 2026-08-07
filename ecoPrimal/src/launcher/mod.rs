@@ -47,11 +47,13 @@
 use std::path::PathBuf;
 use std::time::Duration;
 
+#[cfg(feature = "primordial-compat")]
 mod biomeos;
 mod discovery;
 mod profiles;
 mod spawn;
 
+#[cfg(feature = "primordial-compat")]
 #[expect(
     deprecated,
     reason = "re-exports deprecated launcher for backward compatibility"
@@ -59,11 +61,13 @@ mod spawn;
 pub use biomeos::spawn_biomeos;
 pub use discovery::{discover_binary, discover_biomeos_binary};
 pub use profiles::{LaunchProfile, load_launch_profiles, primal_requires_btsp};
+pub use spawn::SocketNucleation;
+#[cfg(feature = "primordial-compat")]
 #[expect(
     deprecated,
     reason = "re-exports deprecated launcher for backward compatibility"
 )]
-pub use spawn::{PrimalProcess, SocketNucleation, spawn_primal, wait_for_socket};
+pub use spawn::{PrimalProcess, spawn_primal, wait_for_socket};
 
 // ---------------------------------------------------------------------------
 // Error type

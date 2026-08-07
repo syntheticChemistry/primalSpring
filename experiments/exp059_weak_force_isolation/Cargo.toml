@@ -11,8 +11,12 @@ publish = false
 name = "exp059_weak_force_isolation"
 path = "src/main.rs"
 
+[features]
+primordial-compat = ["primalspring/primordial-compat"]
+
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
+serde_json = { workspace = true }
 
 [lints]
 workspace = true

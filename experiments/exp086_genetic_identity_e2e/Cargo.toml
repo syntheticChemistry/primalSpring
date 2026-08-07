@@ -11,6 +11,9 @@ publish = false
 name = "exp086_genetic_identity_e2e"
 path = "src/main.rs"
 
+[features]
+primordial-compat = ["primalspring/primordial-compat"]
+
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
 serde_json = { workspace = true }

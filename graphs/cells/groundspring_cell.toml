@@ -7,7 +7,7 @@
 [graph]
 name = "groundspring_cell"
 description = "groundSpring — NUCLEUS + geoscience + live visualization"
-version = "1.0.0"
+version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
@@ -17,6 +17,7 @@ security_model = "btsp_enforced"
 transport = "uds_only"
 composition_model = "nucleated"
 petaltongue_mode = "live"
+assigned_gate = "westGate"
 
 # ── NUCLEUS Base ─────────────────────────────────────────────────────
 
@@ -93,7 +94,43 @@ spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "storage"
-capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "content.get", "content.put"]
+
+[[graph.nodes]]
+name = "rhizocrypt"
+security_model = "btsp"
+binary = "rhizocrypt"
+order = 7
+required = false
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
+
+[[graph.nodes]]
+name = "loamspine"
+security_model = "btsp"
+binary = "loamspine"
+order = 8
+required = false
+spawn = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = ["spine.create", "entry.append", "certificate.mint"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+security_model = "btsp"
+binary = "sweetgrass"
+order = 9
+required = false
+spawn = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
 
 # ── Meta Tier ────────────────────────────────────────────────────────
 

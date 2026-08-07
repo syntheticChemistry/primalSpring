@@ -4,8 +4,8 @@
 //! Exp033: Gate Failure — bond models + graceful discovery when a gate is absent.
 
 use primalspring::bonding::BondType;
-use primalspring::ipc::discover::{DiscoverySource, discover_primal};
-use primalspring::primal_names;
+use primalspring::composition::CompositionContext;
+use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
 
 const BOND_TYPE_COUNT: usize = 5;
@@ -27,16 +27,56 @@ fn phase_bond_types(v: &mut ValidationResult) {
 }
 
 fn phase_graceful_discovery(v: &mut ValidationResult) {
+    let ctx = CompositionContext::from_live_discovery_with_fallback();
+
+    let has_security = ctx.has_capability("security");
+    v.check_bool(
+        "discover_security_capability",
+        has_security,
+        "CompositionContext discovers security capability (beardog)",
+    );
+
+    let has_nonexistent = ctx.has_capability("nonexistent_capability_xyzzy_12345");
+    v.check_bool(
+        "discovery_graceful_for_missing_capability",
+        !has_nonexistent,
+        "CompositionContext returns false for missing capability without panic",
+    );
+
+    if let Some(bridge) = NeuralBridge::discover() {
+        let bad_call = bridge.capability_call(
+            "nonexistent_xyzzy",
+            "no_such_method",
+            &serde_json::json!({}),
+        );
+        v.check_bool(
+            "neural_bridge_graceful_for_missing",
+            bad_call.is_err(),
+            "NeuralBridge returns error for nonexistent capability without panic",
+        );
+    } else {
+        v.check_skip(
+            "neural_bridge_graceful_for_missing",
+            "biomeOS not running — NeuralBridge graceful error test skipped",
+        );
+    }
+}
+
+#[cfg(feature = "primordial-compat")]
+fn phase_legacy_discovery(v: &mut ValidationResult) {
+    use primalspring::ipc::discover::{DiscoverySource, discover_primal};
+    use primalspring::primal_names;
+
     let songbird = discover_primal(primal_names::SONGBIRD);
     v.check_bool(
-        "discover_songbird_returns_result",
+        "legacy_discover_songbird",
         songbird.primal == primal_names::SONGBIRD,
         "discover_primal returns DiscoveryResult for songbird",
     );
 
     let missing = discover_primal("nonexistent_primal_xyzzy_12345");
     v.check_bool(
-        "discovery_graceful_for_missing_primal",
+        "legacy_discovery_graceful",
         missing.socket.is_none() && missing.source == DiscoverySource::NotFound,
         "discover_primal returns NotFound for missing primal without panic",
     );
@@ -59,8 +99,14 @@ fn main() {
                 v.section("Phase 1: Bond Types");
                 phase_bond_types(v);
 
-                v.section("Phase 2: Graceful Discovery");
+                v.section("Phase 2: Capability-First Discovery");
                 phase_graceful_discovery(v);
+
+                #[cfg(feature = "primordial-compat")]
+                {
+                    v.section("Phase 2b: Legacy Socket Discovery");
+                    phase_legacy_discovery(v);
+                }
 
                 v.section("Phase 3: Gate Failure (skips)");
                 phase_gate_failure_skips(v);

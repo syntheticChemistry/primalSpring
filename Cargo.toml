@@ -103,6 +103,8 @@ members = [
     "experiments/exp113_cephalization",
     "experiments/exp114_tower_cns_convergence",
     "experiments/exp115_nest_ingest_pseudospore",
+    "experiments/exp116_benchscale_nucleus_lab",
+    "experiments/exp117_compute_trio_routing",
 ]
 
 [workspace.package]

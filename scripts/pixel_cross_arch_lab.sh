@@ -24,7 +24,7 @@
 #   - ADB installed and Pixel connected via USB (or --lan with Pixel IP)
 #   - NUCLEUS primals running on the Pixel (BearDog + Songbird with --port)
 #   - For --deploy: aarch64 binaries in /tmp/primalspring-deploy/primals/aarch64/
-#     (run: ./scripts/build_ecosystem_genomeBin.sh --tier1)
+#     (build via plasmidBin: plasmidbuild --target aarch64-unknown-linux-musl --tier1)
 #
 # Port mapping (ADB forward):
 #   localhost:19100 → Pixel:9100 (BearDog)

@@ -1,42 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #![forbid(unsafe_code)]
-//! Exp074: Cross-Gate Health
+//! Exp074: Cross-Gate Health — composition health via CompositionContext + Neural API.
 
 use primalspring::composition::CompositionContext;
-use primalspring::ipc::methods;
-use primalspring::ipc::tcp::tcp_rpc;
-use primalspring::tolerances;
+use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
 
-struct PrimalProbe {
-    name: &'static str,
-    port_env: &'static str,
-    default_port: u16,
-}
-
-fn primals() -> Vec<PrimalProbe> {
-    ["beardog", "songbird", "nestgate", "toadstool", "squirrel"]
-        .iter()
-        .filter_map(|&slug| {
-            tolerances::port_entry_for(slug).map(|e| PrimalProbe {
-                name: e.slug,
-                port_env: e.env_key,
-                default_port: e.port,
-            })
-        })
-        .collect()
-}
-
-fn port_for(probe: &PrimalProbe) -> u16 {
-    std::env::var(probe.port_env)
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or(probe.default_port)
-}
+const HEALTH_DOMAINS: &[&str] = &["security", "discovery", "storage", "compute", "ai"];
 
 fn phase_local_composition(v: &mut ValidationResult, ctx: &CompositionContext) {
-    v.section("Local Composition Discovery");
+    v.section("Phase 1: Local Composition Discovery");
     let caps = ctx.available_capabilities();
     if caps.is_empty() {
         v.check_skip(
@@ -52,149 +26,118 @@ fn phase_local_composition(v: &mut ValidationResult, ctx: &CompositionContext) {
     }
 }
 
-fn probe_primal_health(v: &mut ValidationResult, host: &str, primal: &PrimalProbe) {
-    let port = port_for(primal);
-    let check_name = format!("{}_live", primal.name);
+fn phase_health_via_composition(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.section("Phase 2: Health via CompositionContext");
 
-    match tcp_rpc(
-        host,
-        port,
-        methods::health::LIVENESS,
-        &serde_json::json!({}),
-    ) {
-        Ok((resp, _)) => {
-            let status = resp.get("status").and_then(|s| s.as_str()).unwrap_or("ok");
-            println!(
-                "  {:<12} LIVE  (port {port}, status: {status})",
-                primal.name
-            );
-            v.check_bool(
+    let mut live_count: u32 = 0;
+    for domain in HEALTH_DOMAINS {
+        let check_name = format!("{domain}_health");
+        if !ctx.has_capability(domain) {
+            v.check_skip(&check_name, &format!("{domain} not in composition"));
+            continue;
+        }
+        match ctx.health_check(domain) {
+            Ok(true) => {
+                live_count += 1;
+                println!("  {domain:<12} HEALTHY");
+                v.check_bool(&check_name, true, &format!("{domain} healthy via context"));
+            }
+            Ok(false) => {
+                println!("  {domain:<12} UNHEALTHY");
+                v.check_bool(&check_name, false, &format!("{domain} unhealthy"));
+            }
+            Err(e) => {
+                println!("  {domain:<12} UNREACHABLE");
+                v.check_skip(&check_name, &format!("{domain} unreachable: {e}"));
+            }
+        }
+    }
+
+    let composition = match live_count {
+        0 => "NO NUCLEUS",
+        1..=2 => "TOWER ATOMIC (partial)",
+        3 => "TOWER + one layer",
+        4 => "NUCLEUS (near-complete)",
+        5.. => "FULL NUCLEUS",
+    };
+    println!("  Composition: {composition} ({live_count}/{} domains healthy)", HEALTH_DOMAINS.len());
+    v.check_bool(
+        "nucleus_composition",
+        live_count >= 2,
+        &format!("{composition}: {live_count}/{} domains healthy", HEALTH_DOMAINS.len()),
+    );
+}
+
+fn phase_neural_api_routing(v: &mut ValidationResult) {
+    v.section("Phase 3: Health via Neural API routing");
+
+    let Some(bridge) = NeuralBridge::discover() else {
+        v.check_skip("neural_api_health", "biomeOS not running");
+        return;
+    };
+
+    let health = bridge.health_check();
+    v.check_bool(
+        "neural_api_health",
+        health.is_ok(),
+        "biomeOS neural-api healthy",
+    );
+
+    for domain in HEALTH_DOMAINS {
+        let check_name = format!("neural_{domain}_route");
+        match bridge.capability_call(domain, "health.check", &serde_json::json!({})) {
+            Ok(_) => v.check_bool(
                 &check_name,
                 true,
-                &format!(
-                    "{} {} on port {port}",
-                    primal.name,
-                    methods::health::LIVENESS
-                ),
-            );
-        }
-        Err(e) => {
-            println!("  {:<12} DOWN  (port {port}: {e})", primal.name);
-            v.check_skip(&check_name, &format!("{} unreachable: {e}", primal.name));
+                &format!("{domain} routed via Neural API"),
+            ),
+            Err(e) => v.check_skip(&check_name, &format!("{domain}: {e}")),
         }
     }
 }
 
-fn probe_primal_capabilities(v: &mut ValidationResult, host: &str, primal: &PrimalProbe) {
-    let port = port_for(primal);
-    let check_name = format!("{}_capabilities", primal.name);
+#[cfg(feature = "primordial-compat")]
+fn phase_legacy_tcp_probes(v: &mut ValidationResult) {
+    use primalspring::ipc::methods;
+    use primalspring::ipc::tcp::tcp_rpc;
+    use primalspring::tolerances;
 
-    match tcp_rpc(
-        host,
-        port,
-        methods::capabilities::LIST,
-        &serde_json::json!({}),
-    ) {
-        Ok((caps, _)) => {
-            let count = caps
-                .as_array()
-                .map(std::vec::Vec::len)
-                .or_else(|| {
-                    caps.get("capabilities")
-                        .and_then(|c| c.as_array())
-                        .map(std::vec::Vec::len)
-                })
-                .unwrap_or(1);
-            println!("  {:<12} {count} capabilities", primal.name);
-            v.check_bool(
-                &check_name,
-                count > 0,
-                &format!("{} {}: {count}", primal.name, methods::capabilities::LIST),
-            );
-        }
-        Err(e) => {
-            v.check_skip(
-                &check_name,
-                &format!("{} {}: {e}", primal.name, methods::capabilities::LIST),
-            );
+    v.section("Phase 4 (legacy): Direct TCP health probes");
+
+    let host = std::env::var("REMOTE_GATE_HOST").unwrap_or_default();
+    if host.is_empty() {
+        v.check_skip("legacy_tcp_probes", "REMOTE_GATE_HOST not set");
+        return;
+    }
+
+    for slug in &["beardog", "songbird", "nestgate", "toadstool", "squirrel"] {
+        let Some(entry) = tolerances::port_entry_for(slug) else { continue };
+        let port: u16 = std::env::var(entry.env_key)
+            .ok()
+            .and_then(|p| p.parse().ok())
+            .unwrap_or(entry.port);
+        let check_name = format!("legacy_{slug}_health");
+
+        match tcp_rpc(&host, port, methods::health::LIVENESS, &serde_json::json!({})) {
+            Ok(_) => v.check_bool(&check_name, true, &format!("{slug} at {host}:{port}")),
+            Err(e) => v.check_skip(&check_name, &format!("{slug}: {e}")),
         }
     }
 }
 
 fn main() {
-    let host = std::env::var("REMOTE_GATE_HOST").unwrap_or_default();
-
     ValidationResult::new("primalSpring Exp074 — Cross-Gate Health")
         .with_provenance("exp074_cross_gate_health", "2026-05-09")
         .run(
-            "primalSpring Exp074: Remote NUCLEUS per-primal health + capabilities via TCP",
+            "primalSpring Exp074: Composition health via CompositionContext + Neural API",
             |v| {
-            let ctx = CompositionContext::from_live_discovery_with_fallback();
-            phase_local_composition(v, &ctx);
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_local_composition(v, &ctx);
+                phase_health_via_composition(v, &mut ctx);
+                phase_neural_api_routing(v);
 
-            if host.is_empty() {
-                println!("  REMOTE_GATE_HOST not set — skipping all remote checks.");
-                println!(
-                    "  Usage: REMOTE_GATE_HOST=192.168.1.100 cargo run --bin exp074_cross_gate_health"
-                );
-                v.check_skip("remote_gate_configured", "REMOTE_GATE_HOST not set");
-                return;
-            }
-
-            println!("  Remote gate: {host}");
-            println!();
-
-            v.check_bool("remote_gate_configured", true, "REMOTE_GATE_HOST is set");
-
-            v.section("Phase 1: Health probes");
-            let mut live_count: u32 = 0;
-            for primal in &primals() {
-                let port = port_for(primal);
-                if tcp_rpc(
-                    &host,
-                    port,
-                    methods::health::LIVENESS,
-                    &serde_json::json!({}),
-                )
-                .is_ok()
-                {
-                    live_count += 1;
-                }
-                probe_primal_health(v, &host, primal);
-            }
-
-            v.section("Phase 2: Capability enumeration");
-            for primal in &primals() {
-                probe_primal_capabilities(v, &host, primal);
-            }
-
-            v.section("Phase 3: Composition assessment");
-            let composition = match live_count {
-                0 => "NO NUCLEUS",
-                1..=2 => "TOWER ATOMIC (partial)",
-                3 => "TOWER + one layer",
-                4 => "NUCLEUS (near-complete)",
-                5.. => "FULL NUCLEUS",
-            };
-            println!("  Remote composition: {composition} ({live_count}/5 primals live)");
-            v.check_bool(
-                "nucleus_composition",
-                live_count >= 2,
-                &format!("{composition}: {live_count}/5 primals live"),
-            );
-
-            if live_count >= 2 {
-                v.check_bool(
-                    "tower_minimum",
-                    true,
-                    "at least Tower Atomic (beardog + songbird) live",
-                );
-            } else {
-                v.check_skip(
-                    "tower_minimum",
-                    &format!("only {live_count} primals live, need >= 2 for Tower"),
-                );
-            }
+                #[cfg(feature = "primordial-compat")]
+                phase_legacy_tcp_probes(v);
             },
         );
 }

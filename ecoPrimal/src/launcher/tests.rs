@@ -85,6 +85,7 @@ fn discover_binary_returns_not_found_without_relative_traversal() {
     );
 }
 
+#[cfg(feature = "primordial-compat")]
 #[test]
 fn wait_for_socket_succeeds_when_file_exists() {
     let dir = std::env::temp_dir().join(format!("primalspring-socket-test-{}", std::process::id()));
@@ -95,6 +96,7 @@ fn wait_for_socket_succeeds_when_file_exists() {
     let _ = std::fs::remove_dir_all(&dir);
 }
 
+#[cfg(feature = "primordial-compat")]
 #[test]
 fn wait_for_socket_times_out() {
     let path = std::env::temp_dir().join("nonexistent-socket-xyz.sock");

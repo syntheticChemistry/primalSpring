@@ -1,106 +1,87 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 #![forbid(unsafe_code)]
-//! Exp077: Squirrel Neural API Bridge
-
-use std::io::{BufRead, BufReader, Write};
-use std::os::linux::net::SocketAddrExt;
-use std::os::unix::net::UnixStream;
-use std::time::Duration;
+//! Exp077: Squirrel Neural API Bridge — AI capability routing through biomeOS substrate.
 
 use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
 
-fn squirrel_abstract_rpc(method: &str, params: &serde_json::Value) -> Option<serde_json::Value> {
-    let addr = std::os::unix::net::SocketAddr::from_abstract_name(b"squirrel").ok()?;
-    let stream = UnixStream::connect_addr(&addr).ok()?;
-    stream.set_read_timeout(Some(Duration::from_secs(5))).ok()?;
-    stream
-        .set_write_timeout(Some(Duration::from_secs(5)))
-        .ok()?;
+fn phase_squirrel_via_neural_api(v: &mut ValidationResult) -> bool {
+    v.section("Phase 1: AI routing via Neural API");
 
-    let req = serde_json::json!({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    });
-    let mut payload = serde_json::to_string(&req).ok()?;
-    payload.push('\n');
-    let mut writer = &stream;
-    writer.write_all(payload.as_bytes()).ok()?;
-    writer.flush().ok()?;
+    let Some(bridge) = NeuralBridge::discover() else {
+        v.check_skip(
+            "neural_api_available",
+            "biomeOS not running — ai routing not tested",
+        );
+        return false;
+    };
 
-    let mut reader = BufReader::new(&stream);
-    let mut line = String::new();
-    reader.read_line(&mut line).ok()?;
-    serde_json::from_str(&line).ok()
-}
-
-fn phase_squirrel_direct(v: &mut ValidationResult) -> bool {
-    v.section("Phase 1: Direct Squirrel");
-    let health = squirrel_abstract_rpc("health.check", &serde_json::json!({}));
-    let alive = health
-        .as_ref()
-        .and_then(|r| r.get("result"))
-        .and_then(|r| r.get("alive"))
-        .and_then(serde_json::Value::as_bool)
-        .unwrap_or(false);
-
+    let health = bridge.health_check();
     v.check_bool(
-        "squirrel_health",
-        alive,
-        "Squirrel alive via abstract socket @squirrel",
+        "neural_api_available",
+        health.is_ok(),
+        "biomeOS neural-api healthy",
     );
-
-    if !alive {
+    if health.is_err() {
         return false;
     }
 
-    let caps = squirrel_abstract_rpc("capabilities.list", &serde_json::json!({}));
-    let has_caps = caps.as_ref().and_then(|r| r.get("result")).is_some();
+    let ai_health = bridge.capability_call("ai", "health.check", &serde_json::json!({}));
     v.check_bool(
-        "squirrel_capabilities",
-        has_caps,
-        "Squirrel capabilities.list",
+        "ai_routed_health",
+        ai_health.is_ok(),
+        "ai.health.check routed through Neural API",
     );
 
-    let providers = squirrel_abstract_rpc("list_providers", &serde_json::json!({}));
-    v.check_bool(
-        "squirrel_providers",
-        providers.is_some(),
-        "Squirrel list_providers",
-    );
+    match bridge.capability_call(
+        "ai",
+        "capabilities.list",
+        &serde_json::json!({}),
+    ) {
+        Ok(resp) => {
+            v.check_bool(
+                "ai_capabilities_listed",
+                !resp.value.is_null(),
+                "ai.capabilities.list routed through Neural API",
+            );
+        }
+        Err(e) => {
+            let msg = format!("{e}");
+            let socket_gap = msg.contains("Forward") || msg.contains("Failed to forward");
+            if socket_gap {
+                v.check_skip(
+                    "ai_capabilities_listed",
+                    "abstract socket routing gap — Neural API cannot forward to @squirrel yet",
+                );
+            } else {
+                v.check_skip("ai_capabilities_listed", &format!("ai routing: {msg}"));
+            }
+        }
+    }
 
     true
 }
 
-fn phase_squirrel_via_biomeos(v: &mut ValidationResult, ctx: &mut CompositionContext) {
-    v.section("Phase 2: biomeOS AI routing");
-    let Some(_bridge) = NeuralBridge::discover() else {
-        v.check_skip(
-            "squirrel_biomeos_routing",
-            "biomeOS not running — ai routing not tested",
-        );
-        return;
-    };
+fn phase_squirrel_via_composition(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.section("Phase 2: AI via CompositionContext");
 
     v.check_bool(
         "ai_domain_registered",
         ctx.has_capability("ai"),
-        "ai capability discoverable via composition context",
+        "ai capability discoverable via CompositionContext",
     );
 
     if !ctx.has_capability("ai") {
-        v.check_skip("ai_health_routed", "ai capability not in context");
-        v.check_skip("ai_query_routed", "ai capability not in context");
+        v.check_skip("ai_health_via_ctx", "ai capability not in context");
+        v.check_skip("ai_query_via_ctx", "ai capability not in context");
         return;
     }
 
     let ai_healthy = ctx.health_check("ai").unwrap_or(false);
     v.check_bool(
-        "ai_health_routed",
+        "ai_health_via_ctx",
         ai_healthy,
         "ai domain health via CompositionContext",
     );
@@ -111,7 +92,7 @@ fn phase_squirrel_via_biomeos(v: &mut ValidationResult, ctx: &mut CompositionCon
         serde_json::json!({"prompt": "echo test", "max_tokens": 10}),
     ) {
         Ok(r) => v.check_bool(
-            "ai_query_routed",
+            "ai_query_via_ctx",
             !r.is_null(),
             "ai.query routed through CompositionContext",
         ),
@@ -120,14 +101,68 @@ fn phase_squirrel_via_biomeos(v: &mut ValidationResult, ctx: &mut CompositionCon
             let socket_mismatch = msg.contains("Forward") || msg.contains("Failed to forward");
             if socket_mismatch {
                 v.check_skip(
-                    "ai_query_routed",
+                    "ai_query_via_ctx",
                     "abstract socket routing gap (same as ai.health)",
                 );
             } else {
-                v.check_skip("ai_query_routed", &format!("ai.query: {msg}"));
+                v.check_skip("ai_query_via_ctx", &format!("ai.query: {msg}"));
             }
         }
     }
+}
+
+#[cfg(feature = "primordial-compat")]
+fn phase_squirrel_direct(v: &mut ValidationResult) {
+    use std::io::{BufRead, BufReader, Write};
+    use std::os::linux::net::SocketAddrExt;
+    use std::os::unix::net::UnixStream;
+    use std::time::Duration;
+
+    v.section("Phase 3 (legacy): Direct Squirrel abstract UDS");
+
+    let Some(addr) = std::os::unix::net::SocketAddr::from_abstract_name(b"squirrel").ok() else {
+        v.check_skip("legacy_squirrel_direct", "cannot create abstract socket addr");
+        return;
+    };
+    let Ok(stream) = UnixStream::connect_addr(&addr) else {
+        v.check_skip("legacy_squirrel_direct", "Squirrel abstract socket unreachable");
+        return;
+    };
+    let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
+    let _ = stream.set_write_timeout(Some(Duration::from_secs(5)));
+
+    let req = serde_json::json!({
+        "jsonrpc": "2.0",
+        "method": "health.check",
+        "params": {},
+        "id": 1
+    });
+    let mut payload = serde_json::to_string(&req).unwrap_or_default();
+    payload.push('\n');
+    let mut writer = &stream;
+    if writer.write_all(payload.as_bytes()).is_err() {
+        v.check_skip("legacy_squirrel_direct", "write to @squirrel failed");
+        return;
+    }
+    let _ = writer.flush();
+
+    let mut reader = BufReader::new(&stream);
+    let mut line = String::new();
+    if reader.read_line(&mut line).is_err() {
+        v.check_skip("legacy_squirrel_direct", "read from @squirrel failed");
+        return;
+    }
+
+    let alive = serde_json::from_str::<serde_json::Value>(&line)
+        .ok()
+        .and_then(|r| r.get("result")?.get("alive")?.as_bool())
+        .unwrap_or(false);
+
+    v.check_bool(
+        "legacy_squirrel_direct",
+        alive,
+        "Squirrel alive via abstract socket @squirrel (legacy path)",
+    );
 }
 
 fn main() {
@@ -137,15 +172,11 @@ fn main() {
             "primalSpring Exp077: AI capability routing through biomeOS substrate",
             |v| {
                 let mut ctx = CompositionContext::from_live_discovery_with_fallback();
-                let squirrel_live = phase_squirrel_direct(v);
-                if squirrel_live {
-                    phase_squirrel_via_biomeos(v, &mut ctx);
-                } else {
-                    v.check_skip(
-                        "squirrel_biomeos_routing",
-                        "Squirrel not running — biomeOS routing skipped",
-                    );
-                }
+                let _neural_ok = phase_squirrel_via_neural_api(v);
+                phase_squirrel_via_composition(v, &mut ctx);
+
+                #[cfg(feature = "primordial-compat")]
+                phase_squirrel_direct(v);
             },
         );
 }

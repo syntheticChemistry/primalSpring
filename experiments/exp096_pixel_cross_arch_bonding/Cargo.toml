@@ -11,6 +11,9 @@ publish = false
 name = "exp096_pixel_cross_arch_bonding"
 path = "src/main.rs"
 
+[features]
+primordial-compat = ["primalspring/primordial-compat"]
+
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
 serde_json.workspace = true

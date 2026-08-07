@@ -11,6 +11,9 @@ publish = false
 name = "exp077_squirrel_neural_api_bridge"
 path = "src/main.rs"
 
+[features]
+primordial-compat = ["primalspring/primordial-compat"]
+
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
 serde = { workspace = true }

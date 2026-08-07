@@ -64,7 +64,8 @@ pub enum DiscoveryPath {
     LocalDiscovery,
     /// Connected via TCP port probing (tier 5)
     TcpFallback,
-    /// Inherited from a `RunningAtomic` harness
+    /// Inherited from a `RunningAtomic` harness (primordial-compat only)
+    #[cfg(feature = "primordial-compat")]
     Harness,
     /// Directly injected via `from_clients`
     Injected,
@@ -97,6 +98,7 @@ impl CompositionContext {
     ///
     /// Connects to each capability provider in the [`crate::harness::RunningAtomic`]
     /// and stores the clients keyed by capability name.
+    #[cfg(feature = "primordial-compat")]
     #[must_use]
     #[deprecated(
         since = "0.9.25",

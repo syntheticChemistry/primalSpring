@@ -2,16 +2,24 @@
 
 //! Phases 3-4: BTSP Phase 3 Readiness + HSM Probing.
 
-use crate::config::{pixel_beardog_port, pixel_host, tcp_rpc_value};
+use crate::config::{domain, pixel_beardog_port, pixel_host, rpc_value};
+use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
 
-pub fn validate_btsp_phase3_readiness(v: &mut ValidationResult) {
+pub fn validate_btsp_phase3_readiness(v: &mut ValidationResult, bridge: Option<&NeuralBridge>) {
     v.section("Phase 3: BTSP Phase 3 Cipher Readiness (aarch64)");
 
     let host = pixel_host();
     let bd_port = pixel_beardog_port();
 
-    let crypto_caps = tcp_rpc_value(&host, bd_port, "capabilities.list", &serde_json::json!({}));
+    let crypto_caps = rpc_value(
+        bridge,
+        domain::SECURITY,
+        "capabilities.list",
+        &serde_json::json!({}),
+        &host,
+        bd_port,
+    );
 
     let (has_chacha, has_hmac, has_encrypt) =
         crypto_caps
@@ -35,14 +43,16 @@ pub fn validate_btsp_phase3_readiness(v: &mut ValidationResult) {
         "Pixel BearDog advertises HMAC capability",
     );
 
-    let encrypt_result = tcp_rpc_value(
-        &host,
-        bd_port,
+    let encrypt_result = rpc_value(
+        bridge,
+        domain::SECURITY,
         "crypto.encrypt_chacha20_poly1305",
         &serde_json::json!({
             "plaintext": "cross-arch-phase3-test",
             "key_id": "session_test"
         }),
+        &host,
+        bd_port,
     );
     match &encrypt_result {
         Ok(result) => {
@@ -64,14 +74,16 @@ pub fn validate_btsp_phase3_readiness(v: &mut ValidationResult) {
         Err(e) => v.check_skip("pixel_chacha20_encrypt", &format!("encrypt: {e}")),
     }
 
-    let hash_result = tcp_rpc_value(
-        &host,
-        bd_port,
+    let hash_result = rpc_value(
+        bridge,
+        domain::SECURITY,
         "crypto.hash",
         &serde_json::json!({
             "data": "Y3Jvc3MtYXJjaC1oYXNoLXRlc3Q=",
             "algorithm": "blake3"
         }),
+        &host,
+        bd_port,
     );
     match &hash_result {
         Ok(result) => {
@@ -92,17 +104,19 @@ pub fn validate_btsp_phase3_readiness(v: &mut ValidationResult) {
     }
 }
 
-pub fn validate_hsm_capabilities(v: &mut ValidationResult) {
+pub fn validate_hsm_capabilities(v: &mut ValidationResult, bridge: Option<&NeuralBridge>) {
     v.section("Phase 4: HSM / Hardware Security Probing (Titan M2)");
 
     let host = pixel_host();
     let bd_port = pixel_beardog_port();
 
-    let keypair = tcp_rpc_value(
-        &host,
-        bd_port,
+    let keypair = rpc_value(
+        bridge,
+        domain::SECURITY,
         "crypto.generate_keypair",
         &serde_json::json!({}),
+        &host,
+        bd_port,
     );
     match &keypair {
         Ok(result) => {
@@ -137,14 +151,16 @@ pub fn validate_hsm_capabilities(v: &mut ValidationResult) {
         Err(e) => v.check_skip("pixel_keypair_gen", &format!("keypair: {e}")),
     }
 
-    let sign_result = tcp_rpc_value(
-        &host,
-        bd_port,
+    let sign_result = rpc_value(
+        bridge,
+        domain::SECURITY,
         "crypto.sign",
         &serde_json::json!({
             "data": "Y3Jvc3MtYXJjaC1zaWduLXRlc3Q=",
             "algorithm": "ed25519"
         }),
+        &host,
+        bd_port,
     );
     match &sign_result {
         Ok(result) => {
@@ -165,9 +181,9 @@ pub fn validate_hsm_capabilities(v: &mut ValidationResult) {
                     .get("public_key")
                     .or_else(|| keypair.as_ref().ok().and_then(|k| k.get("public_key"))),
             ) {
-                let verify_result = tcp_rpc_value(
-                    &host,
-                    bd_port,
+                let verify_result = rpc_value(
+                    bridge,
+                    domain::SECURITY,
                     "crypto.verify",
                     &serde_json::json!({
                         "data": "Y3Jvc3MtYXJjaC1zaWduLXRlc3Q=",
@@ -175,6 +191,8 @@ pub fn validate_hsm_capabilities(v: &mut ValidationResult) {
                         "public_key": pubkey,
                         "algorithm": "ed25519"
                     }),
+                    &host,
+                    bd_port,
                 );
                 match &verify_result {
                     Ok(result) => {

@@ -64,8 +64,12 @@ pub(super) fn discover_full() -> DiscoveryResult {
             let resolve_result = clients
                 .get_mut("discovery")
                 .and_then(|sb| {
-                    sb.call("ipc.resolve", serde_json::json!({"primal_id": primal}))
+                    sb.call("ipc.resolve", serde_json::json!({"capability": cap}))
                         .ok()
+                        .or_else(|| {
+                            sb.call("ipc.resolve", serde_json::json!({"primal_id": primal}))
+                                .ok()
+                        })
                 })
                 .and_then(|resp| resp.result);
 

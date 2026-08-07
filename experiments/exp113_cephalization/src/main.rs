@@ -27,8 +27,21 @@
 //!   - Portable primal socket groups across gates
 //!   - K-Derm layer placement (cytoplasm vs plasma membrane sockets)
 
+use std::collections::BTreeMap;
+
 use primalspring::composition::CompositionContext;
 use primalspring::validation::ValidationResult;
+use primalspring_trio_ops::census::{socket_ownership_map, socket_owner};
+
+fn ownership_by_primal() -> BTreeMap<String, Vec<&'static str>> {
+    let mut map: BTreeMap<String, Vec<&'static str>> = BTreeMap::new();
+    for entry in socket_ownership_map() {
+        map.entry(socket_owner(&entry).to_owned())
+            .or_default()
+            .push(entry.socket_suffix);
+    }
+    map
+}
 
 fn main() {
     ValidationResult::new("primalSpring Exp113 — Primal Cephalization")
@@ -50,70 +63,6 @@ fn main() {
             },
         );
 }
-
-struct SocketOwnership {
-    primal: &'static str,
-    domain_sockets: &'static [&'static str],
-}
-
-const OWNERSHIP_MAP: &[SocketOwnership] = &[
-    SocketOwnership {
-        primal: "beardog",
-        domain_sockets: &[
-            "crypto.sock",
-            "security.sock",
-            "btsp.sock",
-            "ed25519.sock",
-            "x25519.sock",
-        ],
-    },
-    SocketOwnership {
-        primal: "songbird",
-        domain_sockets: &["discovery.sock", "braid.sock", "songbird.sock"],
-    },
-    SocketOwnership {
-        primal: "toadstool",
-        domain_sockets: &["compute.sock", "tensor.sock", "shader.sock"],
-    },
-    SocketOwnership {
-        primal: "coralreef",
-        domain_sockets: &["visualization.sock"],
-    },
-    SocketOwnership {
-        primal: "barracuda",
-        domain_sockets: &[
-            "dag.sock",
-            "commit.sock",
-            "merkle.sock",
-            "provenance.sock",
-            "attribution.sock",
-        ],
-    },
-    SocketOwnership {
-        primal: "sweetgrass",
-        domain_sockets: &["storage.sock"],
-    },
-    SocketOwnership {
-        primal: "squirrel",
-        domain_sockets: &["orchestration.sock", "spine.sock"],
-    },
-    SocketOwnership {
-        primal: "loamspine",
-        domain_sockets: &["ledger.sock"],
-    },
-    SocketOwnership {
-        primal: "biomeos",
-        domain_sockets: &["ai.sock", "inference.sock"],
-    },
-    SocketOwnership {
-        primal: "nestgate",
-        domain_sockets: &["network.sock"],
-    },
-    SocketOwnership {
-        primal: "skunkbat",
-        domain_sockets: &["skunkbat.sock"],
-    },
-];
 
 fn biomeos_socket_dir() -> std::path::PathBuf {
     let xdg = primalspring::tolerances::runtime_dir();
@@ -171,6 +120,9 @@ fn phase_ownership_mapping(v: &mut ValidationResult) {
         return;
     }
 
+    let ownership = socket_ownership_map();
+    let by_primal = ownership_by_primal();
+
     let all_sockets: Vec<String> = std::fs::read_dir(&dir)
         .into_iter()
         .flatten()
@@ -188,9 +140,9 @@ fn phase_ownership_mapping(v: &mut ValidationResult) {
     let mut unmapped: Vec<String> = Vec::new();
 
     for sock in &flat_sockets {
-        let owner = OWNERSHIP_MAP
+        let owner = ownership
             .iter()
-            .find(|o| o.domain_sockets.contains(&sock.as_str()));
+            .find(|entry| entry.socket_suffix == sock.as_str());
         if owner.is_some() {
             mapped += 1;
         } else {
@@ -217,19 +169,17 @@ fn phase_ownership_mapping(v: &mut ValidationResult) {
         );
     }
 
-    for entry in OWNERSHIP_MAP {
-        let live = entry
-            .domain_sockets
+    for (primal, domain_sockets) in &by_primal {
+        let live = domain_sockets
             .iter()
             .filter(|s| dir.join(s).exists())
             .count();
         v.check_bool(
-            &format!("ownership:{}", entry.primal),
+            &format!("ownership:{primal}"),
             live > 0,
             &format!(
-                "{live}/{} domain sockets live → would become {}/",
-                entry.domain_sockets.len(),
-                entry.primal
+                "{live}/{} domain sockets live → would become {primal}/",
+                domain_sockets.len()
             ),
         );
     }
@@ -249,9 +199,10 @@ fn phase_cephalization_readiness(v: &mut ValidationResult) {
         ),
     );
 
-    let multi_socket: Vec<_> = OWNERSHIP_MAP
+    let by_primal = ownership_by_primal();
+    let multi_socket: Vec<_> = by_primal
         .iter()
-        .filter(|o| o.domain_sockets.len() >= 3)
+        .filter(|(_, sockets)| sockets.len() >= 3)
         .collect();
     v.check_bool(
         "ceph:high_value_primals",
@@ -261,28 +212,29 @@ fn phase_cephalization_readiness(v: &mut ValidationResult) {
             multi_socket.len(),
             multi_socket
                 .iter()
-                .map(|o| format!("{}({})", o.primal, o.domain_sockets.len()))
+                .map(|(primal, sockets)| format!("{primal}({})", sockets.len()))
                 .collect::<Vec<_>>()
                 .join(", ")
         ),
     );
 
-    let total_flat: usize = OWNERSHIP_MAP.iter().map(|o| o.domain_sockets.len()).sum();
+    let total_flat: usize = by_primal.values().map(Vec::len).sum();
     v.check_bool(
         "ceph:total_migration_targets",
         total_flat > 0,
         &format!(
             "{total_flat} domain sockets across {} primals → primal-scoped directories",
-            OWNERSHIP_MAP.len()
+            by_primal.len()
         ),
     );
 }
 
 fn phase_migration_plan(v: &mut ValidationResult) {
-    let mut phase_a: Vec<(&str, usize)> = OWNERSHIP_MAP
+    let by_primal = ownership_by_primal();
+    let mut phase_a: Vec<(String, usize)> = by_primal
         .iter()
-        .filter(|o| o.domain_sockets.len() >= 3)
-        .map(|o| (o.primal, o.domain_sockets.len()))
+        .filter(|(_, sockets)| sockets.len() >= 3)
+        .map(|(primal, sockets)| (primal.clone(), sockets.len()))
         .collect();
     phase_a.sort_by_key(|a| std::cmp::Reverse(a.1));
 
@@ -299,10 +251,10 @@ fn phase_migration_plan(v: &mut ValidationResult) {
         ),
     );
 
-    let phase_b: Vec<_> = OWNERSHIP_MAP
+    let phase_b: Vec<String> = by_primal
         .iter()
-        .filter(|o| !o.domain_sockets.is_empty() && o.domain_sockets.len() < 3)
-        .map(|o| o.primal)
+        .filter(|(_, sockets)| !sockets.is_empty() && sockets.len() < 3)
+        .map(|(primal, _)| primal.clone())
         .collect();
 
     v.check_bool(

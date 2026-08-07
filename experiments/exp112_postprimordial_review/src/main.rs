@@ -18,6 +18,7 @@
 use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
+use primalspring_trio_ops::census::{federation_port_census, port_is_droppable};
 
 fn main() {
     ValidationResult::new("primalSpring Exp112 — PostPrimordial Review")
@@ -219,45 +220,7 @@ fn phase_socket_census(v: &mut ValidationResult) {
 }
 
 fn phase_tcp_port_audit(v: &mut ValidationResult) {
-    struct PortEntry {
-        port: u16,
-        primal: &'static str,
-        purpose: &'static str,
-        cns_eligible: bool,
-    }
-
-    let ports = [
-        PortEntry {
-            port: 7700,
-            primal: "songbird",
-            purpose: "federation (nucleus01)",
-            cns_eligible: false,
-        },
-        PortEntry {
-            port: 7701,
-            primal: "songbird",
-            purpose: "federation (primalspring01)",
-            cns_eligible: false,
-        },
-        PortEntry {
-            port: 9101,
-            primal: "beardog",
-            purpose: "primalspring01 crypto",
-            cns_eligible: true,
-        },
-        PortEntry {
-            port: 9900,
-            primal: "beardog",
-            purpose: "nucleus01 crypto",
-            cns_eligible: true,
-        },
-        PortEntry {
-            port: 9750,
-            primal: "skunkbat",
-            purpose: "meta-tier defense",
-            cns_eligible: true,
-        },
-    ];
+    let ports = federation_port_census();
 
     let mut cns_eligible = 0;
     for entry in &ports {
@@ -267,7 +230,8 @@ fn phase_tcp_port_audit(v: &mut ValidationResult) {
         )
         .is_ok();
 
-        if reachable && entry.cns_eligible {
+        let cns_eligible_port = port_is_droppable(entry);
+        if reachable && cns_eligible_port {
             cns_eligible += 1;
         }
 
@@ -276,8 +240,8 @@ fn phase_tcp_port_audit(v: &mut ValidationResult) {
             reachable,
             &format!(
                 "{} — {}",
-                entry.purpose,
-                if entry.cns_eligible {
+                entry.status,
+                if cns_eligible_port {
                     "DROPPABLE via Tower CNS (exp114)"
                 } else {
                     "KEEP: federation requires TCP"

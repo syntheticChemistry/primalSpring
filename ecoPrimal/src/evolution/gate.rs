@@ -270,11 +270,16 @@ impl MeshEntry {
     }
 
     /// Whether this gate has Tower Atomic services running.
+    ///
+    /// Checks the gate's `services` list against the Tower composition
+    /// members from `capability_registry.toml` plus the aggregate
+    /// `nucleus_tower` service name. No hardcoded primal slugs.
     #[must_use]
     pub fn has_tower(&self) -> bool {
-        self.services
-            .iter()
-            .any(|s| s == "beardog" || s == "songbird" || s == "skunkbat" || s == "nucleus_tower")
+        self.services.iter().any(|s| {
+            s == "nucleus_tower"
+                || crate::composition::primal_home_tier_priority(s) == Some(0)
+        })
     }
 }
 

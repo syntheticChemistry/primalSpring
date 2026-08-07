@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**93 experiments across 21 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25+). Zero deprecated `probe_primal` callers remain as of Wave 18.
+**95 experiments across 21 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25+). Zero deprecated `probe_primal` callers remain as of Wave 18.
 
 ---
 

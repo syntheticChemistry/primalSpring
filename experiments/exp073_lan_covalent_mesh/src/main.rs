@@ -2,7 +2,11 @@
 
 #![forbid(unsafe_code)]
 
-//! Exp073: LAN Covalent Mesh
+//! Exp073: LAN Covalent Mesh — cross-gate bonding via Neural API + CompositionContext.
+//!
+//! For cross-gate validation where no local Neural API socket exists for the
+//! remote gate, TCP fallback is retained (this is the intended cross-gate
+//! transport until songBird TURN relay or cross-gate Neural API dispatch).
 
 use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
@@ -38,277 +42,22 @@ fn phase_local_composition(v: &mut ValidationResult, ctx: &CompositionContext) {
     }
 }
 
-fn validate_remote_health(
-    v: &mut ValidationResult,
-    host: &str,
-    beardog_port: u16,
-    songbird_port: u16,
-) {
-    v.section("Remote Health");
-
-    match tcp_rpc_value(
-        host,
-        beardog_port,
-        methods::health::LIVENESS,
-        &serde_json::json!({}),
-    ) {
-        Ok(_) => {
-            println!("  remote beardog: LIVE");
-            v.check_bool(
-                "remote_beardog_live",
-                true,
-                "remote beardog health.liveness",
-            );
-        }
-        Err(e) => {
-            println!("  remote beardog: {e}");
-            v.check_skip("remote_beardog_live", &format!("beardog unreachable: {e}"));
-        }
-    }
-
-    match tcp_rpc_value(
-        host,
-        songbird_port,
-        methods::health::LIVENESS,
-        &serde_json::json!({}),
-    ) {
-        Ok(_) => {
-            println!("  remote songbird: LIVE");
-            v.check_bool(
-                "remote_songbird_live",
-                true,
-                "remote songbird health.liveness",
-            );
-        }
-        Err(e) => {
-            println!("  remote songbird: {e}");
-            v.check_skip(
-                "remote_songbird_live",
-                &format!("songbird unreachable: {e}"),
-            );
-        }
-    }
-}
-
-fn validate_remote_capabilities(v: &mut ValidationResult, host: &str, songbird_port: u16) {
-    v.section("Remote Capabilities");
-
-    match tcp_rpc_value(
-        host,
-        songbird_port,
-        methods::capabilities::LIST,
-        &serde_json::json!({}),
-    ) {
-        Ok(caps) => {
-            let count = caps
-                .as_array()
-                .map(std::vec::Vec::len)
-                .or_else(|| {
-                    caps.get("capabilities")
-                        .and_then(|c| c.as_array())
-                        .map(std::vec::Vec::len)
-                })
-                .unwrap_or(0);
-            println!("  remote capabilities: {count}");
-            v.check_bool(
-                "remote_capabilities_enumerated",
-                count > 0,
-                &format!("remote capabilities.list returned {count}"),
-            );
-        }
-        Err(e) => {
-            println!("  remote capabilities: {e}");
-            v.check_skip(
-                "remote_capabilities_enumerated",
-                &format!("capabilities.list: {e}"),
-            );
-        }
-    }
-}
-
-fn validate_mesh_peers(v: &mut ValidationResult, host: &str, songbird_port: u16) {
-    v.section("Mesh Discovery");
-
-    match tcp_rpc_value(host, songbird_port, "mesh.peers", &serde_json::json!({})) {
-        Ok(peers) => {
-            let count = peers
-                .as_array()
-                .map(std::vec::Vec::len)
-                .or_else(|| {
-                    peers
-                        .get("peers")
-                        .and_then(|p| p.as_array())
-                        .map(std::vec::Vec::len)
-                })
-                .unwrap_or(0);
-            println!("  mesh peers discovered: {count}");
-            v.check_bool(
-                "mesh_peers_discovered",
-                count >= 1,
-                &format!("mesh.peers returned {count} peers (need >= 1)"),
-            );
-        }
-        Err(e) => {
-            println!("  mesh.peers: {e}");
-            let acceptable = e.is_method_not_found();
-            if acceptable {
-                v.check_skip(
-                    "mesh_peers_discovered",
-                    &format!("mesh.peers not available: {e}"),
-                );
-            } else {
-                v.check_skip("mesh_peers_discovered", &format!("mesh.peers error: {e}"));
-            }
-        }
-    }
-
-    match tcp_rpc_value(
-        host,
-        songbird_port,
-        "mesh.auto_discover",
-        &serde_json::json!({}),
-    ) {
-        Ok(resp) => {
-            println!("  mesh.auto_discover: {resp}");
-            v.check_bool("mesh_auto_discover", true, "mesh.auto_discover responded");
-        }
-        Err(e) => {
-            println!("  mesh.auto_discover: {e}");
-            v.check_skip("mesh_auto_discover", &format!("auto_discover: {e}"));
-        }
-    }
-}
-
-fn validate_birdsong_beacon(
-    v: &mut ValidationResult,
-    host: &str,
-    songbird_port: u16,
-    family_id: &str,
-) {
-    v.section("BirdSong Beacon Exchange");
-
-    let beacon_result = tcp_rpc_value(
-        host,
-        songbird_port,
-        "birdsong.generate_encrypted_beacon",
-        &serde_json::json!({
-            "family_id": family_id,
-            "node_id": "exp073_remote",
-            "capabilities": ["security", "discovery", "compute", "storage"],
-            "device_type": "tower"
-        }),
-    );
-
-    match &beacon_result {
-        Ok(beacon) => {
-            println!("  remote beacon generated: {}B", beacon.to_string().len());
-            v.check_bool(
-                "remote_beacon_generated",
-                true,
-                "remote BirdSong beacon generated",
-            );
-
-            let enc_str = beacon
-                .get("encrypted_beacon")
-                .and_then(|v| v.as_str())
-                .unwrap_or_default();
-
-            if enc_str.is_empty() {
-                v.check_skip(
-                    "remote_beacon_roundtrip",
-                    "beacon generated but encrypted_beacon field empty",
-                );
-            } else {
-                match tcp_rpc_value(
-                    host,
-                    songbird_port,
-                    "birdsong.decrypt_beacon",
-                    &serde_json::json!({ "encrypted_beacon": enc_str }),
-                ) {
-                    Ok(plain) => {
-                        println!("  remote beacon decrypt: OK");
-                        let has_family = plain
-                            .get("family_id")
-                            .and_then(|f| f.as_str())
-                            .is_some_and(|f| f == family_id);
-                        v.check_bool(
-                            "remote_beacon_roundtrip",
-                            true,
-                            "remote beacon encrypt+decrypt round-trip",
-                        );
-                        v.check_bool(
-                            "beacon_family_matches",
-                            has_family,
-                            "decrypted beacon contains matching family_id",
-                        );
-                    }
-                    Err(e) => {
-                        println!("  remote beacon decrypt: {e}");
-                        v.check_bool(
-                            "remote_beacon_roundtrip",
-                            false,
-                            &format!("decrypt failed: {e}"),
-                        );
-                    }
-                }
-            }
-        }
-        Err(e) => {
-            println!("  remote beacon generation: {e}");
-            let method_missing = e.is_method_not_found();
-            if method_missing {
-                v.check_skip(
-                    "remote_beacon_generated",
-                    "birdsong.generate_encrypted_beacon not available",
-                );
-            } else {
-                v.check_skip("remote_beacon_generated", &format!("beacon: {e}"));
-            }
-        }
-    }
-}
-
-fn validate_stun(v: &mut ValidationResult, host: &str, songbird_port: u16) {
-    v.section("STUN / NAT Discovery");
-
-    match tcp_rpc_value(
-        host,
-        songbird_port,
-        "stun.get_public_address",
-        &serde_json::json!({}),
-    ) {
-        Ok(addr) => {
-            println!("  remote STUN address: {addr}");
-            v.check_bool(
-                "remote_stun_address",
-                true,
-                "remote STUN resolved public address",
-            );
-        }
-        Err(e) => {
-            println!("  remote STUN: {e}");
-            v.check_skip("remote_stun_address", &format!("STUN: {e}"));
-        }
-    }
-}
-
-fn validate_neural_api_routing(v: &mut ValidationResult) {
-    v.section("Neural API Capability Routing");
+fn phase_local_neural_routing(v: &mut ValidationResult) {
+    v.section("Local Neural API Routing");
 
     let Some(bridge) = NeuralBridge::discover() else {
-        println!("  biomeOS not running — skipping neural-api routing checks");
-        v.check_skip("neural_api_routing", "biomeOS neural-api not discovered");
+        v.check_skip("local_neural_api", "biomeOS not running");
         return;
     };
 
     match bridge.health_check() {
         Ok(_) => {
             println!("  neural-api: HEALTHY");
-            v.check_bool("neural_api_health", true, "biomeOS neural-api healthy");
+            v.check_bool("local_neural_api", true, "biomeOS neural-api healthy");
         }
         Err(e) => {
             println!("  neural-api: {e}");
-            v.check_bool("neural_api_health", false, &format!("neural-api: {e}"));
+            v.check_bool("local_neural_api", false, &format!("neural-api: {e}"));
             return;
         }
     }
@@ -329,13 +78,185 @@ fn validate_neural_api_routing(v: &mut ValidationResult) {
     }
 }
 
+fn validate_remote_health(
+    v: &mut ValidationResult,
+    host: &str,
+    beardog_port: u16,
+    songbird_port: u16,
+) {
+    v.section("Remote Health (cross-gate TCP — no remote Neural API socket)");
+
+    match tcp_rpc_value(host, beardog_port, methods::health::LIVENESS, &serde_json::json!({})) {
+        Ok(_) => {
+            println!("  remote beardog: LIVE");
+            v.check_bool("remote_beardog_live", true, "remote beardog health.liveness");
+        }
+        Err(e) => {
+            println!("  remote beardog: {e}");
+            v.check_skip("remote_beardog_live", &format!("beardog unreachable: {e}"));
+        }
+    }
+
+    match tcp_rpc_value(host, songbird_port, methods::health::LIVENESS, &serde_json::json!({})) {
+        Ok(_) => {
+            println!("  remote songbird: LIVE");
+            v.check_bool("remote_songbird_live", true, "remote songbird health.liveness");
+        }
+        Err(e) => {
+            println!("  remote songbird: {e}");
+            v.check_skip("remote_songbird_live", &format!("songbird unreachable: {e}"));
+        }
+    }
+}
+
+fn validate_remote_capabilities(v: &mut ValidationResult, host: &str, songbird_port: u16) {
+    v.section("Remote Capabilities (cross-gate TCP)");
+
+    match tcp_rpc_value(host, songbird_port, methods::capabilities::LIST, &serde_json::json!({})) {
+        Ok(caps) => {
+            let count = caps
+                .as_array()
+                .map(std::vec::Vec::len)
+                .or_else(|| {
+                    caps.get("capabilities")
+                        .and_then(|c| c.as_array())
+                        .map(std::vec::Vec::len)
+                })
+                .unwrap_or(0);
+            println!("  remote capabilities: {count}");
+            v.check_bool(
+                "remote_capabilities_enumerated",
+                count > 0,
+                &format!("remote capabilities.list returned {count}"),
+            );
+        }
+        Err(e) => {
+            println!("  remote capabilities: {e}");
+            v.check_skip("remote_capabilities_enumerated", &format!("capabilities.list: {e}"));
+        }
+    }
+}
+
+fn validate_mesh_peers(v: &mut ValidationResult, host: &str, songbird_port: u16) {
+    v.section("Mesh Discovery (cross-gate TCP)");
+
+    match tcp_rpc_value(host, songbird_port, "mesh.peers", &serde_json::json!({})) {
+        Ok(peers) => {
+            let count = peers
+                .as_array()
+                .map(std::vec::Vec::len)
+                .or_else(|| {
+                    peers.get("peers")
+                        .and_then(|p| p.as_array())
+                        .map(std::vec::Vec::len)
+                })
+                .unwrap_or(0);
+            println!("  mesh peers discovered: {count}");
+            v.check_bool(
+                "mesh_peers_discovered",
+                count >= 1,
+                &format!("mesh.peers returned {count} peers (need >= 1)"),
+            );
+        }
+        Err(e) => {
+            println!("  mesh.peers: {e}");
+            if e.is_method_not_found() {
+                v.check_skip("mesh_peers_discovered", &format!("mesh.peers not available: {e}"));
+            } else {
+                v.check_skip("mesh_peers_discovered", &format!("mesh.peers error: {e}"));
+            }
+        }
+    }
+
+    match tcp_rpc_value(host, songbird_port, "mesh.auto_discover", &serde_json::json!({})) {
+        Ok(resp) => {
+            println!("  mesh.auto_discover: {resp}");
+            v.check_bool("mesh_auto_discover", true, "mesh.auto_discover responded");
+        }
+        Err(e) => {
+            println!("  mesh.auto_discover: {e}");
+            v.check_skip("mesh_auto_discover", &format!("auto_discover: {e}"));
+        }
+    }
+}
+
+fn validate_birdsong_beacon(
+    v: &mut ValidationResult,
+    host: &str,
+    songbird_port: u16,
+    family_id: &str,
+) {
+    v.section("BirdSong Beacon Exchange (cross-gate TCP)");
+
+    let beacon_result = tcp_rpc_value(
+        host,
+        songbird_port,
+        "birdsong.generate_encrypted_beacon",
+        &serde_json::json!({
+            "family_id": family_id,
+            "node_id": "exp073_remote",
+            "capabilities": ["security", "discovery", "compute", "storage"],
+            "device_type": "tower"
+        }),
+    );
+
+    match &beacon_result {
+        Ok(beacon) => {
+            println!("  remote beacon generated: {}B", beacon.to_string().len());
+            v.check_bool("remote_beacon_generated", true, "remote BirdSong beacon generated");
+
+            let enc_str = beacon
+                .get("encrypted_beacon")
+                .and_then(|v| v.as_str())
+                .unwrap_or_default();
+
+            if enc_str.is_empty() {
+                v.check_skip(
+                    "remote_beacon_roundtrip",
+                    "beacon generated but encrypted_beacon field empty",
+                );
+            } else {
+                match tcp_rpc_value(
+                    host,
+                    songbird_port,
+                    "birdsong.decrypt_beacon",
+                    &serde_json::json!({ "encrypted_beacon": enc_str }),
+                ) {
+                    Ok(plain) => {
+                        let has_family = plain
+                            .get("family_id")
+                            .and_then(|f| f.as_str())
+                            .is_some_and(|f| f == family_id);
+                        v.check_bool("remote_beacon_roundtrip", true, "beacon encrypt+decrypt round-trip");
+                        v.check_bool(
+                            "beacon_family_matches",
+                            has_family,
+                            "decrypted beacon contains matching family_id",
+                        );
+                    }
+                    Err(e) => {
+                        v.check_bool("remote_beacon_roundtrip", false, &format!("decrypt failed: {e}"));
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            if e.is_method_not_found() {
+                v.check_skip("remote_beacon_generated", "birdsong.generate_encrypted_beacon not available");
+            } else {
+                v.check_skip("remote_beacon_generated", &format!("beacon: {e}"));
+            }
+        }
+    }
+}
+
 fn validate_genetic_lineage(
     v: &mut ValidationResult,
     host: &str,
     beardog_port: u16,
     family_id: &str,
 ) {
-    v.section("Genetic Lineage (FAMILY_ID)");
+    v.section("Genetic Lineage — FAMILY_ID (cross-gate TCP)");
 
     match tcp_rpc_value(
         host,
@@ -365,203 +286,8 @@ fn validate_genetic_lineage(
     }
 }
 
-#[expect(
-    clippy::too_many_lines,
-    reason = "multi-phase validation is inherently sequential"
-)]
-fn validate_three_tier_genetics(v: &mut ValidationResult, host: &str, beardog_port: u16) {
-    v.section("Three-Tier Genetics (Mito + Nuclear + Lineage Proof)");
-
-    let lineage_seed = "exp073_lan_covalent_test_seed";
-
-    // Tier 1: Mito-beacon key derivation
-    match tcp_rpc_value(
-        host,
-        beardog_port,
-        "genetic.derive_lineage_beacon_key",
-        &serde_json::json!({
-            "lineage_seed": lineage_seed,
-            "domain": "birdsong_beacon_v1"
-        }),
-    ) {
-        Ok(result) => {
-            let has_key = result.get("beacon_key").is_some();
-            let status = if has_key { "derived" } else { "missing" };
-            println!("  Tier 1 mito-beacon key: {status}");
-            v.check_bool(
-                "remote_mito_beacon_derived",
-                has_key,
-                "genetic.derive_lineage_beacon_key on remote BearDog",
-            );
-        }
-        Err(e) => {
-            if e.is_method_not_found() {
-                v.check_skip(
-                    "remote_mito_beacon_derived",
-                    "genetic.derive_lineage_beacon_key not available",
-                );
-            } else {
-                v.check_skip("remote_mito_beacon_derived", &format!("mito-beacon: {e}"));
-            }
-            return;
-        }
-    }
-
-    // Tier 2: Nuclear lineage key — genesis (generation 0)
-    let genesis_result = tcp_rpc_value(
-        host,
-        beardog_port,
-        "genetic.derive_lineage_key",
-        &serde_json::json!({
-            "lineage_seed": lineage_seed,
-            "domain": "covalent_mesh_v1",
-            "generation": 0
-        }),
-    );
-
-    let genesis_key_hash = match &genesis_result {
-        Ok(result) => {
-            let has_key = result.get("lineage_key").is_some();
-            let generation = result
-                .get("generation")
-                .and_then(serde_json::Value::as_u64)
-                .unwrap_or(999);
-            let key_status = if has_key { "derived" } else { "missing" };
-            println!("  Tier 2 nuclear genesis: gen={generation}, key={key_status}");
-            v.check_bool(
-                "remote_nuclear_genesis",
-                has_key && generation == 0,
-                "genetic.derive_lineage_key genesis on remote BearDog",
-            );
-            result
-                .get("lineage_key")
-                .and_then(|k| k.as_str())
-                .map(String::from)
-        }
-        Err(e) => {
-            v.check_skip("remote_nuclear_genesis", &format!("nuclear genesis: {e}"));
-            None
-        }
-    };
-
-    // Tier 2: Nuclear lineage key — child (generation 1, with parent hash)
-    if let Some(ref _parent_key) = genesis_key_hash {
-        let child_result = tcp_rpc_value(
-            host,
-            beardog_port,
-            "genetic.derive_lineage_key",
-            &serde_json::json!({
-                "lineage_seed": lineage_seed,
-                "domain": "covalent_mesh_child_v1",
-                "generation": 1,
-                "context_entropy": "lan-covalent-session"
-            }),
-        );
-
-        match child_result {
-            Ok(result) => {
-                let generation = result
-                    .get("generation")
-                    .and_then(serde_json::Value::as_u64)
-                    .unwrap_or(999);
-                let has_key = result.get("lineage_key").is_some();
-                let key_status = if has_key { "derived" } else { "missing" };
-                println!("  Tier 2 nuclear child:   gen={generation}, key={key_status}");
-                v.check_bool(
-                    "remote_nuclear_child",
-                    has_key && generation == 1,
-                    "genetic.derive_lineage_key child generation on remote BearDog",
-                );
-            }
-            Err(e) => {
-                v.check_skip("remote_nuclear_child", &format!("nuclear child: {e}"));
-            }
-        }
-    }
-
-    // Lineage proof generation + verification round-trip
-    let proof_result = tcp_rpc_value(
-        host,
-        beardog_port,
-        "genetic.generate_lineage_proof",
-        &serde_json::json!({
-            "lineage_seed": lineage_seed,
-            "generation": 0,
-            "context": "covalent_mesh_v1"
-        }),
-    );
-
-    match &proof_result {
-        Ok(result) => {
-            let has_proof = result.get("proof").is_some();
-            println!("  Lineage proof generated: {has_proof}");
-            v.check_bool(
-                "remote_lineage_proof_generated",
-                has_proof,
-                "genetic.generate_lineage_proof on remote BearDog",
-            );
-
-            if let Some(proof) = result.get("proof").and_then(|p| p.as_str()) {
-                match tcp_rpc_value(
-                    host,
-                    beardog_port,
-                    "genetic.verify_lineage",
-                    &serde_json::json!({
-                        "proof": proof,
-                        "claimed_generation": 0,
-                        "context": "covalent_mesh_v1"
-                    }),
-                ) {
-                    Ok(verify) => {
-                        let valid = verify
-                            .get("valid")
-                            .and_then(serde_json::Value::as_bool)
-                            .unwrap_or(false);
-                        println!("  Lineage proof verified: {valid}");
-                        v.check_bool(
-                            "remote_lineage_proof_verified",
-                            valid,
-                            "genetic.verify_lineage round-trip on remote BearDog",
-                        );
-                    }
-                    Err(e) => {
-                        v.check_skip("remote_lineage_proof_verified", &format!("verify: {e}"));
-                    }
-                }
-            }
-        }
-        Err(e) => {
-            v.check_skip("remote_lineage_proof_generated", &format!("proof: {e}"));
-        }
-    }
-
-    // Entropy mixing
-    match tcp_rpc_value(
-        host,
-        beardog_port,
-        "genetic.mix_entropy",
-        &serde_json::json!({
-            "tiers": ["68756d616e2d656e74726f7079", "73757065727669736564", "6d616368696e65"]
-        }),
-    ) {
-        Ok(result) => {
-            let has_mixed = result.get("mixed").is_some();
-            let status = if has_mixed { "OK" } else { "missing" };
-            println!("  Entropy mixing: {status}");
-            v.check_bool(
-                "remote_entropy_mixing",
-                has_mixed,
-                "genetic.mix_entropy on remote BearDog",
-            );
-        }
-        Err(e) => {
-            v.check_skip("remote_entropy_mixing", &format!("mix_entropy: {e}"));
-        }
-    }
-}
-
 fn validate_tower_https(v: &mut ValidationResult, host: &str, songbird_port: u16) {
-    v.section("HTTPS Through Tower Atomic");
+    v.section("HTTPS Through Tower Atomic (cross-gate TCP)");
 
     match tcp_rpc_value(
         host,
@@ -588,6 +314,21 @@ fn validate_tower_https(v: &mut ValidationResult, host: &str, songbird_port: u16
     }
 }
 
+fn validate_stun(v: &mut ValidationResult, host: &str, songbird_port: u16) {
+    v.section("STUN / NAT Discovery (cross-gate TCP)");
+
+    match tcp_rpc_value(host, songbird_port, "stun.get_public_address", &serde_json::json!({})) {
+        Ok(addr) => {
+            println!("  remote STUN address: {addr}");
+            v.check_bool("remote_stun_address", true, "remote STUN resolved public address");
+        }
+        Err(e) => {
+            println!("  remote STUN: {e}");
+            v.check_skip("remote_stun_address", &format!("STUN: {e}"));
+        }
+    }
+}
+
 fn main() {
     let host = std::env::var("REMOTE_GATE_HOST").unwrap_or_default();
     let songbird_port: u16 = std::env::var("REMOTE_SONGBIRD_PORT")
@@ -605,35 +346,34 @@ fn main() {
         .run(
             "primalSpring Exp073: Cross-gate covalent bonding — mesh, beacon, lineage, HTTPS",
             |v| {
-            let ctx = CompositionContext::from_live_discovery_with_fallback();
-            phase_local_composition(v, &ctx);
+                let ctx = CompositionContext::from_live_discovery_with_fallback();
+                phase_local_composition(v, &ctx);
+                phase_local_neural_routing(v);
 
-            if host.is_empty() {
-                println!("  REMOTE_GATE_HOST not set — skipping all remote checks.");
-                println!(
-                    "  Usage: REMOTE_GATE_HOST=192.168.1.100 cargo run --bin exp073_lan_covalent_mesh"
-                );
-                v.check_skip("remote_gate_configured", "REMOTE_GATE_HOST not set");
-                return;
-            }
+                if host.is_empty() {
+                    println!("  REMOTE_GATE_HOST not set — skipping all remote checks.");
+                    println!(
+                        "  Usage: REMOTE_GATE_HOST=192.168.1.100 cargo run --bin exp073_lan_covalent_mesh"
+                    );
+                    v.check_skip("remote_gate_configured", "REMOTE_GATE_HOST not set");
+                    return;
+                }
 
-            println!("  Remote gate: {host}");
-            println!("  Songbird port: {songbird_port}");
-            println!("  BearDog port: {beardog_port}");
-            println!("  Family ID: {family_id}");
-            println!();
+                println!("  Remote gate: {host}");
+                println!("  Songbird port: {songbird_port}");
+                println!("  BearDog port: {beardog_port}");
+                println!("  Family ID: {family_id}");
+                println!();
 
-            v.check_bool("remote_gate_configured", true, "REMOTE_GATE_HOST is set");
+                v.check_bool("remote_gate_configured", true, "REMOTE_GATE_HOST is set");
 
-            validate_remote_health(v, &host, beardog_port, songbird_port);
-            validate_remote_capabilities(v, &host, songbird_port);
-            validate_mesh_peers(v, &host, songbird_port);
-            validate_birdsong_beacon(v, &host, songbird_port, &family_id);
-            validate_genetic_lineage(v, &host, beardog_port, &family_id);
-            validate_three_tier_genetics(v, &host, beardog_port);
-            validate_tower_https(v, &host, songbird_port);
-            validate_neural_api_routing(v);
-            validate_stun(v, &host, songbird_port);
+                validate_remote_health(v, &host, beardog_port, songbird_port);
+                validate_remote_capabilities(v, &host, songbird_port);
+                validate_mesh_peers(v, &host, songbird_port);
+                validate_birdsong_beacon(v, &host, songbird_port, &family_id);
+                validate_genetic_lineage(v, &host, beardog_port, &family_id);
+                validate_tower_https(v, &host, songbird_port);
+                validate_stun(v, &host, songbird_port);
             },
         );
 }

@@ -11,6 +11,9 @@ publish = false
 name = "exp074_cross_gate_health"
 path = "src/main.rs"
 
+[features]
+primordial-compat = ["primalspring/primordial-compat"]
+
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
 serde = { workspace = true }

@@ -24,6 +24,7 @@
 use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
+use primalspring_trio_ops::census::{federation_port_census, port_is_droppable, socket_ownership_map};
 
 fn main() {
     ValidationResult::new("primalSpring Exp114 — Tower CNS Convergence")
@@ -47,71 +48,33 @@ fn main() {
 }
 
 fn phase_port_census(v: &mut ValidationResult) {
-    #[expect(clippy::struct_field_names, reason = "clarity for port census")]
-    struct Port {
-        port: u16,
-        primal: &'static str,
-        role: &'static str,
-        can_drop: bool,
-    }
-
-    let ports = [
-        Port {
-            port: 7700,
-            primal: "songbird",
-            role: "federation nucleus01",
-            can_drop: false,
-        },
-        Port {
-            port: 7701,
-            primal: "songbird",
-            role: "federation primalspring01",
-            can_drop: false,
-        },
-        Port {
-            port: 9900,
-            primal: "beardog",
-            role: "crypto RPC nucleus01",
-            can_drop: true,
-        },
-        Port {
-            port: 9101,
-            primal: "beardog",
-            role: "crypto RPC primalspring01",
-            can_drop: true,
-        },
-        Port {
-            port: 9750,
-            primal: "skunkbat",
-            role: "meta-tier defense",
-            can_drop: true,
-        },
-    ];
+    let ports = federation_port_census();
 
     let mut reachable_count = 0;
     let mut droppable_count = 0;
 
-    for p in &ports {
+    for entry in &ports {
         let reachable = std::net::TcpStream::connect_timeout(
-            &std::net::SocketAddr::from(([127, 0, 0, 1], p.port)),
+            &std::net::SocketAddr::from(([127, 0, 0, 1], entry.port)),
             std::time::Duration::from_millis(500),
         )
         .is_ok();
 
+        let can_drop = port_is_droppable(entry);
         if reachable {
             reachable_count += 1;
-            if p.can_drop {
+            if can_drop {
                 droppable_count += 1;
             }
         }
 
         v.check_bool(
-            &format!("port:{}:{}", p.primal, p.port),
+            &format!("port:{}:{}", entry.primal, entry.port),
             reachable,
             &format!(
                 "{} — {}",
-                p.role,
-                if p.can_drop {
+                entry.status,
+                if can_drop {
                     "DROPPABLE: available via UDS, TCP unnecessary"
                 } else {
                     "KEEP: federation requires TCP for cross-gate braid"
@@ -133,31 +96,13 @@ fn phase_port_census(v: &mut ValidationResult) {
 
 fn phase_uds_coverage(v: &mut ValidationResult) {
     let dir = primalspring::tolerances::biomeos_socket_dir();
-
-    let caps_with_sockets: &[(&str, &str)] = &[
-        ("crypto", "crypto.sock"),
-        ("security", "security.sock"),
-        ("btsp", "btsp.sock"),
-        ("discovery", "discovery.sock"),
-        ("braid", "braid.sock"),
-        ("compute", "compute.sock"),
-        ("tensor", "tensor.sock"),
-        ("shader", "shader.sock"),
-        ("storage", "storage.sock"),
-        ("ledger", "ledger.sock"),
-        ("dag", "dag.sock"),
-        ("commit", "commit.sock"),
-        ("provenance", "provenance.sock"),
-        ("attribution", "attribution.sock"),
-        ("orchestration", "orchestration.sock"),
-        ("visualization", "visualization.sock"),
-        ("network", "network.sock"),
-        ("ai", "ai.sock"),
-        ("inference", "inference.sock"),
-    ];
+    let caps_with_sockets: Vec<(&str, &str)> = socket_ownership_map()
+        .iter()
+        .map(|entry| (entry.capability, entry.socket_suffix))
+        .collect();
 
     let mut uds_ready = 0;
-    for &(cap, sock) in caps_with_sockets {
+    for &(cap, sock) in &caps_with_sockets {
         let exists = dir.join(sock).exists();
         if exists {
             uds_ready += 1;

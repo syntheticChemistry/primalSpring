@@ -7,7 +7,7 @@
 [graph]
 name = "neuralspring_cell"
 description = "neuralSpring — NUCLEUS + ML inference + live visualization"
-version = "1.0.0"
+version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
@@ -17,6 +17,8 @@ security_model = "btsp_enforced"
 transport = "uds_only"
 composition_model = "nucleated"
 petaltongue_mode = "live"
+assigned_gate = "strandGate"
+data_gate = "westGate"
 
 # ── NUCLEUS Base ─────────────────────────────────────────────────────
 
@@ -95,13 +97,25 @@ health_method = "health.liveness"
 by_capability = "shader"
 capabilities = ["shader.compile.wgsl", "shader.compile.spirv"]
 
+[[graph.nodes]]
+name = "nestgate"
+security_model = "btsp"
+binary = "nestgate"
+order = 6
+required = true
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "storage"
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "content.get", "content.put"]
+
 # ── Meta Tier ────────────────────────────────────────────────────────
 
 [[graph.nodes]]
 name = "squirrel"
 security_model = "btsp"
 binary = "squirrel"
-order = 6
+order = 7
 required = true
 spawn = false
 depends_on = ["songbird"]
@@ -113,7 +127,7 @@ capabilities = ["ai.chat", "ai.inference", "inference.complete", "inference.embe
 name = "petaltongue"
 security_model = "btsp"
 binary = "petaltongue"
-order = 7
+order = 8
 required = true
 spawn = false
 depends_on = ["songbird"]
@@ -124,13 +138,49 @@ capabilities = ["visualization.render", "visualization.render.scene", "visualiza
 [graph.nodes.params]
 mode = "live"
 
+[[graph.nodes]]
+name = "rhizocrypt"
+security_model = "btsp"
+binary = "rhizocrypt"
+order = 9
+required = false
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
+
+[[graph.nodes]]
+name = "loamspine"
+security_model = "btsp"
+binary = "loamspine"
+order = 10
+required = false
+spawn = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = ["spine.create", "entry.append", "certificate.mint"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+security_model = "btsp"
+binary = "sweetgrass"
+order = 11
+required = false
+spawn = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
+
 # ── Domain Overlay ───────────────────────────────────────────────────
 
 [[graph.nodes]]
 name = "neuralspring"
 security_model = "btsp"
 binary = "neuralspring"
-order = 11
+order = 12
 required = true
 depends_on = ["beardog", "songbird", "toadstool", "barracuda", "squirrel"]
 health_method = "health.liveness"
@@ -149,4 +199,4 @@ depends_on = ["neuralspring", "petaltongue"]
 name = "health_check"
 
 [graph.nodes.operation.params]
-targets = ["beardog", "songbird", "toadstool", "barracuda", "squirrel", "petaltongue", "neuralspring"]
+targets = ["beardog", "songbird", "toadstool", "barracuda", "nestgate", "squirrel", "petaltongue", "neuralspring"]

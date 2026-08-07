@@ -68,6 +68,7 @@ pub mod env_keys;
 pub mod evolution;
 pub mod genetics;
 pub mod graphs;
+#[cfg(feature = "primordial-compat")]
 pub mod harness;
 pub mod ipc;
 pub mod launcher;

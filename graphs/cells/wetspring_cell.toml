@@ -7,7 +7,7 @@
 [graph]
 name = "wetspring_cell"
 description = "wetSpring — NUCLEUS + life science + live visualization"
-version = "1.0.0"
+version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
@@ -17,6 +17,8 @@ security_model = "btsp_enforced"
 transport = "uds_only"
 composition_model = "nucleated"
 petaltongue_mode = "live"
+assigned_gate = "westGate"
+compute_gate = "strandGate"
 
 # ── NUCLEUS Base ─────────────────────────────────────────────────────
 
@@ -105,7 +107,7 @@ spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "storage"
-capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "content.get", "content.put"]
 
 [[graph.nodes]]
 name = "rhizocrypt"

@@ -69,25 +69,17 @@ pub fn validate_crypto_bootstrap(ctx: &mut CompositionContext, v: &mut Validatio
 
 /// Derive a Tier 0 base key for a primal from its seed fingerprint.
 ///
-/// Uses HMAC-SHA256 with the info string `primal-nucleus-v1:{primal}`.
-/// This is a pure-Rust equivalent of the shell script's `derive_base_key()`.
+/// Delegates to bearDog `crypto.hmac_sha256` when a live security provider
+/// is reachable, falling back to local HMAC-SHA256 for offline validation.
 #[must_use]
 pub fn derive_base_key(primal: &str, fingerprint: &[u8]) -> [u8; 32] {
-    use hmac::{Hmac, KeyInit, Mac};
-    use sha2::Sha256;
-
     let info = format!("primal-nucleus-v1:{primal}");
-    let Ok(mut mac) = <Hmac<Sha256> as KeyInit>::new_from_slice(fingerprint) else {
-        return [0u8; 32];
-    };
-    mac.update(info.as_bytes());
-    mac.finalize().into_bytes().into()
+    hmac_sha256_delegate(fingerprint, info.as_bytes())
 }
 
 /// Derive a Tier 1 family key from the base key and family seed.
 ///
-/// Uses HMAC-SHA256 of `base_key || family_seed` with the info string
-/// `family-v1:{family_id}:{primal}`.
+/// Delegates to bearDog `crypto.hmac_sha256` when available.
 #[must_use]
 pub fn derive_family_key(
     base_key: &[u8; 32],
@@ -95,34 +87,70 @@ pub fn derive_family_key(
     family_id: &str,
     primal: &str,
 ) -> [u8; 32] {
-    use hmac::{Hmac, KeyInit, Mac};
-    use sha2::Sha256;
-
     let mut combined = Vec::with_capacity(base_key.len() + family_seed.len());
     combined.extend_from_slice(base_key);
     combined.extend_from_slice(family_seed);
 
     let info = format!("family-v1:{family_id}:{primal}");
-    let Ok(mut mac) = <Hmac<Sha256> as KeyInit>::new_from_slice(&combined) else {
-        return [0u8; 32];
-    };
-    mac.update(info.as_bytes());
-    mac.finalize().into_bytes().into()
+    hmac_sha256_delegate(&combined, info.as_bytes())
 }
 
 /// Derive a Tier 2 purpose key from the family key.
 ///
-/// Uses HMAC-SHA256 with the info string `purpose-v1:{purpose}`.
+/// Delegates to bearDog `crypto.hmac_sha256` when available.
 #[must_use]
 pub fn derive_purpose_key(family_key: &[u8; 32], purpose: &str) -> [u8; 32] {
+    let info = format!("purpose-v1:{purpose}");
+    hmac_sha256_delegate(family_key, info.as_bytes())
+}
+
+/// Try bearDog RPC for HMAC-SHA256; fall back to local pure-Rust crypto.
+///
+/// The delegation path uses the security provider's `crypto.hmac_sha256`
+/// capability via `CompositionContext::call()`. When bearDog is unreachable
+/// (offline tests, CI, pre-NUCLEUS bootstrap), the local HMAC is used.
+/// Both paths produce identical output — verified by the `s_crypto_bootstrap`
+/// scenario.
+fn hmac_sha256_delegate(key: &[u8], data: &[u8]) -> [u8; 32] {
+    use base64::Engine;
+    let b64 = base64::engine::general_purpose::STANDARD;
+
+    if let Some(result) = crate::ipc::discover::capability_call(
+        "security",
+        "crypto.hmac_sha256",
+        &serde_json::json!({
+            "key": b64.encode(key),
+            "data": b64.encode(data),
+        }),
+    ) {
+        if let Some(digest_b64) = result
+            .get("digest")
+            .or_else(|| result.get("hash"))
+            .or_else(|| result.get("mac"))
+            .and_then(serde_json::Value::as_str)
+        {
+            if let Ok(bytes) = b64.decode(digest_b64) {
+                if bytes.len() == 32 {
+                    let mut out = [0u8; 32];
+                    out.copy_from_slice(&bytes);
+                    return out;
+                }
+            }
+        }
+    }
+
+    hmac_sha256_local(key, data)
+}
+
+/// Local HMAC-SHA256 fallback — pure Rust, no IPC.
+fn hmac_sha256_local(key: &[u8], data: &[u8]) -> [u8; 32] {
     use hmac::{Hmac, KeyInit, Mac};
     use sha2::Sha256;
 
-    let info = format!("purpose-v1:{purpose}");
-    let Ok(mut mac) = <Hmac<Sha256> as KeyInit>::new_from_slice(family_key) else {
+    let Ok(mut mac) = <Hmac<Sha256> as KeyInit>::new_from_slice(key) else {
         return [0u8; 32];
     };
-    mac.update(info.as_bytes());
+    mac.update(data);
     mac.finalize().into_bytes().into()
 }
 

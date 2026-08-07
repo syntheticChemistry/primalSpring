@@ -5,12 +5,13 @@
 //! exp086 — Genetic Identity E2E
 //!
 //! Validates the mito (beacon seed) vs nuclear (family/lineage seed) model
-//! end-to-end: lineage key derivation, beacon-scoped encryption, family
-//! identity in capability registry, and cross-gate isolation.
+//! end-to-end via `NeuralBridge::capability_call()`: lineage key derivation,
+//! beacon-scoped encryption, family identity in capability registry, and
+//! cross-gate isolation.
 
 use primalspring::composition::CompositionContext;
-use primalspring::ipc::{methods, tcp};
-use primalspring::tolerances;
+use primalspring::ipc::methods;
+use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
 
 const GENETIC_DERIVE_LINEAGE_BEACON_KEY: &str = "genetic.derive_lineage_beacon_key";
@@ -42,7 +43,7 @@ fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContex
 }
 
 /// Nuclear genetics: derive keys from family/lineage seed.
-fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16) {
+fn phase_lineage_key_derivation(v: &mut ValidationResult, bridge: &NeuralBridge) {
     use base64::Engine;
     let b64 = base64::engine::general_purpose::STANDARD;
 
@@ -50,16 +51,16 @@ fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16)
 
     let lineage_seed = b64.encode(b"primalSpring_exp086_test_seed!!");
 
-    let beacon_key = tcp::tcp_rpc(
-        host,
-        port,
+    let beacon_key = bridge.capability_call(
+        "security",
         GENETIC_DERIVE_LINEAGE_BEACON_KEY,
         &serde_json::json!({
             "lineage_seed": lineage_seed
         }),
     );
     match &beacon_key {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let has_key = result.get("beacon_key").is_some()
                 || result.get("key").is_some()
                 || result.get("derived_key").is_some();
@@ -72,15 +73,14 @@ fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16)
         Err(e) => {
             v.check_skip(
                 "beacon key derivation",
-                &format!("BearDog genetic RPC not reachable: {e}"),
+                &format!("routing failed: {e}"),
             );
             return;
         }
     }
 
-    let domain_key = tcp::tcp_rpc(
-        host,
-        port,
+    let domain_key = bridge.capability_call(
+        "security",
         GENETIC_DERIVE_LINEAGE_KEY,
         &serde_json::json!({
             "our_family_id": "exp086-family",
@@ -90,25 +90,24 @@ fn phase_lineage_key_derivation(v: &mut ValidationResult, host: &str, port: u16)
         }),
     );
     match domain_key {
-        Ok((result, _)) => {
-            let has_key = result.get("key").is_some() || result.get("derived_key").is_some();
+        Ok(resp) => {
+            let has_key = resp.value.get("key").is_some() || resp.value.get("derived_key").is_some();
             v.check_bool(
                 "domain key derived",
                 has_key,
                 "per-domain key derivation works",
             );
         }
-        Err(e) => v.check_skip("domain key derivation", &format!("derive failed: {e}")),
+        Err(e) => v.check_skip("domain key derivation", &format!("routing failed: {e}")),
     }
 }
 
 /// Mito genetics: beacon encryption is family-scoped.
-fn phase_beacon_family_scoping(v: &mut ValidationResult, host: &str, port: u16) {
+fn phase_beacon_family_scoping(v: &mut ValidationResult, bridge: &NeuralBridge) {
     v.section("Phase 3: Beacon family scoping (mito)");
 
-    let beacon = tcp::tcp_rpc(
-        host,
-        port,
+    let beacon = bridge.capability_call(
+        "discovery",
         BIRDSONG_GENERATE_ENCRYPTED_BEACON,
         &serde_json::json!({
             "node_id": "exp086-mito-test",
@@ -116,7 +115,8 @@ fn phase_beacon_family_scoping(v: &mut ValidationResult, host: &str, port: u16) 
         }),
     );
     match &beacon {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let has_beacon =
                 result.get("encrypted_beacon").is_some() || result.get("beacon").is_some();
             v.check_bool(
@@ -128,7 +128,7 @@ fn phase_beacon_family_scoping(v: &mut ValidationResult, host: &str, port: u16) 
         Err(e) => {
             v.check_skip(
                 "family-scoped beacon",
-                &format!("Songbird not reachable: {e}"),
+                &format!("routing failed: {e}"),
             );
             return;
         }
@@ -137,20 +137,24 @@ fn phase_beacon_family_scoping(v: &mut ValidationResult, host: &str, port: u16) 
     let beacon_data = beacon
         .as_ref()
         .ok()
-        .and_then(|(r, _)| r.get("encrypted_beacon").or_else(|| r.get("beacon")))
+        .and_then(|resp| {
+            resp.value
+                .get("encrypted_beacon")
+                .or_else(|| resp.value.get("beacon"))
+        })
         .and_then(|b| b.as_str())
         .unwrap_or_default();
 
-    let decrypt_same = tcp::tcp_rpc(
-        host,
-        port,
+    let decrypt_same = bridge.capability_call(
+        "discovery",
         BIRDSONG_DECRYPT_BEACON,
         &serde_json::json!({
             "encrypted_beacon": beacon_data
         }),
     );
     match decrypt_same {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let has_node = result.get("node_id").is_some()
                 || result
                     .get("beacon")
@@ -162,23 +166,22 @@ fn phase_beacon_family_scoping(v: &mut ValidationResult, host: &str, port: u16) 
                 "same family can decrypt beacon",
             );
         }
-        Err(e) => v.check_skip("same-family decrypt", &format!("decrypt failed: {e}")),
+        Err(e) => v.check_skip("same-family decrypt", &format!("routing failed: {e}")),
     }
 }
 
 /// Verify biomeOS registers family identity in capability routing.
-fn phase_biomeos_family_registry(v: &mut ValidationResult, host: &str, port: u16) {
+fn phase_biomeos_family_registry(v: &mut ValidationResult, bridge: &NeuralBridge) {
     v.section("Phase 4: biomeOS family registry");
 
-    let caps = tcp::tcp_rpc(
-        host,
-        port,
+    let caps = bridge.capability_call(
+        "orchestration",
         methods::capabilities::LIST,
         &serde_json::json!({}),
     );
     match caps {
-        Ok((result, _)) => {
-            let caps_str = result.to_string();
+        Ok(resp) => {
+            let caps_str = resp.value.to_string();
             let has_family = caps_str.contains("family")
                 || caps_str.contains("genetic")
                 || caps_str.contains("lineage");
@@ -190,36 +193,34 @@ fn phase_biomeos_family_registry(v: &mut ValidationResult, host: &str, port: u16
         }
         Err(e) => v.check_skip(
             "biomeOS capability list",
-            &format!("biomeOS not reachable: {e}"),
+            &format!("routing failed: {e}"),
         ),
     }
 
-    let routes = tcp::tcp_rpc(host, port, "route.list", &serde_json::json!({}));
+    let routes = bridge.capability_call("orchestration", "route.list", &serde_json::json!({}));
     match routes {
-        Ok((result, _)) => {
-            let has_routes = result.is_array() || result.is_object();
+        Ok(resp) => {
+            let has_routes = resp.value.is_array() || resp.value.is_object();
             v.check_bool(
                 "route registry populated",
                 has_routes,
                 "biomeOS has registered routes",
             );
         }
-        Err(e) => v.check_skip("route registry", &format!("route.list failed: {e}")),
+        Err(e) => v.check_skip("route registry", &format!("routing failed: {e}")),
     }
 }
 
 fn verify_lineage_correct_seed(
     v: &mut ValidationResult,
-    host: &str,
-    port: u16,
+    bridge: &NeuralBridge,
     our_family: &str,
     peer_family: &str,
     proof: &str,
     lineage_seed: &str,
 ) {
-    let verify_ok = tcp::tcp_rpc(
-        host,
-        port,
+    let verify_ok = bridge.capability_call(
+        "security",
         GENETIC_VERIFY_LINEAGE,
         &serde_json::json!({
             "our_family_id": our_family,
@@ -229,8 +230,9 @@ fn verify_lineage_correct_seed(
         }),
     );
     match verify_ok {
-        Ok((result, _)) => {
-            let valid = result
+        Ok(resp) => {
+            let valid = resp
+                .value
                 .get("valid")
                 .and_then(serde_json::Value::as_bool)
                 .unwrap_or(false);
@@ -242,23 +244,21 @@ fn verify_lineage_correct_seed(
         }
         Err(e) => v.check_skip(
             "lineage verification",
-            &format!("genetic.verify_lineage failed: {e}"),
+            &format!("routing failed: {e}"),
         ),
     }
 }
 
 fn verify_lineage_wrong_seed(
     v: &mut ValidationResult,
-    host: &str,
-    port: u16,
+    bridge: &NeuralBridge,
     our_family: &str,
     peer_family: &str,
     proof: &str,
     wrong_seed: &str,
 ) {
-    let verify_bad = tcp::tcp_rpc(
-        host,
-        port,
+    let verify_bad = bridge.capability_call(
+        "security",
         GENETIC_VERIFY_LINEAGE,
         &serde_json::json!({
             "our_family_id": our_family,
@@ -268,8 +268,9 @@ fn verify_lineage_wrong_seed(
         }),
     );
     match verify_bad {
-        Ok((result, _)) => {
-            let valid = result
+        Ok(resp) => {
+            let valid = resp
+                .value
                 .get("valid")
                 .and_then(serde_json::Value::as_bool)
                 .unwrap_or(true);
@@ -288,7 +289,7 @@ fn verify_lineage_wrong_seed(
 }
 
 /// Verify lineage chain integrity via generate-then-verify round-trip.
-fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port: u16) {
+fn phase_genetic_lineage_verification(v: &mut ValidationResult, bridge: &NeuralBridge) {
     use base64::Engine;
     let b64 = base64::engine::general_purpose::STANDARD;
 
@@ -298,9 +299,8 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
     let our_family = "exp086-family-alpha";
     let peer_family = "exp086-family-beta";
 
-    let proof_result = tcp::tcp_rpc(
-        host,
-        port,
+    let proof_result = bridge.capability_call(
+        "security",
         GENETIC_GENERATE_LINEAGE_PROOF,
         &serde_json::json!({
             "our_family_id": our_family,
@@ -309,14 +309,14 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
         }),
     );
     let proof_b64 = match &proof_result {
-        Ok((result, _)) => {
-            let has_proof = result.get("proof").is_some();
+        Ok(resp) => {
+            let has_proof = resp.value.get("proof").is_some();
             v.check_bool(
                 "lineage proof generated",
                 has_proof,
                 "genetic.generate_lineage_proof returns proof",
             );
-            result
+            resp.value
                 .get("proof")
                 .and_then(|p| p.as_str())
                 .map(String::from)
@@ -324,7 +324,7 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
         Err(e) => {
             v.check_skip(
                 "lineage proof generation",
-                &format!("BearDog genetic RPC not reachable: {e}"),
+                &format!("routing failed: {e}"),
             );
             return;
         }
@@ -337,8 +337,7 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
 
     verify_lineage_correct_seed(
         v,
-        host,
-        port,
+        bridge,
         our_family,
         peer_family,
         &proof,
@@ -346,18 +345,18 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
     );
 
     let wrong_seed = b64.encode(b"WRONG_seed_not_the_real_one!!!!");
-    verify_lineage_wrong_seed(v, host, port, our_family, peer_family, &proof, &wrong_seed);
+    verify_lineage_wrong_seed(v, bridge, our_family, peer_family, &proof, &wrong_seed);
 
-    let birdsong_lineage = tcp::tcp_rpc(
-        host,
-        port,
+    let birdsong_lineage = bridge.capability_call(
+        "discovery",
         BIRDSONG_VERIFY_LINEAGE,
         &serde_json::json!({
             "peer_node_id": "exp086-peer-node"
         }),
     );
     match birdsong_lineage {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let has_challenge = result.get("challenge_generated").is_some()
                 || result.get("challenge").is_some()
                 || result.get("valid").is_some();
@@ -369,7 +368,108 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
         }
         Err(e) => v.check_skip(
             "birdsong lineage",
-            &format!("Songbird lineage not reachable: {e}"),
+            &format!("routing failed: {e}"),
+        ),
+    }
+}
+
+#[cfg(feature = "primordial-compat")]
+fn phase_legacy_tcp(v: &mut ValidationResult) {
+    use primalspring::ipc::tcp;
+    use primalspring::tolerances;
+
+    v.section("Phase 6 (legacy): Direct TCP genetic identity");
+
+    let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
+    let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::default_port_for("songbird"));
+    let biomeos_port = tcp::env_port("BIOMEOS_PORT", 9800);
+    let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+
+    use base64::Engine;
+    let b64 = base64::engine::general_purpose::STANDARD;
+    let lineage_seed = b64.encode(b"primalSpring_exp086_test_seed!!");
+
+    match tcp::tcp_rpc(
+        &host,
+        bd_port,
+        GENETIC_DERIVE_LINEAGE_BEACON_KEY,
+        &serde_json::json!({ "lineage_seed": lineage_seed }),
+    ) {
+        Ok((result, _)) => {
+            let has_key = result.get("beacon_key").is_some()
+                || result.get("key").is_some()
+                || result.get("derived_key").is_some();
+            v.check_bool("legacy beacon key derived", has_key, "TCP HKDF beacon key");
+        }
+        Err(e) => v.check_skip(
+            "legacy beacon key derivation",
+            &format!("BearDog genetic RPC not reachable: {e}"),
+        ),
+    }
+
+    match tcp::tcp_rpc(
+        &host,
+        sg_port,
+        BIRDSONG_GENERATE_ENCRYPTED_BEACON,
+        &serde_json::json!({
+            "node_id": "exp086-mito-test",
+            "capabilities": ["security", "discovery"]
+        }),
+    ) {
+        Ok((result, _)) => {
+            let has_beacon =
+                result.get("encrypted_beacon").is_some() || result.get("beacon").is_some();
+            v.check_bool("legacy family-scoped beacon", has_beacon, "TCP beacon generation");
+        }
+        Err(e) => v.check_skip(
+            "legacy family-scoped beacon",
+            &format!("Songbird not reachable: {e}"),
+        ),
+    }
+
+    match tcp::tcp_rpc(
+        &host,
+        biomeos_port,
+        methods::capabilities::LIST,
+        &serde_json::json!({}),
+    ) {
+        Ok((result, _)) => {
+            let caps_str = result.to_string();
+            let has_family = caps_str.contains("family")
+                || caps_str.contains("genetic")
+                || caps_str.contains("lineage");
+            v.check_bool(
+                "legacy biomeOS family awareness",
+                has_family,
+                "TCP capability registry includes family/genetic/lineage",
+            );
+        }
+        Err(e) => v.check_skip(
+            "legacy biomeOS capability list",
+            &format!("biomeOS not reachable: {e}"),
+        ),
+    }
+
+    match tcp::tcp_rpc(
+        &host,
+        bd_port,
+        GENETIC_GENERATE_LINEAGE_PROOF,
+        &serde_json::json!({
+            "our_family_id": "exp086-family-alpha",
+            "peer_family_id": "exp086-family-beta",
+            "lineage_seed": lineage_seed,
+        }),
+    ) {
+        Ok((result, _)) => {
+            v.check_bool(
+                "legacy lineage proof generated",
+                result.get("proof").is_some(),
+                "TCP genetic.generate_lineage_proof",
+            );
+        }
+        Err(e) => v.check_skip(
+            "legacy lineage proof generation",
+            &format!("BearDog genetic RPC not reachable: {e}"),
         ),
     }
 }
@@ -377,18 +477,23 @@ fn phase_genetic_lineage_verification(v: &mut ValidationResult, host: &str, port
 fn main() {
     ValidationResult::new("primalSpring Exp086 — Genetic Identity E2E")
         .with_provenance("exp086_genetic_identity_e2e", "2026-05-09")
-        .run("mito vs nuclear genetics validation", |v| {
+        .run("mito vs nuclear genetics validation via NeuralBridge", |v| {
             let ctx = CompositionContext::from_live_discovery_with_fallback();
             phase_composition_discovery(v, &ctx);
 
-            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
-            let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::default_port_for("songbird"));
-            let biomeos_port = tcp::env_port("BIOMEOS_PORT", 9800);
-            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+            let Some(bridge) = NeuralBridge::discover() else {
+                v.check_skip("neural_api", "biomeOS not running — routing skipped");
+                #[cfg(feature = "primordial-compat")]
+                phase_legacy_tcp(v);
+                return;
+            };
 
-            phase_lineage_key_derivation(v, &host, bd_port);
-            phase_beacon_family_scoping(v, &host, sg_port);
-            phase_biomeos_family_registry(v, &host, biomeos_port);
-            phase_genetic_lineage_verification(v, &host, bd_port);
+            phase_lineage_key_derivation(v, &bridge);
+            phase_beacon_family_scoping(v, &bridge);
+            phase_biomeos_family_registry(v, &bridge);
+            phase_genetic_lineage_verification(v, &bridge);
+
+            #[cfg(feature = "primordial-compat")]
+            phase_legacy_tcp(v);
         });
 }

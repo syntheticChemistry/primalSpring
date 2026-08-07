@@ -690,6 +690,7 @@ name = "primalspring-exp033"
 version = "0.9.25"
 dependencies = [
  "primalspring",
+ "serde_json",
 ]
 
 [[package]]
@@ -817,6 +818,7 @@ name = "primalspring-exp059"
 version = "0.9.25"
 dependencies = [
  "primalspring",
+ "serde_json",
 ]
 
 [[package]]
@@ -1262,6 +1264,7 @@ name = "primalspring-exp112"
 version = "0.9.33"
 dependencies = [
  "primalspring",
+ "primalspring-trio-ops",
  "serde",
  "serde_json",
 ]
@@ -1271,6 +1274,7 @@ name = "primalspring-exp113"
 version = "0.9.33"
 dependencies = [
  "primalspring",
+ "primalspring-trio-ops",
  "serde",
  "serde_json",
 ]
@@ -1280,6 +1284,7 @@ name = "primalspring-exp114"
 version = "0.9.33"
 dependencies = [
  "primalspring",
+ "primalspring-trio-ops",
  "serde",
  "serde_json",
 ]
@@ -1294,11 +1299,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "primalspring-exp116"
+version = "0.9.46"
+dependencies = [
+ "primalspring",
+ "serde_json",
+]
+
+[[package]]
+name = "primalspring-exp117"
+version = "0.9.46"
+dependencies = [
+ "primalspring",
+ "serde_json",
+]
+
+[[package]]
 name = "primalspring-trio-ops"
 version = "0.9.25"
 dependencies = [
  "primalspring",
  "serde_json",
+ "toml",
 ]
 
 [[package]]

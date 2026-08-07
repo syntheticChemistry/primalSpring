@@ -24,6 +24,8 @@ transport = "uds_only"
 composition_model = "pure"
 petaltongue_mode = "live"
 tick_hz = 60
+assigned_gate = "blueGate"
+fallback_gate = "northGate"
 
 # ── NUCLEUS Base ─────────────────────────────────────────────────────
 

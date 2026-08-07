@@ -62,15 +62,15 @@ echo "║  Remote Songbird:$REMOTE_HOST:$REMOTE_SONGBIRD_PORT"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
 
-# Phase 0: Quick local health check
+# Phase 0: Quick local health check via primalspring CLI
 echo "══ Phase 0: Local Gate Health ══"
-"$SCRIPT_DIR/validate_remote_gate.sh" localhost || {
+cd "$PROJECT_DIR"
+if ! cargo run --bin primalspring_unibin -- status --brief 2>/dev/null; then
     echo ""
     echo "Local gate is not fully healthy. Start NUCLEUS first:"
-    echo "  FAMILY_ID=$FAMILY_ID FAMILY_SEED=<shared-seed> beardog server --port $BEARDOG_PORT &"
-    echo "  FAMILY_ID=$FAMILY_ID songbird server --port $SONGBIRD_PORT &"
+    echo "  nucleus_launcher --family-id $FAMILY_ID"
     exit 1
-}
+fi
 echo ""
 
 # Phase 1: Remote gate health

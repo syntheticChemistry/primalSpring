@@ -2,7 +2,15 @@
 
 #![forbid(unsafe_code)]
 
-//! Exp020: RootPulse full commit — validates the commit pipeline against live composition.
+//! Exp020: RootPulse full commit — validates the session-scoped provenance pipeline.
+//!
+//! Exercises the 7-phase canonical provenance flow from
+//! `specs/COMPOSITION_BROKER.md`:
+//!   1. session.create → rhizoCrypt DAG session
+//!   2. dag.event.append → per-step ephemeral DAG events
+//!   3. session.commit → dehydrate → spine → sign → braid
+//!
+//! This is primalSpring's N4 validation anchor for the provenance trio.
 
 use primalspring::composition::CompositionContext;
 use primalspring::emergent::EmergentSystem;
@@ -116,8 +124,8 @@ fn commit_phase_dehydrate(v: &mut ValidationResult, trio_ready: bool) {
 fn commit_phase_sign(v: &mut ValidationResult, ctx: &mut CompositionContext) {
     v.check_or_skip(
         "phase_3_sign",
-        ctx.has_capability("orchestration").then_some(()),
-        "orchestration not available for sign phase",
+        ctx.has_capability("security").then_some(()),
+        "security capability not available for sign phase",
         |(), v| match ctx.call(
             "security",
             "crypto.sign",
@@ -126,7 +134,10 @@ fn commit_phase_sign(v: &mut ValidationResult, ctx: &mut CompositionContext) {
                 "algorithm": "ed25519",
             }),
         ) {
-            Ok(_) => v.check_bool("crypto_sign", true, "security crypto.sign"),
+            Ok(resp) => {
+                let has_sig = resp.get("signature").is_some() || resp.get("sig").is_some();
+                v.check_bool("crypto_sign", has_sig, "bearDog Ed25519 signs session commit");
+            }
             Err(e) if e.is_connection_error() => v.check_skip("crypto_sign", &format!("{e}")),
             Err(e) => v.check_bool("crypto_sign", false, &format!("error: {e}")),
         },
@@ -185,23 +196,23 @@ fn phase_attribution(v: &mut ValidationResult, trio_ready: bool) {
 fn main() {
     ValidationResult::new("primalSpring Exp020 — RootPulse Full Commit")
         .with_provenance("exp020_rootpulse_commit", "2026-05-09")
-        .run("primalSpring Exp020: RootPulse Full 6-Phase Commit", |v| {
-            v.section("Phase 1: Structural");
+        .run("primalSpring Exp020: Session-Scoped RootPulse Commit", |v| {
+            v.section("Phase 1: Structural (graph requirements)");
             phase_structural(v);
 
-            v.section("Phase 2: Discovery");
+            v.section("Phase 2: Capability discovery (trio + security)");
             let mut ctx = CompositionContext::from_live_discovery_with_fallback();
             phase_discovery(v, &ctx);
 
-            v.section("Phase 3: Health");
+            v.section("Phase 3: Trio health (dag + spine + braid domains)");
             let trio_ready = phase_trio_health(v, &mut ctx);
 
-            v.section("Phase 4: Commit Pipeline");
+            v.section("Phase 4: Session-scoped commit pipeline");
             commit_phase_dehydrate(v, trio_ready);
             commit_phase_sign(v, &mut ctx);
             commit_phase_store_commit(v, trio_ready);
 
-            v.section("Phase 5: Attribution");
+            v.section("Phase 5: Attribution (sweetGrass braid)");
             phase_attribution(v, trio_ready);
         });
 }

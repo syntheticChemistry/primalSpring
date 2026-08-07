@@ -43,6 +43,35 @@ path = "src/bin/nucleus_launcher/main.rs"
 
 [features]
 stub-primals = []
+primordial-compat = []
+
+[[test]]
+name = "server_ecosystem"
+required-features = ["primordial-compat"]
+
+[[test]]
+name = "server_ecosystem_overlay"
+required-features = ["primordial-compat"]
+
+[[test]]
+name = "server_ecosystem_songbird"
+required-features = ["primordial-compat"]
+
+[[test]]
+name = "server_ecosystem_genetics"
+required-features = ["primordial-compat"]
+
+[[test]]
+name = "compose_compute"
+required-features = ["primordial-compat"]
+
+[[test]]
+name = "compose_node"
+required-features = ["primordial-compat"]
+
+[[test]]
+name = "compose_nest"
+required-features = ["primordial-compat"]
 
 [dev-dependencies]
 proptest = "1.10.0"

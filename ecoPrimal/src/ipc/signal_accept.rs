@@ -22,6 +22,11 @@ use std::io::{self, Read};
 use crate::tolerances;
 
 /// Classified transport signal tier from connection prefix.
+#[deprecated(
+    since = "0.9.46",
+    note = "pre-primordial debt: primals converge on sourdough_core::transport::ribocipher. \
+            Retained for detect_signal_buffered in validation probes. Removal target: Wave 170."
+)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SignalTier {
     /// `[0xEC, 0x01]` — `MitoBeacon` clear tier. Proceed with plaintext JSON-RPC.

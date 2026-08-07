@@ -3,21 +3,22 @@
 //! Phases 5-7: Beacon Exchange, Bonding Model, STUN/NAT Discovery.
 
 use crate::config::{
-    family_id, pixel_beardog_port, pixel_host, pixel_nestgate_port, pixel_songbird_port,
-    tcp_rpc_value,
+    domain, family_id, pixel_beardog_port, pixel_host, pixel_nestgate_port, pixel_songbird_port,
+    rpc_value,
 };
 use primalspring::ipc::methods;
+use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
 
-pub fn validate_beacon_exchange(v: &mut ValidationResult) {
+pub fn validate_beacon_exchange(v: &mut ValidationResult, bridge: Option<&NeuralBridge>) {
     v.section("Phase 5: BirdSong Beacon Exchange (x86_64 ↔ aarch64)");
 
     let host = pixel_host();
     let sb_port = pixel_songbird_port();
 
-    let beacon_result = tcp_rpc_value(
-        &host,
-        sb_port,
+    let beacon_result = rpc_value(
+        bridge,
+        domain::DISCOVERY,
         "birdsong.generate_encrypted_beacon",
         &serde_json::json!({
             "node_id": "pixel-grapheneos",
@@ -25,6 +26,8 @@ pub fn validate_beacon_exchange(v: &mut ValidationResult) {
             "device_type": "mobile",
             "arch": "aarch64"
         }),
+        &host,
+        sb_port,
     );
 
     match &beacon_result {
@@ -41,11 +44,13 @@ pub fn validate_beacon_exchange(v: &mut ValidationResult) {
             );
 
             if let Some(beacon) = result.get("encrypted_beacon") {
-                let decrypt_result = tcp_rpc_value(
-                    &host,
-                    sb_port,
+                let decrypt_result = rpc_value(
+                    bridge,
+                    domain::DISCOVERY,
                     "birdsong.decrypt_beacon",
                     &serde_json::json!({ "encrypted_beacon": beacon }),
+                    &host,
+                    sb_port,
                 );
                 match &decrypt_result {
                     Ok(result) => {
@@ -75,7 +80,14 @@ pub fn validate_beacon_exchange(v: &mut ValidationResult) {
         }
     }
 
-    let mesh_result = tcp_rpc_value(&host, sb_port, "mesh.peers", &serde_json::json!({}));
+    let mesh_result = rpc_value(
+        bridge,
+        domain::DISCOVERY,
+        "mesh.peers",
+        &serde_json::json!({}),
+        &host,
+        sb_port,
+    );
     match &mesh_result {
         Ok(result) => {
             let peer_count = result.as_array().map_or(0, Vec::len);
@@ -90,18 +102,20 @@ pub fn validate_beacon_exchange(v: &mut ValidationResult) {
     }
 }
 
-pub fn validate_bonding_model(v: &mut ValidationResult) {
+pub fn validate_bonding_model(v: &mut ValidationResult, bridge: Option<&NeuralBridge>) {
     v.section("Phase 6: Bonding Model Verification (cross-arch)");
 
     let host = pixel_host();
     let bd_port = pixel_beardog_port();
     let fid = family_id();
 
-    let family_check = tcp_rpc_value(
-        &host,
-        bd_port,
+    let family_check = rpc_value(
+        bridge,
+        domain::SECURITY,
         methods::health::CHECK,
         &serde_json::json!({}),
+        &host,
+        bd_port,
     );
     match &family_check {
         Ok(result) => {
@@ -122,11 +136,13 @@ pub fn validate_bonding_model(v: &mut ValidationResult) {
         Err(e) => v.check_skip("pixel_family_id_check", &format!("health.check: {e}")),
     }
 
-    let ionic_probe = tcp_rpc_value(
-        &host,
-        bd_port,
+    let ionic_probe = rpc_value(
+        bridge,
+        domain::SECURITY,
         "crypto.ionic_bond.capabilities",
         &serde_json::json!({}),
+        &host,
+        bd_port,
     );
     match &ionic_probe {
         Ok(result) => {
@@ -156,22 +172,26 @@ pub fn validate_bonding_model(v: &mut ValidationResult) {
     let test_key = format!("exp096_cross_arch_{}", std::process::id());
     let test_data = "cross-architecture-integrity-check-aarch64-x86_64";
 
-    let store_result = tcp_rpc_value(
-        &host,
-        ng_port,
+    let store_result = rpc_value(
+        bridge,
+        domain::STORAGE,
         "storage.store",
         &serde_json::json!({
             "key": test_key,
             "value": test_data
         }),
+        &host,
+        ng_port,
     );
     match &store_result {
         Ok(_) => {
-            let retrieve_result = tcp_rpc_value(
-                &host,
-                ng_port,
+            let retrieve_result = rpc_value(
+                bridge,
+                domain::STORAGE,
                 "storage.retrieve",
                 &serde_json::json!({ "key": test_key }),
+                &host,
+                ng_port,
             );
             match &retrieve_result {
                 Ok(result) => {
@@ -197,17 +217,19 @@ pub fn validate_bonding_model(v: &mut ValidationResult) {
     }
 }
 
-pub fn validate_stun_nat(v: &mut ValidationResult) {
+pub fn validate_stun_nat(v: &mut ValidationResult, bridge: Option<&NeuralBridge>) {
     v.section("Phase 7: STUN / NAT (Pixel network posture)");
 
     let host = pixel_host();
     let sb_port = pixel_songbird_port();
 
-    let stun_result = tcp_rpc_value(
-        &host,
-        sb_port,
+    let stun_result = rpc_value(
+        bridge,
+        domain::DISCOVERY,
         "stun.get_public_address",
         &serde_json::json!({}),
+        &host,
+        sb_port,
     );
     match &stun_result {
         Ok(result) => {

@@ -11,6 +11,9 @@ publish = false
 name = "exp076_cross_gate_neural_routing"
 path = "src/main.rs"
 
+[features]
+primordial-compat = ["primalspring/primordial-compat"]
+
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
 serde = { workspace = true }

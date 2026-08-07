@@ -1,8 +1,8 @@
 # Neural API — Subsystem Evolution Spec
 
 **Owner**: biomeOS (substrate primal) + primalSpring (observatory + validation)
-**Status**: Operational — evolving toward layered semantic network
-**Date**: May 24, 2026 (Wave 47)
+**Status**: Operational — Stage 2 activation in progress (G67)
+**Date**: May 24, 2026 (Wave 47) | Updated: Aug 7, 2026 (Wave 157a)
 
 ---
 
@@ -108,7 +108,7 @@ The Neural API becomes a neural network whose inference IS the API.
 
 ---
 
-## Current Architecture (biomeOS v3.70)
+## Current Architecture (biomeOS v4.57+)
 
 ```
 biomeos neural-api
@@ -258,13 +258,57 @@ Observatory tools:
 - [x] TOML parser reads both `[signal]` and `[impulse]` table names (no migration required)
 - [ ] Phase 2: Forgejo webhook → peptidoglycan impulse-relay → Songbird mesh.publish
 
-### Wave 43+: Provider Selection + Graph Optimization
+### Wave 67 (157a): G67 Stage 2 Activation — Forwarding Fix + N1-N6
+
+**Prerequisites now COMPLETE**:
+- G64 Cephalization — tarpc convergent evolution **15/15** primals
+- G65 Protocol Negotiation — single-socket dual-protocol **15/15**
+- G66 Transport Abstraction — silicon-agnostic IPC **15/15** cross-arch
+
+**Forwarding fix (N1 — DONE)**:
+- [x] biomeOS commit `ffed2c5b`: `forward_request_with_timeout` always uses pool path
+- [x] `forward_request()` wrapped in outer `request_timeout` — graph/proxy callers can't accumulate unbounded wall time
+- [x] `capability.call` dispatch uses pooled JSON-RPC with clean timeout, skips heavy tarpc→BTSP escalation
+- [x] `neural-api-server` binary built and verified (`primals/biomeOS/target/release/neural-api-server`)
+
+**Composition broker threshold CROSSED (Wave 155i)**:
+- [x] biomeOS v4.57+ in COORDINATED mode — 704+ capabilities registered
+- [x] 27+ atomic signal graphs across Tower/Node/Nest/NUCLEUS/Meta tiers
+- [x] Provenance E2E: 7/7 validated on westGate + blueGate
+- [x] Atomic signal collapse: 490+ methods → ~32 signals (Phase A complete)
+- [x] Session-scoped provenance model proven (westGate convoy: 0.3 → 217 files/sec)
+
+**Activation tasks (primalSpring owns validation)**:
+- [x] N1: Forwarding fix — biomeOS commit `ffed2c5b`
+- [ ] N2: `capability.call` routes to bearDog — exp075, exp087, exp091
+- [ ] N3: Tower Atomic routing (bearDog+songBird+skunkBat) — exp001, exp060, exp112
+- [ ] N4: Provenance Trio routing (rhizoCrypt+loamSpine+sweetGrass) — exp020, trio_ops
+- [ ] N5: Node Atomic routing (toadStool+barraCuda+coralReef) — exp117 (new)
+- [ ] N6: Deploy to production gates — gate team handoffs
+
+**Observatory evolution**:
+- [x] `NeuralBridge` observatory: routing_weights, route_explain, composition_patterns, plan_tier
+- [x] `NeuralDispatcher` metrics: dispatch latency, success rate, route path
+- [x] `NeuralRoutingTable`: 490+ methods, 7 composition tiers, O(1) lookup
+- [x] Scenarios: 197 across 11 tracks (1,277 tests total)
+- [ ] benchScale integration: topology-driven NUCLEUS labs for isolated testing
+- [ ] Primordial debt gated behind `primordial-compat` feature flag
+
+**Cross-team patterns absorbed**:
+- [x] westGate: session-scoped provenance, 4-tier storage, convoy optimization
+- [x] strandGate/hotSpring: compute trio IPC-only (barraCuda=WHAT, coralReef=HOW, toadStool=WHERE)
+- [x] strandGate: cross-gate provenance convergence via BLAKE3 hash reference
+
+See `specs/STAGE2_ACTIVATION.md` for the full N1-N6 validation contract.
+See `specs/COMPOSITION_BROKER.md` for the patterns proven by gate teams.
+
+### Future: Provider Selection + Graph Optimization
 - [ ] Weighted provider selection in `discover_capability` (currently first-match)
 - [ ] Co-occurrence analysis (which capabilities are called together)
 - [ ] Graph pre-staging (dependency validation pattern, already prototyped)
 - [ ] PathwayLearner suggestions → actual weight table updates
 
-### Wave 46+: Learned Routing (horizon)
+### Future: Learned Routing (horizon)
 - [ ] Weight matrix as input to gradient-free optimizer
 - [ ] A/B shadow comparison (already prototyped in `validation::shadow`)
 - [ ] Self-healing: automatic rerouting on primal failure

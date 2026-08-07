@@ -11,6 +11,9 @@ publish = false
 name = "exp089_beardog_witness_roundtrip"
 path = "src/main.rs"
 
+[features]
+primordial-compat = ["primalspring/primordial-compat"]
+
 [dependencies]
 primalspring = { path = "../../ecoPrimal" }
 serde_json = { workspace = true }

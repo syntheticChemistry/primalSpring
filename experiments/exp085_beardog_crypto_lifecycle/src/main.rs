@@ -4,13 +4,12 @@
 
 //! exp085 — `BearDog` Crypto Lifecycle E2E
 //!
-//! Validates that `BearDog` performs real cryptography through both direct
-//! IPC and Neural API routing: Ed25519 sign/verify, `BirdSong` beacon
-//! round-trip, Blake3 hashing, and secrets store/retrieve.
+//! Validates that `BearDog` performs real cryptography through Neural API
+//! routing via `NeuralBridge::capability_call()`: Ed25519 sign/verify,
+//! `BirdSong` beacon round-trip, Blake3 hashing, and secrets store/retrieve.
 
 use primalspring::composition::CompositionContext;
-use primalspring::ipc::tcp;
-use primalspring::tolerances;
+use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
 
 const CRYPTO_GENERATE_KEYPAIR: &str = "crypto.generate_keypair";
@@ -34,25 +33,26 @@ fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContex
     v.check_bool(
         "has_security_capability_path",
         ctx.has_capability("security"),
-        "security capability for BearDog TCP path",
+        "security capability for BearDog via NeuralBridge",
     );
 }
 
 fn phase_ed25519_generate(
     v: &mut ValidationResult,
-    host: &str,
-    port: u16,
+    bridge: &NeuralBridge,
 ) -> Option<(String, String)> {
     v.section("Phase 2: Ed25519 keypair generation");
 
-    let keypair = tcp::tcp_rpc(
-        host,
-        port,
+    let start = std::time::Instant::now();
+    let keypair = bridge.capability_call(
+        "security",
         CRYPTO_GENERATE_KEYPAIR,
         &serde_json::json!({ "algorithm": "ed25519" }),
     );
+    let latency_us = u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX);
     match &keypair {
-        Ok((result, latency)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let has_public = result.get("public_key").is_some()
                 || result.get("publicKey").is_some()
                 || result.get("public").is_some();
@@ -63,8 +63,8 @@ fn phase_ed25519_generate(
             );
             v.check_latency(
                 "keypair generation latency",
-                u64::try_from(latency.as_micros()).unwrap_or(u64::MAX),
-                tolerances::GRAPH_NODE_MAX_US,
+                latency_us,
+                primalspring::tolerances::GRAPH_NODE_MAX_US,
             );
             let pub_key = result
                 .get("public_key")
@@ -76,24 +76,24 @@ fn phase_ed25519_generate(
             Some((pub_key, String::new()))
         }
         Err(e) => {
-            v.check_skip("keypair generation", &format!("BearDog not reachable: {e}"));
+            v.check_skip("keypair generation", &format!("routing failed: {e}"));
             None
         }
     }
 }
 
-fn phase_ed25519_sign_verify(v: &mut ValidationResult, host: &str, port: u16, pub_key: &str) {
+fn phase_ed25519_sign_verify(v: &mut ValidationResult, bridge: &NeuralBridge, pub_key: &str) {
     v.section("Phase 3: Ed25519 sign + verify");
 
     let test_payload = "primalSpring exp085 crypto lifecycle test";
-    let sign_result = tcp::tcp_rpc(
-        host,
-        port,
+    let sign_result = bridge.capability_call(
+        "security",
         CRYPTO_SIGN_ED25519,
         &serde_json::json!({ "data": test_payload }),
     );
     let sig = match &sign_result {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             v.check_bool(
                 "sign returns signature",
                 result.get("signature").is_some(),
@@ -106,19 +106,19 @@ fn phase_ed25519_sign_verify(v: &mut ValidationResult, host: &str, port: u16, pu
                 .to_owned()
         }
         Err(e) => {
-            v.check_skip("sign ed25519", &format!("sign failed: {e}"));
+            v.check_skip("sign ed25519", &format!("routing failed: {e}"));
             return;
         }
     };
 
-    let verify_ok = tcp::tcp_rpc(
-        host,
-        port,
+    let verify_ok = bridge.capability_call(
+        "security",
         CRYPTO_VERIFY_ED25519,
         &serde_json::json!({ "data": test_payload, "signature": sig, "public_key": pub_key }),
     );
     match verify_ok {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let valid = result
                 .get("valid")
                 .and_then(serde_json::Value::as_bool)
@@ -134,17 +134,17 @@ fn phase_ed25519_sign_verify(v: &mut ValidationResult, host: &str, port: u16, pu
                 "correct signature verifies true",
             );
         }
-        Err(e) => v.check_skip("verify valid signature", &format!("verify failed: {e}")),
+        Err(e) => v.check_skip("verify valid signature", &format!("routing failed: {e}")),
     }
 
-    let verify_tampered = tcp::tcp_rpc(
-        host,
-        port,
+    let verify_tampered = bridge.capability_call(
+        "security",
         CRYPTO_VERIFY_ED25519,
         &serde_json::json!({ "data": "TAMPERED payload", "signature": sig, "public_key": pub_key }),
     );
     match verify_tampered {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let valid = result
                 .get("valid")
                 .and_then(serde_json::Value::as_bool)
@@ -167,56 +167,53 @@ fn phase_ed25519_sign_verify(v: &mut ValidationResult, host: &str, port: u16, pu
     }
 }
 
-fn phase_hashing(v: &mut ValidationResult, host: &str, port: u16) {
+fn phase_hashing(v: &mut ValidationResult, bridge: &NeuralBridge) {
     v.section("Phase 4: Hashing");
 
-    let hash_result = tcp::tcp_rpc(
-        host,
-        port,
+    let hash_result = bridge.capability_call(
+        "security",
         CRYPTO_BLAKE3_HASH,
         &serde_json::json!({
             "data": "primalSpring exp085 hash test"
         }),
     );
     match hash_result {
-        Ok((result, _)) => {
-            let has_hash = result.get("hash").is_some() || result.get("digest").is_some();
+        Ok(resp) => {
+            let has_hash = resp.value.get("hash").is_some() || resp.value.get("digest").is_some();
             v.check_bool(
                 "blake3 returns hash",
                 has_hash,
                 "blake3_hash returns hash/digest",
             );
         }
-        Err(e) => v.check_skip("blake3 hash", &format!("BearDog not reachable: {e}")),
+        Err(e) => v.check_skip("blake3 hash", &format!("routing failed: {e}")),
     }
 
-    let sha_result = tcp::tcp_rpc(
-        host,
-        port,
+    let sha_result = bridge.capability_call(
+        "security",
         CRYPTO_SHA256_HASH,
         &serde_json::json!({
             "data": "primalSpring exp085 sha test"
         }),
     );
     match sha_result {
-        Ok((result, _)) => {
-            let has_hash = result.get("hash").is_some() || result.get("digest").is_some();
+        Ok(resp) => {
+            let has_hash = resp.value.get("hash").is_some() || resp.value.get("digest").is_some();
             v.check_bool(
                 "sha256 returns hash",
                 has_hash,
                 "sha256_hash returns hash/digest",
             );
         }
-        Err(e) => v.check_skip("sha256 hash", &format!("BearDog not reachable: {e}")),
+        Err(e) => v.check_skip("sha256 hash", &format!("routing failed: {e}")),
     }
 }
 
-fn phase_birdsong_beacon(v: &mut ValidationResult, host: &str, port: u16) {
+fn phase_birdsong_beacon(v: &mut ValidationResult, bridge: &NeuralBridge) {
     v.section("Phase 5: BirdSong beacon round-trip");
 
-    let beacon_gen = tcp::tcp_rpc(
-        host,
-        port,
+    let beacon_gen = bridge.capability_call(
+        "discovery",
         BIRDSONG_GENERATE_ENCRYPTED_BEACON,
         &serde_json::json!({
             "node_id": "exp085-test-node",
@@ -224,7 +221,8 @@ fn phase_birdsong_beacon(v: &mut ValidationResult, host: &str, port: u16) {
         }),
     );
     match &beacon_gen {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let has_beacon =
                 result.get("encrypted_beacon").is_some() || result.get("beacon").is_some();
             v.check_bool(
@@ -234,7 +232,7 @@ fn phase_birdsong_beacon(v: &mut ValidationResult, host: &str, port: u16) {
             );
         }
         Err(e) => {
-            v.check_skip("beacon generation", &format!("Songbird not reachable: {e}"));
+            v.check_skip("beacon generation", &format!("routing failed: {e}"));
             return;
         }
     }
@@ -242,20 +240,24 @@ fn phase_birdsong_beacon(v: &mut ValidationResult, host: &str, port: u16) {
     let beacon_data = beacon_gen
         .as_ref()
         .ok()
-        .and_then(|(r, _)| r.get("encrypted_beacon").or_else(|| r.get("beacon")))
+        .and_then(|resp| {
+            resp.value
+                .get("encrypted_beacon")
+                .or_else(|| resp.value.get("beacon"))
+        })
         .and_then(|b| b.as_str())
         .unwrap_or_default();
 
-    let beacon_dec = tcp::tcp_rpc(
-        host,
-        port,
+    let beacon_dec = bridge.capability_call(
+        "discovery",
         BIRDSONG_DECRYPT_BEACON,
         &serde_json::json!({
             "encrypted_beacon": beacon_data
         }),
     );
     match beacon_dec {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let has_node = result.get("node_id").is_some()
                 || result
                     .get("beacon")
@@ -267,16 +269,15 @@ fn phase_birdsong_beacon(v: &mut ValidationResult, host: &str, port: u16) {
                 "decrypted beacon contains node_id",
             );
         }
-        Err(e) => v.check_skip("beacon decrypt", &format!("decrypt failed: {e}")),
+        Err(e) => v.check_skip("beacon decrypt", &format!("routing failed: {e}")),
     }
 }
 
-fn phase_secrets(v: &mut ValidationResult, host: &str, port: u16) {
+fn phase_secrets(v: &mut ValidationResult, bridge: &NeuralBridge) {
     v.section("Phase 6: Secrets store/retrieve");
 
-    let store_result = tcp::tcp_rpc(
-        host,
-        port,
+    let store_result = bridge.capability_call(
+        "security",
         SECRETS_STORE,
         &serde_json::json!({
             "key": "exp085_test_secret",
@@ -284,29 +285,29 @@ fn phase_secrets(v: &mut ValidationResult, host: &str, port: u16) {
         }),
     );
     match &store_result {
-        Ok((_, _)) => {
+        Ok(_) => {
             v.check_bool("secret stored", true, "secrets.store succeeded");
         }
         Err(e) => {
             v.check_skip(
                 "secrets store",
-                &format!("BearDog secrets not reachable: {e}"),
+                &format!("routing failed: {e}"),
             );
             return;
         }
     }
 
-    let retrieve_result = tcp::tcp_rpc(
-        host,
-        port,
+    let retrieve_result = bridge.capability_call(
+        "security",
         SECRETS_RETRIEVE,
         &serde_json::json!({
             "key": "exp085_test_secret"
         }),
     );
     match retrieve_result {
-        Ok((result, _)) => {
-            let val = result
+        Ok(resp) => {
+            let val = resp
+                .value
                 .get("value")
                 .and_then(serde_json::Value::as_str)
                 .unwrap_or_default();
@@ -316,27 +317,143 @@ fn phase_secrets(v: &mut ValidationResult, host: &str, port: u16) {
                 "retrieved value matches stored value",
             );
         }
-        Err(e) => v.check_skip("secrets retrieve", &format!("retrieve failed: {e}")),
+        Err(e) => v.check_skip("secrets retrieve", &format!("routing failed: {e}")),
+    }
+}
+
+#[cfg(feature = "primordial-compat")]
+fn phase_legacy_tcp(v: &mut ValidationResult) {
+    use primalspring::ipc::tcp;
+    use primalspring::tolerances;
+
+    v.section("Phase 7 (legacy): Direct TCP crypto lifecycle");
+
+    let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
+    let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::default_port_for("songbird"));
+    let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+
+    let keypair = tcp::tcp_rpc(
+        &host,
+        bd_port,
+        CRYPTO_GENERATE_KEYPAIR,
+        &serde_json::json!({ "algorithm": "ed25519" }),
+    );
+    let pub_key = match &keypair {
+        Ok((result, _)) => {
+            let has_public = result.get("public_key").is_some()
+                || result.get("publicKey").is_some()
+                || result.get("public").is_some();
+            v.check_bool(
+                "legacy keypair has public key",
+                has_public,
+                "TCP generate_keypair returns public key",
+            );
+            result
+                .get("public_key")
+                .or_else(|| result.get("publicKey"))
+                .or_else(|| result.get("public"))
+                .and_then(|k| k.as_str())
+                .unwrap_or_default()
+                .to_owned()
+        }
+        Err(e) => {
+            v.check_skip("legacy keypair generation", &format!("BearDog not reachable: {e}"));
+            String::new()
+        }
+    };
+
+    if !pub_key.is_empty() {
+        let test_payload = "primalSpring exp085 crypto lifecycle test";
+        if let Ok((result, _)) = tcp::tcp_rpc(
+            &host,
+            bd_port,
+            CRYPTO_SIGN_ED25519,
+            &serde_json::json!({ "data": test_payload }),
+        ) {
+            if let Some(sig) = result.get("signature").and_then(serde_json::Value::as_str) {
+                if let Ok((verify, _)) = tcp::tcp_rpc(
+                    &host,
+                    bd_port,
+                    CRYPTO_VERIFY_ED25519,
+                    &serde_json::json!({ "data": test_payload, "signature": sig, "public_key": pub_key }),
+                ) {
+                    let valid = verify
+                        .get("valid")
+                        .and_then(serde_json::Value::as_bool)
+                        .unwrap_or(false);
+                    v.check_bool("legacy verify valid signature", valid, "TCP sign+verify");
+                }
+            }
+        }
+    }
+
+    match tcp::tcp_rpc(
+        &host,
+        bd_port,
+        CRYPTO_BLAKE3_HASH,
+        &serde_json::json!({ "data": "primalSpring exp085 hash test" }),
+    ) {
+        Ok((result, _)) => {
+            let has_hash = result.get("hash").is_some() || result.get("digest").is_some();
+            v.check_bool("legacy blake3 returns hash", has_hash, "TCP blake3_hash");
+        }
+        Err(e) => v.check_skip("legacy blake3 hash", &format!("BearDog not reachable: {e}")),
+    }
+
+    match tcp::tcp_rpc(
+        &host,
+        sg_port,
+        BIRDSONG_GENERATE_ENCRYPTED_BEACON,
+        &serde_json::json!({
+            "node_id": "exp085-test-node",
+            "capabilities": ["coordination", "crypto"]
+        }),
+    ) {
+        Ok((result, _)) => {
+            let has_beacon =
+                result.get("encrypted_beacon").is_some() || result.get("beacon").is_some();
+            v.check_bool("legacy beacon generation", has_beacon, "TCP generate_encrypted_beacon");
+        }
+        Err(e) => v.check_skip("legacy beacon generation", &format!("Songbird not reachable: {e}")),
+    }
+
+    match tcp::tcp_rpc(
+        &host,
+        bd_port,
+        SECRETS_STORE,
+        &serde_json::json!({
+            "key": "exp085_test_secret",
+            "value": "sovereign_data_at_rest"
+        }),
+    ) {
+        Ok(_) => v.check_bool("legacy secret stored", true, "TCP secrets.store succeeded"),
+        Err(e) => v.check_skip("legacy secrets store", &format!("BearDog secrets not reachable: {e}")),
     }
 }
 
 fn main() {
     ValidationResult::new("primalSpring Exp085 — BearDog Crypto Lifecycle E2E")
         .with_provenance("exp085_beardog_crypto_lifecycle", "2026-05-09")
-        .run("crypto lifecycle validation", |v| {
+        .run("crypto lifecycle validation via NeuralBridge", |v| {
             let ctx = CompositionContext::from_live_discovery_with_fallback();
             phase_composition_discovery(v, &ctx);
 
-            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
-            let sg_port = tcp::env_port("SONGBIRD_PORT", tolerances::default_port_for("songbird"));
-            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+            let Some(bridge) = NeuralBridge::discover() else {
+                v.check_skip("neural_api", "biomeOS not running — routing skipped");
+                #[cfg(feature = "primordial-compat")]
+                phase_legacy_tcp(v);
+                return;
+            };
 
-            let keys = phase_ed25519_generate(v, &host, bd_port);
+            let keys = phase_ed25519_generate(v, &bridge);
             if let Some((pub_key, _)) = &keys {
-                phase_ed25519_sign_verify(v, &host, bd_port, pub_key);
+                phase_ed25519_sign_verify(v, &bridge, pub_key);
             }
-            phase_hashing(v, &host, bd_port);
-            phase_birdsong_beacon(v, &host, sg_port);
-            phase_secrets(v, &host, bd_port);
+            phase_hashing(v, &bridge);
+            phase_birdsong_beacon(v, &bridge);
+            phase_secrets(v, &bridge);
+
+            #[cfg(feature = "primordial-compat")]
+            phase_legacy_tcp(v);
         });
 }

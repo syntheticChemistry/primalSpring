@@ -8,7 +8,7 @@
 [graph]
 name = "healthspring_cell"
 description = "healthSpring — NUCLEUS + health/clinical + live visualization"
-version = "1.0.0"
+version = "2.0.0"
 coordination = "sequential"
 
 [graph.metadata]
@@ -18,6 +18,8 @@ security_model = "btsp_enforced"
 transport = "uds_only"
 composition_model = "nucleated"
 petaltongue_mode = "live"
+assigned_gate = "ironGate"
+data_gate = "westGate"
 
 # ── NUCLEUS Base ─────────────────────────────────────────────────────
 
@@ -61,6 +63,30 @@ by_capability = "discovery"
 capabilities = ["ipc.resolve", "ipc.register", "discovery.peers"]
 
 [[graph.nodes]]
+name = "toadstool"
+security_model = "btsp"
+binary = "toadstool"
+order = 3
+required = true
+spawn = false
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "compute"
+capabilities = ["compute.dispatch", "compute.execute", "compute.capabilities"]
+
+[[graph.nodes]]
+name = "barracuda"
+security_model = "btsp"
+binary = "barracuda"
+order = 4
+required = false
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "tensor"
+capabilities = ["tensor.matmul", "tensor.create", "stats.mean", "stats.std_dev"]
+
+[[graph.nodes]]
 name = "nestgate"
 security_model = "btsp"
 binary = "nestgate"
@@ -70,7 +96,43 @@ spawn = false
 depends_on = ["beardog"]
 health_method = "health.liveness"
 by_capability = "storage"
-capabilities = ["storage.store", "storage.retrieve", "storage.list"]
+capabilities = ["storage.store", "storage.retrieve", "storage.list", "content.get", "content.put"]
+
+[[graph.nodes]]
+name = "rhizocrypt"
+security_model = "btsp"
+binary = "rhizocrypt"
+order = 7
+required = false
+spawn = false
+depends_on = ["beardog"]
+health_method = "health.liveness"
+by_capability = "dag"
+capabilities = ["dag.session.create", "dag.event.append", "dag.merkle.root"]
+
+[[graph.nodes]]
+name = "loamspine"
+security_model = "btsp"
+binary = "loamspine"
+order = 8
+required = false
+spawn = false
+depends_on = ["beardog", "rhizocrypt"]
+health_method = "health.liveness"
+by_capability = "ledger"
+capabilities = ["spine.create", "entry.append", "certificate.mint"]
+
+[[graph.nodes]]
+name = "sweetgrass"
+security_model = "btsp"
+binary = "sweetgrass"
+order = 9
+required = false
+spawn = false
+depends_on = ["beardog", "loamspine"]
+health_method = "health.liveness"
+by_capability = "attribution"
+capabilities = ["braid.create", "braid.commit", "anchoring.anchor"]
 
 # ── Meta Tier ────────────────────────────────────────────────────────
 
@@ -109,7 +171,7 @@ security_model = "btsp"
 binary = "healthspring_primal"
 order = 12
 required = true
-depends_on = ["beardog", "songbird", "nestgate"]
+depends_on = ["beardog", "songbird", "nestgate", "toadstool"]
 health_method = "health.liveness"
 by_capability = "health"
 capabilities = ["health.pharmacology", "health.genomics", "health.clinical", "health.de_identify", "health.aggregate", "data.fetch"]
@@ -126,4 +188,4 @@ depends_on = ["healthspring", "petaltongue"]
 name = "health_check"
 
 [graph.nodes.operation.params]
-targets = ["beardog", "songbird", "nestgate", "petaltongue", "healthspring"]
+targets = ["beardog", "songbird", "toadstool", "nestgate", "petaltongue", "healthspring"]

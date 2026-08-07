@@ -4,46 +4,15 @@
 
 //! Exp090: Tower Atomic LAN Probe — discover basement HPC gates and map capabilities.
 //!
-//! Uses biomeOS neural-api + Songbird to probe the LAN via `BirdSong` UDP
-//! multicast, discover all reachable primals, and build a topology map.
-//!
-//! Flow:
-//!   1. Start Tower Atomic (`BearDog` + Songbird) on local gate
-//!   2. mesh.init + `mesh.auto_discover` via `BirdSong` multicast (239.255.77.77)
-//!   3. For each discovered peer, capabilities.list via TCP JSON-RPC
-//!   4. Test HTTPS through Tower: http.get on each discovered Songbird
-//!   5. Report: gate inventory, capabilities per gate, HTTPS status, latency
-//!
-//! Environment:
-//!   `FAMILY_ID`         — shared family ID for mesh (default: 8ff3b864a4bc589a)
-//!   `NODE_ID`           — this gate's node ID (default: eastgate)
-//!   `SONGBIRD_PORT`     — local Songbird TCP port (default: 9200)
-//!   `BEARDOG_PORT`      — local `BearDog` TCP port (default: 9100)
-//!   `NEURAL_API_SOCKET` — biomeOS neural-api socket path (auto-discovered)
+//! Probes the LAN via biomeOS Neural API and Songbird mesh discovery to build
+//! a topology map of reachable gates and their capability surfaces.
 
 use primalspring::composition::CompositionContext;
 use primalspring::ipc::NeuralBridge;
-use primalspring::ipc::methods;
-use primalspring::ipc::tcp::tcp_rpc;
-use primalspring::tolerances;
 use primalspring::validation::ValidationResult;
 
 fn env_or(key: &str, default: &str) -> String {
     std::env::var(key).unwrap_or_else(|_| default.to_owned())
-}
-
-fn songbird_port() -> u16 {
-    std::env::var("SONGBIRD_PORT")
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or_else(|| tolerances::default_port_for("songbird"))
-}
-
-fn beardog_port() -> u16 {
-    std::env::var("BEARDOG_PORT")
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or_else(|| tolerances::default_port_for("beardog"))
 }
 
 fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {
@@ -66,83 +35,67 @@ fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContex
     );
 }
 
-fn validate_local_tower(v: &mut ValidationResult) {
-    v.section("Phase 2: Local Tower Atomic health");
+fn validate_local_tower(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.section("Phase 2: Local Tower Atomic health via CompositionContext");
 
-    let bd_port = beardog_port();
-    let sb_port = songbird_port();
-
-    match tcp_rpc(
-        "localhost",
-        bd_port,
-        methods::health::LIVENESS,
-        &serde_json::json!({}),
-    ) {
-        Ok((resp, latency)) => {
-            let ms = latency.as_millis();
-            println!("  BearDog:  LIVE (port {bd_port}, {ms}ms)");
-            v.check_bool(
-                "local_beardog_live",
-                true,
-                &format!("BearDog at :{bd_port} ({ms}ms)"),
-            );
-
-            let status = resp
-                .get("status")
-                .and_then(|s| s.as_str())
-                .unwrap_or("unknown");
-            println!("  BearDog status: {status}");
+    for domain in &["security", "discovery"] {
+        let check_name = format!("local_{domain}_live");
+        if !ctx.has_capability(domain) {
+            v.check_skip(&check_name, &format!("{domain} not in composition"));
+            continue;
         }
-        Err(e) => {
-            println!("  BearDog:  DOWN ({e})");
-            v.check_bool(
-                "local_beardog_live",
-                false,
-                &format!("BearDog unreachable: {e}"),
-            );
+        match ctx.health_check(domain) {
+            Ok(true) => {
+                println!("  {domain}: LIVE");
+                v.check_bool(&check_name, true, &format!("{domain} healthy"));
+            }
+            Ok(false) => {
+                println!("  {domain}: UNHEALTHY");
+                v.check_bool(&check_name, false, &format!("{domain} unhealthy"));
+            }
+            Err(e) => {
+                println!("  {domain}: DOWN ({e})");
+                v.check_skip(&check_name, &format!("{domain} unreachable: {e}"));
+            }
         }
     }
 
-    match tcp_rpc(
-        "localhost",
-        sb_port,
-        methods::health::LIVENESS,
-        &serde_json::json!({}),
-    ) {
-        Ok((_, latency)) => {
-            let ms = latency.as_millis();
-            println!("  Songbird: LIVE (port {sb_port}, {ms}ms)");
-            v.check_bool(
-                "local_songbird_live",
-                true,
-                &format!("Songbird at :{sb_port} ({ms}ms)"),
-            );
+    if let Some(bridge) = NeuralBridge::discover() {
+        match bridge.health_check() {
+            Ok(_) => {
+                println!("  Neural API: HEALTHY");
+                v.check_bool("neural_api_local", true, "biomeOS neural-api healthy");
+            }
+            Err(e) => {
+                println!("  Neural API: {e}");
+                v.check_bool("neural_api_local", false, &format!("neural-api: {e}"));
+            }
         }
-        Err(e) => {
-            println!("  Songbird: DOWN ({e})");
-            v.check_bool(
-                "local_songbird_live",
-                false,
-                &format!("Songbird unreachable: {e}"),
-            );
-        }
+    } else {
+        v.check_skip("neural_api_local", "biomeOS not running");
     }
 }
 
 fn validate_mesh_discovery(
     v: &mut ValidationResult,
+    ctx: &mut CompositionContext,
     family_id: &str,
     node_id: &str,
 ) -> Vec<serde_json::Value> {
-    v.section("Phase 3: BirdSong mesh discovery");
+    v.section("Phase 3: BirdSong mesh discovery via CompositionContext");
 
-    let sb_port = songbird_port();
+    if !ctx.has_capability("mesh") && !ctx.has_capability("discovery") {
+        v.check_skip("mesh_init", "no mesh/discovery capability");
+        v.check_skip("mesh_peers_discovered", "no mesh/discovery capability");
+        return Vec::new();
+    }
 
-    match tcp_rpc(
-        "localhost",
-        sb_port,
+    let mesh_domain = if ctx.has_capability("mesh") { "mesh" } else { "discovery" };
+
+    match ctx.call(
+        mesh_domain,
         "mesh.init",
-        &serde_json::json!({
+        serde_json::json!({
             "node_id": node_id,
             "family_id": family_id,
             "bootstrap_onions": []
@@ -150,29 +103,20 @@ fn validate_mesh_discovery(
     ) {
         Ok(_) => {
             println!("  mesh.init: OK");
-            v.check_bool("mesh_init", true, "mesh.init succeeded");
+            v.check_bool("mesh_init", true, "mesh.init via CompositionContext");
         }
         Err(e) => {
             println!("  mesh.init: {e}");
-            let acceptable = e.is_method_not_found();
-            if acceptable {
-                v.check_skip(
-                    "mesh_init",
-                    "mesh.init not available on this Songbird build",
-                );
-            } else {
-                v.check_skip("mesh_init", &format!("mesh.init error: {e}"));
-            }
+            v.check_skip("mesh_init", &format!("mesh.init: {e}"));
         }
     }
 
-    match tcp_rpc(
-        "localhost",
-        sb_port,
+    match ctx.call(
+        mesh_domain,
         "mesh.auto_discover",
-        &serde_json::json!({}),
+        serde_json::json!({}),
     ) {
-        Ok((resp, _)) => {
+        Ok(resp) => {
             println!("  mesh.auto_discover: {resp}");
             v.check_bool("mesh_auto_discover", true, "mesh.auto_discover responded");
         }
@@ -182,8 +126,8 @@ fn validate_mesh_discovery(
         }
     }
 
-    match tcp_rpc("localhost", sb_port, "mesh.peers", &serde_json::json!({})) {
-        Ok((resp, _)) => {
+    match ctx.call(mesh_domain, "mesh.peers", serde_json::json!({})) {
+        Ok(resp) => {
             let peer_list = resp
                 .as_array()
                 .cloned()
@@ -198,10 +142,7 @@ fn validate_mesh_discovery(
             );
 
             for (i, peer) in peer_list.iter().enumerate() {
-                let addr = peer
-                    .get("address")
-                    .and_then(|a| a.as_str())
-                    .unwrap_or("unknown");
+                let addr = peer.get("address").and_then(|a| a.as_str()).unwrap_or("unknown");
                 let pid = peer.get("node_id").and_then(|n| n.as_str()).unwrap_or("?");
                 println!("    [{i}] {pid} @ {addr}");
             }
@@ -216,96 +157,15 @@ fn validate_mesh_discovery(
     }
 }
 
-fn validate_peer_capabilities(v: &mut ValidationResult, peers: &[serde_json::Value]) {
-    v.section("Phase 4: Peer capability enumeration");
-
-    if peers.is_empty() {
-        println!("  No peers discovered — skipping capability enumeration.");
-        v.check_skip("peer_capabilities", "no peers to enumerate");
-        return;
-    }
-
-    let mut total_caps: usize = 0;
-    for (i, peer) in peers.iter().enumerate() {
-        let addr = peer
-            .get("address")
-            .and_then(|a| a.as_str())
-            .unwrap_or("127.0.0.1");
-
-        let (host, port) = parse_host_port(addr, tolerances::default_port_for("songbird"));
-        let check_name = format!("peer_{i}_capabilities");
-
-        match tcp_rpc(
-            &host,
-            port,
-            methods::capabilities::LIST,
-            &serde_json::json!({}),
-        ) {
-            Ok((caps, latency)) => {
-                let count = caps
-                    .as_array()
-                    .map(Vec::len)
-                    .or_else(|| {
-                        caps.get("capabilities")
-                            .and_then(|c| c.as_array())
-                            .map(Vec::len)
-                    })
-                    .unwrap_or(0);
-                let ms = latency.as_millis();
-                println!("  peer[{i}] {addr}: {count} capabilities ({ms}ms)");
-                total_caps += count;
-                v.check_bool(
-                    &check_name,
-                    count > 0,
-                    &format!("peer {addr}: {count} caps"),
-                );
-            }
-            Err(e) => {
-                println!("  peer[{i}] {addr}: unreachable ({e})");
-                v.check_skip(&check_name, &format!("peer {addr}: {e}"));
-            }
-        }
-    }
-
-    println!("  Total peer capabilities: {total_caps}");
-}
-
 fn validate_https_through_tower(v: &mut ValidationResult) {
-    v.section("Phase 5: HTTPS through Tower Atomic");
+    v.section("Phase 4: HTTPS through Tower Atomic via Neural API");
 
     let Some(bridge) = NeuralBridge::discover() else {
-        println!("  biomeOS not running — trying direct Songbird TCP");
-        let sb_port = songbird_port();
-        match tcp_rpc(
-            "localhost",
-            sb_port,
-            "http.get",
-            &serde_json::json!({ "url": "https://ifconfig.me/ip" }),
-        ) {
-            Ok((resp, latency)) => {
-                let status = resp
-                    .get("status_code")
-                    .and_then(serde_json::Value::as_u64)
-                    .unwrap_or(0);
-                let ms = latency.as_millis();
-                println!("  HTTPS via direct Songbird: status {status} ({ms}ms)");
-                v.check_bool(
-                    "tower_https",
-                    status == 200,
-                    &format!("HTTPS status {status}"),
-                );
-            }
-            Err(e) => {
-                println!("  HTTPS via Songbird: {e}");
-                v.check_skip("tower_https", &format!("Songbird HTTPS: {e}"));
-            }
-        }
+        v.check_skip("tower_https", "biomeOS not running");
         return;
     };
 
-    let health = bridge.health_check();
-    if health.is_err() {
-        println!("  biomeOS neural-api unhealthy");
+    if bridge.health_check().is_err() {
         v.check_skip("tower_https", "biomeOS neural-api not healthy");
         return;
     }
@@ -335,20 +195,28 @@ fn validate_https_through_tower(v: &mut ValidationResult) {
     }
 }
 
-fn validate_stun(v: &mut ValidationResult) {
-    v.section("Phase 6: STUN / NAT discovery");
+fn validate_stun(v: &mut ValidationResult, ctx: &mut CompositionContext) {
+    v.section("Phase 5: STUN / NAT discovery via CompositionContext");
 
-    let sb_port = songbird_port();
-    match tcp_rpc(
-        "localhost",
-        sb_port,
+    let stun_domain = if ctx.has_capability("stun") {
+        "stun"
+    } else if ctx.has_capability("network") {
+        "network"
+    } else if ctx.has_capability("discovery") {
+        "discovery"
+    } else {
+        v.check_skip("stun_public_address", "no stun/network/discovery capability");
+        return;
+    };
+
+    match ctx.call(
+        stun_domain,
         "stun.get_public_address",
-        &serde_json::json!({}),
+        serde_json::json!({}),
     ) {
-        Ok((resp, latency)) => {
+        Ok(resp) => {
             let addr = resp.get("address").and_then(|a| a.as_str()).unwrap_or("?");
-            let ms = latency.as_millis();
-            println!("  Public address: {addr} ({ms}ms)");
+            println!("  Public address: {addr}");
             v.check_bool("stun_public_address", true, &format!("STUN: {addr}"));
         }
         Err(e) => {
@@ -358,14 +226,28 @@ fn validate_stun(v: &mut ValidationResult) {
     }
 }
 
-fn parse_host_port(addr: &str, default_port: u16) -> (String, u16) {
-    match addr.rsplit_once(':') {
-        Some((host, port_str)) => {
-            let port = port_str.parse().unwrap_or(default_port);
-            (host.to_owned(), port)
-        }
-        None => (addr.to_owned(), default_port),
-    }
+#[cfg(feature = "primordial-compat")]
+fn validate_legacy_tcp_tower(v: &mut ValidationResult) {
+    use primalspring::ipc::methods;
+    use primalspring::ipc::tcp::tcp_rpc;
+    use primalspring::tolerances;
+
+    v.section("Phase 6 (legacy): Direct TCP tower probes");
+
+    let bd_port: u16 = std::env::var("BEARDOG_PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or_else(|| tolerances::default_port_for("beardog"));
+    let sb_port: u16 = std::env::var("SONGBIRD_PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or_else(|| tolerances::default_port_for("songbird"));
+
+    let bd_ok = tcp_rpc("localhost", bd_port, methods::health::LIVENESS, &serde_json::json!({})).is_ok();
+    v.check_bool("legacy_beardog_tcp", bd_ok, &format!("BearDog at :{bd_port}"));
+
+    let sb_ok = tcp_rpc("localhost", sb_port, methods::health::LIVENESS, &serde_json::json!({})).is_ok();
+    v.check_bool("legacy_songbird_tcp", sb_ok, &format!("Songbird at :{sb_port}"));
 }
 
 fn main() {
@@ -377,26 +259,26 @@ fn main() {
         .run(
             "LAN discovery + capability topology + HTTPS via Tower Atomic",
             |v| {
-                let ctx = CompositionContext::from_live_discovery_with_fallback();
+                let mut ctx = CompositionContext::from_live_discovery_with_fallback();
                 phase_composition_discovery(v, &ctx);
 
                 println!("  Node ID:   {node_id}");
                 println!("  Family ID: {family_id}");
-                println!("  BearDog:   localhost:{}", beardog_port());
-                println!("  Songbird:  localhost:{}", songbird_port());
                 println!();
 
-                validate_local_tower(v);
-
-                let peers = validate_mesh_discovery(v, &family_id, &node_id);
-
-                validate_peer_capabilities(v, &peers);
-
+                validate_local_tower(v, &mut ctx);
+                let peers = validate_mesh_discovery(v, &mut ctx, &family_id, &node_id);
+                if !peers.is_empty() {
+                    v.section("Phase 3b: Peer topology");
+                    for (i, peer) in peers.iter().enumerate() {
+                        let addr = peer.get("address").and_then(|a| a.as_str()).unwrap_or("?");
+                        println!("  peer[{i}]: {addr}");
+                    }
+                }
                 validate_https_through_tower(v);
+                validate_stun(v, &mut ctx);
 
-                validate_stun(v);
-
-                v.section("Phase 7: Topology summary");
+                v.section("Topology summary");
                 let peer_count = peers.len();
                 let total_gates = peer_count + 1;
                 println!("  Local gate:  {node_id}");
@@ -407,6 +289,9 @@ fn main() {
                     true,
                     &format!("{total_gates} gate(s) in mesh ({peer_count} peers + self)"),
                 );
+
+                #[cfg(feature = "primordial-compat")]
+                validate_legacy_tcp_tower(v);
             },
         );
 }

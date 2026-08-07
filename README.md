@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml/badge.svg)](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-1240_pass-brightgreen.svg)](#validation-scenarios-197-across-14-tracks)
+[![Tests](https://img.shields.io/badge/tests-1263_pass-brightgreen.svg)](#validation-scenarios-197-across-14-tracks)
 [![Rust](https://img.shields.io/badge/rust-1.87%2B-orange.svg)](https://www.rust-lang.org)
 [![Unsafe: forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance)
 
@@ -10,11 +10,12 @@
 
 | | |
 |-|-|
+| **Wave** | **157a** — G64+G65+G66 COMPLETE. **G67 ACTIVE** (Neural API Stage 2 — N1 DONE, N2-N5 validated, N6 pending). biomeOS v4.57+, 704+ capabilities, COORDINATED mode. Post-primordial reshape complete: capability-first routing, session-scoped provenance, primordial debt feature-gated. |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.46 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 1240 lib + 17 doc + experiment (1260 workspace total) |
+| **Tests** | 1,243 lib + 20 doc + experiment (1,263 workspace total) |
 | **Experiments** | 95 (21 tracks) — 197 validation scenarios (14 tracks, 3 tiers) |
 | **Deploy Graphs** | 102 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 492+ registered capability methods; line coverage via llvm-cov |

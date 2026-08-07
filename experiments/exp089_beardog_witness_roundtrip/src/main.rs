@@ -5,17 +5,17 @@
 //! exp089 — `BearDog` Witness Round-Trip
 //!
 //! Validates that a `BearDog` Ed25519 signature can be wrapped into the
-//! trio's `WireWitnessRef` format and verified back through `BearDog`.
-//! This is the bridge pattern that wetSpring (Anderson QS), ludoSpring
-//! (game checkpoints), and any future spring will use for provenance.
+//! trio's `WireWitnessRef` format and verified back through `BearDog` via
+//! `NeuralBridge::capability_call()`. This is the bridge pattern that
+//! wetSpring (Anderson QS), ludoSpring (game checkpoints), and any future
+//! spring will use for provenance.
 //!
 //! When `BearDog` is not reachable, the experiment validates the offline
 //! witness serialization round-trip (struct → JSON → struct) and exits
 //! with pass for the offline portion, skip for the live crypto portion.
 
 use primalspring::composition::CompositionContext;
-use primalspring::ipc::tcp;
-use primalspring::tolerances;
+use primalspring::ipc::NeuralBridge;
 use primalspring::validation::ValidationResult;
 
 const CRYPTO_GENERATE_KEYPAIR: &str = "crypto.generate_keypair";
@@ -33,7 +33,7 @@ fn phase_composition_discovery(v: &mut ValidationResult, ctx: &CompositionContex
     v.check_bool(
         "has_security_capability_path",
         ctx.has_capability("security"),
-        "security capability for live BearDog TCP path",
+        "security capability for live BearDog via NeuralBridge",
     );
 }
 
@@ -145,13 +145,13 @@ fn phase_non_crypto_witness(v: &mut ValidationResult) {
     }
 }
 
-fn phase_live_sign_to_witness(v: &mut ValidationResult, host: &str, port: u16) {
+fn phase_live_sign_to_witness(v: &mut ValidationResult, bridge: &NeuralBridge) {
     v.section("Phase 4: Live BearDog sign → witness → verify");
 
-    let Some(pub_key) = generate_keypair(host, port) else {
+    let Some(pub_key) = generate_keypair(bridge) else {
         v.check_skip(
             "live crypto (all)",
-            &format!("BearDog not reachable at {host}:{port}"),
+            "BearDog not reachable via NeuralBridge",
         );
         return;
     };
@@ -162,7 +162,7 @@ fn phase_live_sign_to_witness(v: &mut ValidationResult, host: &str, port: u16) {
     );
 
     let test_data = "exp089 Anderson QS provenance witness test payload";
-    let Some((sig, algorithm)) = sign_payload(host, port, test_data) else {
+    let Some((sig, algorithm)) = sign_payload(bridge, test_data) else {
         v.check_skip("sign ed25519", "sign call failed");
         return;
     };
@@ -190,17 +190,18 @@ fn phase_live_sign_to_witness(v: &mut ValidationResult, host: &str, port: u16) {
         "BearDog response wrapped into WireWitnessRef",
     );
 
-    verify_witness_evidence(v, host, port, test_data, &sig, &pub_key);
+    verify_witness_evidence(v, bridge, test_data, &sig, &pub_key);
 }
 
-fn generate_keypair(host: &str, port: u16) -> Option<String> {
-    let (result, _) = tcp::tcp_rpc(
-        host,
-        port,
-        CRYPTO_GENERATE_KEYPAIR,
-        &serde_json::json!({"algorithm": "ed25519"}),
-    )
-    .ok()?;
+fn generate_keypair(bridge: &NeuralBridge) -> Option<String> {
+    let resp = bridge
+        .capability_call(
+            "security",
+            CRYPTO_GENERATE_KEYPAIR,
+            &serde_json::json!({"algorithm": "ed25519"}),
+        )
+        .ok()?;
+    let result = &resp.value;
     let key = result
         .get("public_key")
         .or_else(|| result.get("publicKey"))
@@ -210,14 +211,15 @@ fn generate_keypair(host: &str, port: u16) -> Option<String> {
     Some(key)
 }
 
-fn sign_payload(host: &str, port: u16, data: &str) -> Option<(String, String)> {
-    let (result, _) = tcp::tcp_rpc(
-        host,
-        port,
-        CRYPTO_SIGN_ED25519,
-        &serde_json::json!({"message": data}),
-    )
-    .ok()?;
+fn sign_payload(bridge: &NeuralBridge, data: &str) -> Option<(String, String)> {
+    let resp = bridge
+        .capability_call(
+            "security",
+            CRYPTO_SIGN_ED25519,
+            &serde_json::json!({"message": data}),
+        )
+        .ok()?;
+    let result = &resp.value;
     let sig = result
         .get("signature")
         .and_then(serde_json::Value::as_str)
@@ -233,15 +235,13 @@ fn sign_payload(host: &str, port: u16, data: &str) -> Option<(String, String)> {
 
 fn verify_witness_evidence(
     v: &mut ValidationResult,
-    host: &str,
-    port: u16,
+    bridge: &NeuralBridge,
     message: &str,
     evidence: &str,
     pub_key: &str,
 ) {
-    let verify_result = tcp::tcp_rpc(
-        host,
-        port,
+    let verify_result = bridge.capability_call(
+        "security",
         CRYPTO_VERIFY_ED25519,
         &serde_json::json!({
             "message": message,
@@ -250,7 +250,8 @@ fn verify_witness_evidence(
         }),
     );
     match verify_result {
-        Ok((result, _)) => {
+        Ok(resp) => {
+            let result = &resp.value;
             let valid = result
                 .get("valid")
                 .and_then(serde_json::Value::as_bool)
@@ -265,7 +266,124 @@ fn verify_witness_evidence(
                 "BearDog confirms witness signature is valid",
             );
         }
-        Err(e) => v.check_skip("witness verification", &format!("verify failed: {e}")),
+        Err(e) => v.check_skip("witness verification", &format!("routing failed: {e}")),
+    }
+}
+
+#[cfg(feature = "primordial-compat")]
+mod legacy_tcp {
+    use super::{CRYPTO_GENERATE_KEYPAIR, CRYPTO_SIGN_ED25519, CRYPTO_VERIFY_ED25519};
+    use primalspring::ipc::tcp;
+    use primalspring::tolerances;
+    use primalspring::validation::ValidationResult;
+
+    pub fn generate_keypair(host: &str, port: u16) -> Option<String> {
+        let (result, _) = tcp::tcp_rpc(
+            host,
+            port,
+            CRYPTO_GENERATE_KEYPAIR,
+            &serde_json::json!({"algorithm": "ed25519"}),
+        )
+        .ok()?;
+        let key = result
+            .get("public_key")
+            .or_else(|| result.get("publicKey"))
+            .or_else(|| result.get("public"))
+            .and_then(serde_json::Value::as_str)?
+            .to_owned();
+        Some(key)
+    }
+
+    pub fn sign_payload(host: &str, port: u16, data: &str) -> Option<(String, String)> {
+        let (result, _) = tcp::tcp_rpc(
+            host,
+            port,
+            CRYPTO_SIGN_ED25519,
+            &serde_json::json!({"message": data}),
+        )
+        .ok()?;
+        let sig = result
+            .get("signature")
+            .and_then(serde_json::Value::as_str)
+            .unwrap_or_default()
+            .to_owned();
+        let alg = result
+            .get("algorithm")
+            .and_then(serde_json::Value::as_str)
+            .unwrap_or("Ed25519")
+            .to_lowercase();
+        Some((sig, alg))
+    }
+
+    pub fn verify_witness_evidence(
+        v: &mut ValidationResult,
+        host: &str,
+        port: u16,
+        message: &str,
+        evidence: &str,
+        pub_key: &str,
+    ) {
+        let verify_result = tcp::tcp_rpc(
+            host,
+            port,
+            CRYPTO_VERIFY_ED25519,
+            &serde_json::json!({
+                "message": message,
+                "signature": evidence,
+                "public_key": pub_key,
+            }),
+        );
+        match verify_result {
+            Ok((result, _)) => {
+                let valid = result
+                    .get("valid")
+                    .and_then(serde_json::Value::as_bool)
+                    .unwrap_or(false)
+                    || result
+                        .get("verified")
+                        .and_then(serde_json::Value::as_bool)
+                        .unwrap_or(false);
+                v.check_bool(
+                    "legacy witness evidence verifies",
+                    valid,
+                    "TCP BearDog confirms witness signature is valid",
+                );
+            }
+            Err(e) => v.check_skip("legacy witness verification", &format!("verify failed: {e}")),
+        }
+    }
+
+    pub fn phase_legacy_tcp(v: &mut ValidationResult) {
+        v.section("Phase 5 (legacy): Direct TCP sign → witness → verify");
+
+        let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
+        let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+
+        let Some(pub_key) = generate_keypair(&host, bd_port) else {
+            v.check_skip(
+                "legacy live crypto (all)",
+                &format!("BearDog not reachable at {host}:{bd_port}"),
+            );
+            return;
+        };
+        v.check_bool(
+            "legacy keypair generated",
+            !pub_key.is_empty(),
+            "TCP public key present",
+        );
+
+        let test_data = "exp089 Anderson QS provenance witness test payload";
+        let Some((sig, _algorithm)) = sign_payload(&host, bd_port, test_data) else {
+            v.check_skip("legacy sign ed25519", "TCP sign call failed");
+            return;
+        };
+        v.check_bool(
+            "legacy signature returned",
+            !sig.is_empty(),
+            "TCP non-empty signature",
+        );
+
+        verify_witness_evidence(v, &host, bd_port, test_data, &sig, &pub_key);
     }
 }
 
@@ -276,16 +394,23 @@ fn str_field<'a>(val: &'a serde_json::Value, key: &str) -> Option<&'a str> {
 fn main() {
     ValidationResult::new("primalSpring Exp089 — BearDog Witness Round-Trip")
         .with_provenance("exp089_beardog_witness_roundtrip", "2026-05-09")
-        .run("witness wire type validation", |v| {
+        .run("witness wire type validation via NeuralBridge", |v| {
             let ctx = CompositionContext::from_live_discovery_with_fallback();
             phase_composition_discovery(v, &ctx);
 
             phase_offline_witness_roundtrip(v);
             phase_non_crypto_witness(v);
 
-            let bd_port = tcp::env_port("BEARDOG_PORT", tolerances::default_port_for("beardog"));
-            let host = std::env::var("TOWER_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned());
+            let Some(bridge) = NeuralBridge::discover() else {
+                v.check_skip("neural_api", "biomeOS not running — live crypto skipped");
+                #[cfg(feature = "primordial-compat")]
+                legacy_tcp::phase_legacy_tcp(v);
+                return;
+            };
 
-            phase_live_sign_to_witness(v, &host, bd_port);
+            phase_live_sign_to_witness(v, &bridge);
+
+            #[cfg(feature = "primordial-compat")]
+            legacy_tcp::phase_legacy_tcp(v);
         });
 }

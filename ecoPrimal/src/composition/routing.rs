@@ -152,11 +152,15 @@ fn leak_domain(domain: &str) -> &'static str {
     Box::leak(domain.to_owned().into_boxed_str())
 }
 
-/// Map a capability domain to its canonical primal provider.
+/// Map a capability domain to its canonical primal provider (bootstrap layer).
+///
+/// This is the TOML-derived *bootstrap* lookup used when no live Neural API
+/// connection exists. Once connected, callers should prefer
+/// [`CompositionContext::call`] which routes through the live neural-api
+/// and falls back to this bootstrap layer automatically.
 ///
 /// Resolves from the parsed `capability_registry.toml` first, then falls
-/// through to spring/app owners. This is the ecosystem's single source of
-/// truth for "which primal owns which capability domain."
+/// through to spring/app owners.
 ///
 /// ```
 /// assert_eq!(primalspring::composition::capability_to_primal("tensor"), "barracuda");
