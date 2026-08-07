@@ -1,0 +1,80 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: waterFall sync.diverge
+#
+# Detects divergence across remotes for a repository. Pure read-only sensing
+# (quorumSignal domain). Fetches all remotes, classifies temporal state as
+# converge/diverge/parity, fires a SYNC impulse if diverged, publishes
+# freshness heads, and optionally broadcasts to the mesh.
+#
+# No primal knows about "divergence detection" — biomeOS composes the graph.
+# When the cascade timer fires (Phase A), it invokes this graph via the
+# Neural API to sense the ecosystem's temporal state.
+#
+# Coordination domain: waterFall (SENSE / afferent)
+
+[graph]
+id = "sync_diverge"
+name = "Sync Diverge"
+description = "Detect divergence across remotes. Fetch → classify → impulse → publish freshness."
+version = "1.0.0"
+coordination = "sequential"
+composition_tier = "waterfall"
+composition_name = "diverge"
+coordination_domain = "fall"
+
+[graph.metadata]
+particle = "photon"
+security_model = "btsp_optional"
+transport = "uds_only"
+secure_by_default = true
+fragments = ["tower_atomic"]
+
+[[graph.nodes]]
+name = "check"
+binary = "membrane"
+order = 1
+required = true
+spawn = false
+by_capability = "temporal"
+capabilities = ["temporal.check"]
+
+[[graph.nodes]]
+name = "classify"
+binary = "membrane"
+order = 2
+required = true
+spawn = false
+depends_on = ["check"]
+by_capability = "temporal"
+capabilities = ["temporal.classify"]
+
+[[graph.nodes]]
+name = "impulse"
+binary = "membrane"
+order = 3
+required = true
+spawn = false
+depends_on = ["classify"]
+by_capability = "temporal"
+capabilities = ["impulse.post"]
+
+[[graph.nodes]]
+name = "publish"
+binary = "membrane"
+order = 4
+required = true
+spawn = false
+depends_on = ["impulse"]
+by_capability = "temporal"
+capabilities = ["freshness.publish"]
+
+[[graph.nodes]]
+name = "broadcast"
+binary = "songbird"
+order = 5
+required = false
+spawn = false
+depends_on = ["publish"]
+by_capability = "mesh"
+capabilities = ["mesh.publish"]

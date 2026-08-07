@@ -1,0 +1,126 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Atomic Signal: waterFall sync.resolve.crossgate
+#
+# Cross-gate variant of sync.resolve. Coordinates resolution across multiple
+# gates via songBird mesh discovery and federated push. Adds mesh peers
+# discovery, cross-gate attribution braid (sweetGrass), and federated push
+# to propagate the resolution to all gates that hold the diverged repo.
+#
+# Coordination domain: waterFall (ACTION / efferent, cross-gate)
+
+[graph]
+id = "sync_resolve_crossgate"
+name = "Sync Resolve Cross-Gate"
+description = "Cross-gate divergence resolution. Mesh → check → classify → merge → detect → sign → commit → attribute → federate → resolve."
+version = "1.0.0"
+coordination = "sequential"
+composition_tier = "waterfall"
+composition_name = "resolve_crossgate"
+coordination_domain = "fall"
+
+[graph.metadata]
+particle = "neutron"
+security_model = "btsp_enforced"
+transport = "uds_only"
+secure_by_default = true
+fragments = ["tower_atomic", "provenance_trio"]
+
+[[graph.nodes]]
+name = "peers"
+binary = "songbird"
+order = 1
+required = true
+spawn = false
+by_capability = "mesh"
+capabilities = ["mesh.peers"]
+
+[[graph.nodes]]
+name = "check"
+binary = "membrane"
+order = 2
+required = true
+spawn = false
+depends_on = ["peers"]
+by_capability = "temporal"
+capabilities = ["temporal.check"]
+
+[[graph.nodes]]
+name = "classify"
+binary = "membrane"
+order = 3
+required = true
+spawn = false
+depends_on = ["check"]
+by_capability = "temporal"
+capabilities = ["temporal.classify"]
+
+[[graph.nodes]]
+name = "merge"
+binary = "membrane"
+order = 4
+required = true
+spawn = false
+depends_on = ["classify"]
+by_capability = "temporal"
+capabilities = ["temporal.sync"]
+
+[[graph.nodes]]
+name = "detect"
+binary = "membrane"
+order = 5
+required = true
+spawn = false
+depends_on = ["merge"]
+by_capability = "temporal"
+capabilities = ["conflict.detect"]
+
+[[graph.nodes]]
+name = "sign"
+binary = "beardog"
+order = 6
+required = true
+spawn = false
+depends_on = ["detect"]
+by_capability = "security"
+capabilities = ["crypto.sign_ed25519"]
+
+[[graph.nodes]]
+name = "commit"
+binary = "loamspine"
+order = 7
+required = true
+spawn = false
+depends_on = ["sign"]
+by_capability = "ledger"
+capabilities = ["session.commit"]
+
+[[graph.nodes]]
+name = "attribute"
+binary = "sweetgrass"
+order = 8
+required = true
+spawn = false
+depends_on = ["commit"]
+by_capability = "attribution"
+capabilities = ["braid.create"]
+
+[[graph.nodes]]
+name = "federate"
+binary = "songbird"
+order = 9
+required = true
+spawn = false
+depends_on = ["attribute"]
+by_capability = "mesh"
+capabilities = ["mesh.publish"]
+
+[[graph.nodes]]
+name = "resolve"
+binary = "membrane"
+order = 10
+required = true
+spawn = false
+depends_on = ["federate"]
+by_capability = "temporal"
+capabilities = ["impulse.post"]
