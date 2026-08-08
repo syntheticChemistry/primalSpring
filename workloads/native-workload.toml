@@ -1,0 +1,48 @@
+# Template: Native binary workload for toadStool dispatch
+#
+# Copy this file, fill in the fields, and run:
+#   toadstool execute --timeout 120 --format text your-workload.toml
+#
+# For Python scripts, set command to your Python interpreter path
+# and put the script path in args.
+#
+# Path resolution:
+#   Use absolute paths. toadStool does not expand ${VAR} patterns (Gap 8).
+#   The sandbox may override working_dir under Standard isolation.
+#   Set [security] isolation_level = "None" for local development.
+#
+# Portability:
+#   For machine-portable workloads, consider using paths relative to a
+#   well-known env root (e.g., ECOPRIMALS_ROOT) and wrapping execution
+#   with a script that resolves them. Or use `which <binary>` for PATH
+#   binaries and avoid hardcoding /home/<user>/... paths.
+#
+# plasmidBin binaries:
+#   When springs ship release binaries to plasmidBin, prefer:
+#     command = "$PLASMIDBIN_DIR/springs/<spring>/target/release/<binary>"
+#   Until then, source-build path:
+#     command = "$SPRINGS_ROOT/<spring>/target/release/<binary>"
+#   toadStool does not expand env vars — the dispatch wrapper resolves them.
+
+[metadata]
+name = "your-workload-name"
+description = "What this workload does"
+version = "0.1.0"
+
+[execution]
+type = "native"
+command = "/absolute/path/to/binary-or-interpreter"
+args = ["/absolute/path/to/script-or-args"]
+working_dir = "/absolute/path/to/working/directory"
+
+[resources]
+max_memory_bytes = 2147483648
+max_cpu_percent = 80.0
+
+[security]
+isolation_level = "None"
+
+# [provenance]
+# track = true
+# archive_to = "nestgate"
+# Uncomment when toadStool supports native [provenance] sections (Gap 5).
