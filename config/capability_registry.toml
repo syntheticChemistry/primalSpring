@@ -504,11 +504,17 @@ stability = "stable"
 routes_to = "commit"
 methods = [
     "braid.anchor",
+    "braid.batch_commit",
+    "braid.batch_create",
     "braid.commit",
     "braid.complete",
     "braid.create",
+    "braid.delete",
     "braid.get",
+    "braid.get_by_hash",
+    "braid.list",
     "braid.partial_update",
+    "braid.query",
     "braid.sync",
 ]
 
@@ -518,6 +524,14 @@ routes_to = "commit"
 methods = [
     "anchoring.anchor",
     "anchoring.verify",
+]
+
+[convergence]
+owner = "sweetgrass"
+stability = "stable"
+methods = [
+    "convergence.batch_check",
+    "convergence.check",
 ]
 
 [provenance]
@@ -1142,9 +1156,24 @@ methods = [
 owner = "membrane"
 stability = "evolving"
 methods = [
-    "temporal.check",
-    "temporal.sync",
     "temporal.cascade",
+    "temporal.check",
+    "temporal.classify",
+    "temporal.sync",
+]
+
+[conflict]
+owner = "membrane"
+stability = "evolving"
+methods = [
+    "conflict.detect",
+]
+
+[freshness]
+owner = "membrane"
+stability = "evolving"
+methods = [
+    "freshness.publish",
 ]
 
 [potential]
