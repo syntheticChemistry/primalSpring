@@ -129,7 +129,9 @@ G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder)
 riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
 58 methods registered via primal.announce, 919 exec/s graph throughput,
 dispatch reorder confirmed (mean 1.3ms, was 15s). 9/11 primals forward via
-capability.call. riboCipher auto-detect gap documented (sweetGrass enforces).
+capability.call. **riboCipher auto-detect FIXED** (`d1f555e7`): TOML-based
+domain flags + capability.call direct path both use `forward_request_ribocipher()`
+for sweetGrass/rhizoCrypt. Gap CLOSED. Depot rebuild will activate fleet-wide.
 Post-primordial reshape complete: capability-first discovery
 (NeuralBridge → CompositionContext), session-scoped provenance model,
 primordial debt feature-gated behind `primordial-compat`, TOML-driven

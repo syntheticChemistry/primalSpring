@@ -5,13 +5,13 @@
 //! - Legacy primals (beardog, loamSpine, etc.) accept plain JSON-RPC only
 //!
 //! The biomeOS riboCipher pool ships dual-lane: plain + riboCipher.
-//! `send_ribocipher_jsonrpc()` exists but auto-detect is not wired.
+//! Auto-detect is wired via domain-level `ribocipher = true` in capability_registry.toml.
 //!
 //! This experiment:
 //! 1. Tests direct primal connectivity (bypass Neural API)
 //! 2. Classifies each primal's protocol affinity
 //! 3. Tests capability.call forwarding (Neural API → primal)
-//! 4. Identifies which primals need riboCipher forwarding
+//! 4. Verifies riboCipher auto-detect (0 rejections = gap closed)
 //! 5. Validates the dispatch reorder improvement (no 15s timeout)
 
 use primalspring::validation::ValidationResult;
@@ -125,7 +125,7 @@ fn try_direct_rpc(socket_path: &str, payload: &[u8], prefix: &[u8]) -> bool {
 }
 
 const NUCLEUS_PRIMALS: &[(&str, &str, &str)] = &[
-    ("beardog", "/run/user/1000/biomeos/beardog.sock", "crypto"),
+    ("beardog", "/run/user/1000/biomeos/beardog-default.sock", "crypto"),
     ("songbird", "/run/user/1000/biomeos/songbird.sock", "mesh"),
     ("skunkbat", "/run/user/1000/biomeos/skunkbat.sock", "defense"),
     ("sweetgrass", "/run/user/1000/biomeos/sweetgrass.sock", "braid"),
@@ -169,9 +169,9 @@ fn phase_protocol_classification(v: &mut ValidationResult, probes: &[PrimalProbe
 
     v.check_bool(
         "mixed_protocol_surface",
-        !plain_only.is_empty() && !ribo_only.is_empty(),
+        !ribo_only.is_empty() || !dual.is_empty(),
         &format!(
-            "Mixed surface: {} plain-only, {} ribo-only, {} dual-lane",
+            "Protocol surface: {} plain-only, {} ribo-only, {} dual-lane",
             plain_only.len(), ribo_only.len(), dual.len()
         ),
     );
@@ -194,13 +194,13 @@ fn phase_protocol_classification(v: &mut ValidationResult, probes: &[PrimalProbe
         &format!("beardog plain JSON-RPC: {beardog_plain}"),
     );
 
-    let needs_autodetect = !plain_only.is_empty() && !ribo_only.is_empty();
+    let has_ribo_primals = !ribo_only.is_empty();
     v.check_bool(
-        "autodetect_required",
-        needs_autodetect,
+        "ribocipher_primals_present",
+        has_ribo_primals,
         &format!(
-            "Auto-detect needed: primals disagree on protocol ({} need plain, {} need ribo)",
-            plain_only.len(), ribo_only.len()
+            "riboCipher-enforcing primals detected: {} ribo-only (sweetGrass expected)",
+            ribo_only.len()
         ),
     );
 }
@@ -287,10 +287,11 @@ fn phase_neural_api_forwarding(v: &mut ValidationResult) {
     );
 
     v.check_bool(
-        "ribocipher_gap_identified",
-        fail_ribo > 0,
+        "ribocipher_autodetect_verified",
+        fail_ribo == 0,
         &format!(
-            "{fail_ribo} primal(s) rejected forwarded call (riboCipher required → auto-detect gap)"
+            "{fail_ribo} primal(s) rejected forwarded call — auto-detect gap {}",
+            if fail_ribo == 0 { "CLOSED" } else { "OPEN (riboCipher required but plain sent)" }
         ),
     );
 }

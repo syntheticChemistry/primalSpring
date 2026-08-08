@@ -10,7 +10,7 @@
 
 | | |
 |-|-|
-| **Wave** | **157a** — G64+G65+G66 COMPLETE. **G67 ACTIVE** (Neural API Stage 2 — N1 DONE, N2-N5 verified, dispatch reorder confirmed). biomeOS dispatch fix (`44c40191`): 15s→1.3ms mean latency. 9/11 primals forward via Neural API. riboCipher auto-detect gap documented (1/11: sweetGrass). Owns eastGate temporal cascade. |
+| **Wave** | **157a** — G64+G65+G66 COMPLETE. **G67 ACTIVE** (Neural API Stage 2 — N1 DONE, N2-N5 verified, dispatch reorder confirmed). biomeOS dispatch fix (`44c40191`): 15s→1.3ms. riboCipher auto-detect FIXED (`d1f555e7`): sweetGrass routes via riboCipher, gap CLOSED. 9/11 primals forward. Owns eastGate temporal cascade. |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.46 |
 | **Edition** | Rust 2024 (1.87+) |
