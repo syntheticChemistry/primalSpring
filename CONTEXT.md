@@ -120,21 +120,25 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.46 Wave 157a (Aug 7, 2026) — 197 scenarios (14 tracks, 3 tiers),
-490+ registered capability methods, 95 experiments (21 tracks), 102 graph TOMLs
-(16 directories). 1,263 workspace tests. **11-gate mesh (6 NUCLEUS +
-5 active). G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
-G67 ACTIVE (Neural API Stage 2 activation — N1 DONE, N2-N5 validated, N6 pending).
-140K+ ecosystem tests across 15 primals.** Post-primordial reshape complete:
-capability-first discovery (NeuralBridge → CompositionContext), session-scoped
-provenance model, primordial debt feature-gated behind `primordial-compat`,
-TOML-driven routing throughout (no hardcoded primal slugs in production paths).
+v0.9.46 Wave 157a (Aug 8, 2026) — 198 scenarios (15 tracks, 3 tiers),
+704+ registered capability methods, 98 experiments (21 tracks), 102 graph TOMLs
+(16 directories). 1,282 workspace tests. **6/6 NUCLEUS gates redeployed.
+G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
+G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 validated, N6 pending).
+140K+ ecosystem tests across 15 primals.** Neural API live on eastGate:
+riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
+58 methods registered via primal.announce, 1,251 graph exec/s, PathwayLearner
+structural prerequisites validated (s_neural_learning scenario).
+Post-primordial reshape complete: capability-first discovery
+(NeuralBridge → CompositionContext), session-scoped provenance model,
+primordial debt feature-gated behind `primordial-compat`, TOML-driven
+routing throughout. **Owns eastGate temporal cascade** (scripts/temporal_cascade.sh).
 Config-driven topology (`config/mesh_topology.toml` — SSOT for gate roster,
 zones, mesh addresses). Evolution module: CytoplasmZone model
 (backbone/house2/garage/wan), three-hub triangle topology, gate enrollment
 pipeline, convergence monitoring. Zero clippy warnings, zero unsafe blocks.
-Role formalized: composition experimentation laboratory. Deployment ops handed
-to cellMembrane, workload packaging to projectNUCLEUS.
+Role formalized: composition experimentation laboratory + eastGate cascade owner.
+Deployment ops handed to cellMembrane, workload packaging to projectNUCLEUS.
 **Wave 82c Deep Debt Sprint COMPLETE**: 3 fossil tool scripts deleted,
 `validate_nucleus_deployment.sh` and `validate_release.sh` replaced by
 `primalspring nucleus` and `primalspring release` Rust subcommands,
