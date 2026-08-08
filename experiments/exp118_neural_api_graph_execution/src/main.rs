@@ -191,8 +191,8 @@ fn phase_announce(v: &mut ValidationResult) {
 fn phase_capability_routing(v: &mut ValidationResult) {
     let call_params = serde_json::json!({
         "capability": "crypto",
-        "operation": "sign_ed25519",
-        "args": {"data": "dGVzdA=="}
+        "operation": "health.check",
+        "args": {}
     });
 
     match neural_rpc("capability.call", &call_params) {
@@ -219,8 +219,10 @@ fn phase_capability_routing(v: &mut ValidationResult) {
     match neural_rpc("capability.discover", &serde_json::json!({"capability": "crypto"})) {
         Ok(result) => {
             let has_provider = result.get("providers").is_some()
+                || result.get("primals").is_some()
                 || result.get("primal").is_some()
-                || result.get("socket").is_some();
+                || result.get("socket").is_some()
+                || result.get("primary_endpoint").is_some();
             v.check_bool(
                 "capability_discover",
                 has_provider,

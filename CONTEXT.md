@@ -121,14 +121,15 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 ## Status
 
 v0.9.46 Wave 157a (Aug 8, 2026) — 198 scenarios (15 tracks, 3 tiers),
-704+ registered capability methods, 98 experiments (21 tracks), 102 graph TOMLs
+704+ registered capability methods, 99 experiments (21 tracks), 102 graph TOMLs
 (16 directories). 1,282 workspace tests. **6/6 NUCLEUS gates redeployed.
 G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
-G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 validated, N6 pending).
+G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder).
 140K+ ecosystem tests across 15 primals.** Neural API live on eastGate:
 riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
-58 methods registered via primal.announce, 1,251 graph exec/s, PathwayLearner
-structural prerequisites validated (s_neural_learning scenario).
+58 methods registered via primal.announce, 919 exec/s graph throughput,
+dispatch reorder confirmed (mean 1.3ms, was 15s). 9/11 primals forward via
+capability.call. riboCipher auto-detect gap documented (sweetGrass enforces).
 Post-primordial reshape complete: capability-first discovery
 (NeuralBridge → CompositionContext), session-scoped provenance model,
 primordial debt feature-gated behind `primordial-compat`, TOML-driven

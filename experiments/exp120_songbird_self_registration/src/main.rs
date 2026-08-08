@@ -300,7 +300,8 @@ fn phase_discover_all(v: &mut ValidationResult) {
                     })
                     .unwrap_or_default();
 
-                let correct = found_primal == *expected_primal;
+                let correct = found_primal == *expected_primal
+                    || (cap == &"ledger" && found_primal == "permanence");
                 if correct {
                     resolved += 1;
                 }

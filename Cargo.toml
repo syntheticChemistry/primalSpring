@@ -108,6 +108,7 @@ members = [
     "experiments/exp118_neural_api_graph_execution",
     "experiments/exp119_pathway_learner_structural",
     "experiments/exp120_songbird_self_registration",
+    "experiments/exp121_ribocipher_dispatch_autodetect",
 ]
 
 [workspace.package]

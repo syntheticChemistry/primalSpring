@@ -10,13 +10,13 @@
 
 | | |
 |-|-|
-| **Wave** | **157a** — G64+G65+G66 COMPLETE. **G67 ACTIVE** (Neural API Stage 2 — N1 DONE, N2-N5 validated, N6 pending). biomeOS v4.57+, 704+ capabilities, COORDINATED mode. Post-primordial reshape complete. **Neural API live on eastGate**: riboCipher protocol validated, 34 capabilities registered, 1,251 exec/s graph throughput, PathwayLearner prerequisites confirmed. Owns eastGate temporal cascade. |
+| **Wave** | **157a** — G64+G65+G66 COMPLETE. **G67 ACTIVE** (Neural API Stage 2 — N1 DONE, N2-N5 verified, dispatch reorder confirmed). biomeOS dispatch fix (`44c40191`): 15s→1.3ms mean latency. 9/11 primals forward via Neural API. riboCipher auto-detect gap documented (1/11: sweetGrass). Owns eastGate temporal cascade. |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.46 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 1,262 lib + 20 doc + experiment (1,282 workspace total) |
-| **Experiments** | 98 (21 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
+| **Experiments** | 99 (21 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
 | **Deploy Graphs** | 102 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 492+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
