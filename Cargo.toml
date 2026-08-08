@@ -106,6 +106,7 @@ members = [
     "experiments/exp116_benchscale_nucleus_lab",
     "experiments/exp117_compute_trio_routing",
     "experiments/exp118_neural_api_graph_execution",
+    "experiments/exp119_pathway_learner_structural",
 ]
 
 [workspace.package]

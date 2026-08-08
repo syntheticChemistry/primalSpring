@@ -1,0 +1,18 @@
+[package]
+name = "primalspring-exp119"
+version = "0.9.46"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[[bin]]
+name = "exp119_pathway_learner_structural"
+path = "src/main.rs"
+
+[dependencies]
+primalspring = { path = "../../ecoPrimal" }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true
