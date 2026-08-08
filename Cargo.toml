@@ -107,6 +107,7 @@ members = [
     "experiments/exp117_compute_trio_routing",
     "experiments/exp118_neural_api_graph_execution",
     "experiments/exp119_pathway_learner_structural",
+    "experiments/exp120_songbird_self_registration",
 ]
 
 [workspace.package]

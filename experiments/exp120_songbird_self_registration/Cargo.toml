@@ -1,0 +1,18 @@
+[package]
+name = "primalspring-exp120"
+version = "0.9.46"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[[bin]]
+name = "exp120_songbird_self_registration"
+path = "src/main.rs"
+
+[dependencies]
+primalspring = { path = "../../ecoPrimal" }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true
