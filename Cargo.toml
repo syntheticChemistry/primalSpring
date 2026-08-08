@@ -105,6 +105,7 @@ members = [
     "experiments/exp115_nest_ingest_pseudospore",
     "experiments/exp116_benchscale_nucleus_lab",
     "experiments/exp117_compute_trio_routing",
+    "experiments/exp118_neural_api_graph_execution",
 ]
 
 [workspace.package]
