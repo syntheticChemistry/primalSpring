@@ -428,6 +428,7 @@ methods = [
     "dag.slice.checkout",
     "dag.slice.get",
     "dag.partial_dehydrate",
+    "dag.query",
     "dag.vertex.get",
     "dag.vertex.query",
 ]
@@ -439,7 +440,9 @@ stability = "stable"
 methods = [
     "spine.create",
     "spine.get",
+    "spine.list",
     "spine.seal",
+    "spine.status",
 ]
 
 [event]
@@ -455,6 +458,7 @@ stability = "stable"
 methods = [
     "entry.append",
     "entry.get",
+    "entry.list",
 ]
 
 [session]
@@ -516,6 +520,7 @@ methods = [
     "braid.partial_update",
     "braid.query",
     "braid.sync",
+    "braid.verify",
 ]
 
 [anchoring]
@@ -579,6 +584,7 @@ methods = [
     "content.fetch_heads",
     "content.get",
     "content.hash",
+    "content.ingest",
     "content.list",
     "content.promote",
     "content.publish",
@@ -586,6 +592,7 @@ methods = [
     "content.put",
     "content.replicate",
     "content.resolve",
+    "content.stat",
     "content.sync",
 ]
 

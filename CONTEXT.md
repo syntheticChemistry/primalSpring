@@ -138,6 +138,9 @@ primordial debt feature-gated behind `primordial-compat`, TOML-driven
 routing throughout. **Owns eastGate temporal cascade** (scripts/temporal_cascade.sh).
 **Depot v4.57.0 deployed on eastGate**: biomeOS + songBird + cellMembrane + swarmVine
 rebuilt, 1.0ms dispatch mean, 11/11 primals announced, swarmVine live (primal #16).
+**Vine-bat loop OPERATIONAL** (Aug 9): swarmVine `df97b25` calls skunkBat
+`metadata.analyze` 8-check pre-accept on gossip.spread. 29 primals announced,
+capability registry synced with upstream provenance chain translations (`2fae9144`).
 Config-driven topology (`config/mesh_topology.toml` — SSOT for gate roster,
 zones, mesh addresses). Evolution module: CytoplasmZone model
 (backbone/house2/garage/wan), three-hub triangle topology, gate enrollment
