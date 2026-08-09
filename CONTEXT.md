@@ -136,6 +136,8 @@ Post-primordial reshape complete: capability-first discovery
 (NeuralBridge → CompositionContext), session-scoped provenance model,
 primordial debt feature-gated behind `primordial-compat`, TOML-driven
 routing throughout. **Owns eastGate temporal cascade** (scripts/temporal_cascade.sh).
+**Depot v4.57.0 deployed on eastGate**: biomeOS + songBird + cellMembrane + swarmVine
+rebuilt, 1.0ms dispatch mean, 11/11 primals announced, swarmVine live (primal #16).
 Config-driven topology (`config/mesh_topology.toml` — SSOT for gate roster,
 zones, mesh addresses). Evolution module: CytoplasmZone model
 (backbone/house2/garage/wan), three-hub triangle topology, gate enrollment
