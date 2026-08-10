@@ -514,21 +514,282 @@ pub fn global_start_order(
     Ok(order)
 }
 
-/// Summary of manifest reconciliation against live NUCLEUS state.
+// ---------------------------------------------------------------------------
+// Multi-Composition Orchestration
+// ---------------------------------------------------------------------------
+
+/// A workflow step targeting a composition or capability.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ManifestReconciliation {
-    /// Gate name from manifest
-    pub gate: String,
-    /// Total primals declared in manifest
-    pub declared: usize,
-    /// Primals found alive on the gate
-    pub alive: usize,
-    /// Primals missing from the gate
-    pub missing: Vec<String>,
-    /// Extra primals on the gate not in manifest
-    pub extra: Vec<String>,
-    /// Composition readiness results
-    pub compositions: Vec<CompositionReadinessResult>,
+pub struct WorkflowStep {
+    /// Step identifier (for dependency references)
+    pub id: String,
+    /// Which composition(s) this step operates on
+    pub target: WorkflowTarget,
+    /// Action to perform
+    pub action: WorkflowAction,
+    /// Steps that must complete before this one begins
+    #[serde(default)]
+    pub depends_on: Vec<String>,
+    /// Timeout for this step
+    #[serde(default = "default_step_timeout_secs")]
+    pub timeout_secs: u64,
+}
+
+fn default_step_timeout_secs() -> u64 {
+    120
+}
+
+/// What a workflow step targets.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum WorkflowTarget {
+    /// Target a single composition by name
+    Composition(String),
+    /// Target a specific primal by slug
+    Primal(String),
+    /// Target all compositions (global)
+    All,
+}
+
+/// Action a workflow step performs.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum WorkflowAction {
+    /// Start the target (respecting dependency ordering)
+    Start,
+    /// Stop the target (reverse dependency ordering)
+    Stop,
+    /// Health check the target
+    HealthCheck,
+    /// Invoke a capability on the target
+    CapabilityCall {
+        /// Capability domain
+        capability: String,
+        /// Operation to invoke
+        operation: String,
+    },
+    /// Wait for a readiness gate
+    AwaitReady,
+    /// Reconcile manifest against live state
+    Reconcile,
+}
+
+/// A multi-step composition workflow.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CompositionWorkflow {
+    /// Workflow name
+    pub name: String,
+    /// Optional description
+    #[serde(default)]
+    pub description: String,
+    /// Ordered steps (topologically resolved by `depends_on`)
+    pub steps: Vec<WorkflowStep>,
+}
+
+/// Result of executing a single workflow step.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StepResult {
+    /// Step ID
+    pub id: String,
+    /// Whether the step succeeded
+    pub success: bool,
+    /// Human-readable outcome
+    pub message: String,
+    /// Elapsed milliseconds
+    pub elapsed_ms: u64,
+}
+
+/// Result of executing an entire workflow.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WorkflowResult {
+    /// Workflow name
+    pub name: String,
+    /// Results per step
+    pub steps: Vec<StepResult>,
+    /// Whether all steps passed
+    pub success: bool,
+    /// Total elapsed milliseconds
+    pub total_ms: u64,
+}
+
+/// Resolve a workflow's step ordering using topological sort on `depends_on`.
+///
+/// Returns steps grouped into parallel waves — steps in the same wave have
+/// no mutual dependencies and can execute concurrently.
+pub fn resolve_workflow_waves(
+    workflow: &CompositionWorkflow,
+) -> Result<Vec<Vec<&WorkflowStep>>, ManifestError> {
+    let step_map: HashMap<&str, &WorkflowStep> = workflow
+        .steps
+        .iter()
+        .map(|s| (s.id.as_str(), s))
+        .collect();
+
+    let mut in_degree: HashMap<&str, usize> = HashMap::new();
+    for step in &workflow.steps {
+        in_degree.entry(step.id.as_str()).or_insert(0);
+        for dep in &step.depends_on {
+            if !step_map.contains_key(dep.as_str()) {
+                return Err(ManifestError::Validation(format!(
+                    "workflow '{}': step '{}' depends on unknown step '{dep}'",
+                    workflow.name, step.id
+                )));
+            }
+            *in_degree.entry(step.id.as_str()).or_insert(0) += 1;
+        }
+    }
+
+    let mut waves = Vec::new();
+    let mut remaining: HashSet<&str> = workflow.steps.iter().map(|s| s.id.as_str()).collect();
+
+    while !remaining.is_empty() {
+        let wave: Vec<&str> = remaining
+            .iter()
+            .copied()
+            .filter(|id| {
+                in_degree.get(id).copied().unwrap_or(0) == 0
+            })
+            .collect();
+
+        if wave.is_empty() {
+            return Err(ManifestError::Cycle {
+                composition: workflow.name.clone(),
+                cycle: remaining.iter().copied().collect::<Vec<_>>().join(" -> "),
+            });
+        }
+
+        for &id in &wave {
+            remaining.remove(id);
+            for step in &workflow.steps {
+                if step.depends_on.iter().any(|d| d == id) {
+                    *in_degree.entry(step.id.as_str()).or_default() -= 1;
+                }
+            }
+        }
+
+        waves.push(wave.into_iter().filter_map(|id| step_map.get(id).copied()).collect());
+    }
+
+    Ok(waves)
+}
+
+/// Build the standard NUCLEUS startup workflow from a manifest.
+///
+/// Produces a workflow that starts compositions in priority order,
+/// awaits readiness on each, then performs a final reconciliation.
+pub fn nucleus_startup_workflow(manifest: &BiomeManifest) -> CompositionWorkflow {
+    let mut steps = Vec::new();
+    let mut prev_id: Option<String> = None;
+
+    let mut comps: Vec<&CompositionGraph> = manifest
+        .compositions
+        .iter()
+        .filter(|c| c.auto_start)
+        .collect();
+    comps.sort_by_key(|c| c.priority);
+
+    for comp in &comps {
+        let start_id = format!("start_{}", comp.name.replace('-', "_"));
+        steps.push(WorkflowStep {
+            id: start_id.clone(),
+            target: WorkflowTarget::Composition(comp.name.clone()),
+            action: WorkflowAction::Start,
+            depends_on: prev_id.iter().cloned().collect(),
+            timeout_secs: comp
+                .readiness
+                .as_ref()
+                .map(|r| r.timeout_secs.into())
+                .unwrap_or(120),
+        });
+
+        let ready_id = format!("ready_{}", comp.name.replace('-', "_"));
+        steps.push(WorkflowStep {
+            id: ready_id.clone(),
+            target: WorkflowTarget::Composition(comp.name.clone()),
+            action: WorkflowAction::AwaitReady,
+            depends_on: vec![start_id],
+            timeout_secs: comp
+                .readiness
+                .as_ref()
+                .map(|r| r.timeout_secs.into())
+                .unwrap_or(60),
+        });
+
+        prev_id = Some(ready_id);
+    }
+
+    steps.push(WorkflowStep {
+        id: "final_reconcile".to_string(),
+        target: WorkflowTarget::All,
+        action: WorkflowAction::Reconcile,
+        depends_on: prev_id.into_iter().collect(),
+        timeout_secs: 30,
+    });
+
+    CompositionWorkflow {
+        name: format!("{}_startup", manifest.metadata.name),
+        description: format!(
+            "Standard NUCLEUS startup for {} ({} compositions)",
+            manifest.metadata.name,
+            comps.len()
+        ),
+        steps,
+    }
+}
+
+/// Build a graceful shutdown workflow (reverse of startup).
+pub fn nucleus_shutdown_workflow(manifest: &BiomeManifest) -> CompositionWorkflow {
+    let mut steps = Vec::new();
+    let mut prev_id: Option<String> = None;
+
+    let mut comps: Vec<&CompositionGraph> = manifest
+        .compositions
+        .iter()
+        .filter(|c| c.auto_start)
+        .collect();
+    comps.sort_by_key(|c| std::cmp::Reverse(c.priority));
+
+    for comp in &comps {
+        let stop_id = format!("stop_{}", comp.name.replace('-', "_"));
+        steps.push(WorkflowStep {
+            id: stop_id.clone(),
+            target: WorkflowTarget::Composition(comp.name.clone()),
+            action: WorkflowAction::Stop,
+            depends_on: prev_id.iter().cloned().collect(),
+            timeout_secs: 30,
+        });
+        prev_id = Some(stop_id);
+    }
+
+    CompositionWorkflow {
+        name: format!("{}_shutdown", manifest.metadata.name),
+        description: format!(
+            "Graceful NUCLEUS shutdown for {} (reverse priority)",
+            manifest.metadata.name
+        ),
+        steps,
+    }
+}
+
+/// Build a health-check workflow that probes all compositions in parallel.
+pub fn nucleus_health_workflow(manifest: &BiomeManifest) -> CompositionWorkflow {
+    let steps: Vec<WorkflowStep> = manifest
+        .compositions
+        .iter()
+        .map(|comp| WorkflowStep {
+            id: format!("health_{}", comp.name.replace('-', "_")),
+            target: WorkflowTarget::Composition(comp.name.clone()),
+            action: WorkflowAction::HealthCheck,
+            depends_on: Vec::new(),
+            timeout_secs: 15,
+        })
+        .collect();
+
+    CompositionWorkflow {
+        name: format!("{}_health", manifest.metadata.name),
+        description: "Parallel health check across all compositions".to_string(),
+        steps,
+    }
 }
 
 /// Readiness result for a single composition.
@@ -544,6 +805,23 @@ pub struct CompositionReadinessResult {
     pub healthy_members: Vec<String>,
     /// Members that are unhealthy or missing
     pub unhealthy_members: Vec<String>,
+}
+
+/// Summary of manifest reconciliation against live NUCLEUS state.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ManifestReconciliation {
+    /// Gate name from manifest
+    pub gate: String,
+    /// Total primals declared in manifest
+    pub declared: usize,
+    /// Primals found alive on the gate
+    pub alive: usize,
+    /// Primals missing from the gate
+    pub missing: Vec<String>,
+    /// Extra primals on the gate not in manifest
+    pub extra: Vec<String>,
+    /// Composition readiness results
+    pub compositions: Vec<CompositionReadinessResult>,
 }
 
 /// Reconcile a manifest against a live NUCLEUS state by checking socket
@@ -834,5 +1112,74 @@ metadata:
         assert!(fed.enabled);
         assert_eq!(fed.peers.len(), 6);
         assert!(fed.peers.contains(&"sporeGate".to_string()));
+    }
+
+    #[test]
+    fn startup_workflow_structure() {
+        let manifest: BiomeManifest = serde_yaml_ng::from_str(eastgate_yaml()).unwrap();
+        let wf = nucleus_startup_workflow(&manifest);
+        assert_eq!(wf.name, "eastgate_startup");
+        // 3 compositions × 2 (start + ready) + 1 reconcile = 7 steps
+        assert_eq!(wf.steps.len(), 7);
+        assert!(matches!(wf.steps.last().unwrap().action, WorkflowAction::Reconcile));
+    }
+
+    #[test]
+    fn shutdown_workflow_reverse_priority() {
+        let manifest: BiomeManifest = serde_yaml_ng::from_str(eastgate_yaml()).unwrap();
+        let wf = nucleus_shutdown_workflow(&manifest);
+        assert_eq!(wf.name, "eastgate_shutdown");
+        assert_eq!(wf.steps.len(), 3);
+        // Node (priority 20) should stop first, then Nest (10), then Tower (0)
+        assert!(wf.steps[0].id.contains("node"));
+        assert!(wf.steps[1].id.contains("nest"));
+        assert!(wf.steps[2].id.contains("tower"));
+    }
+
+    #[test]
+    fn health_workflow_parallel() {
+        let manifest: BiomeManifest = serde_yaml_ng::from_str(eastgate_yaml()).unwrap();
+        let wf = nucleus_health_workflow(&manifest);
+        assert_eq!(wf.steps.len(), 3);
+        // All steps have zero depends_on — fully parallel
+        for step in &wf.steps {
+            assert!(step.depends_on.is_empty());
+        }
+    }
+
+    #[test]
+    fn workflow_wave_resolution() {
+        let manifest: BiomeManifest = serde_yaml_ng::from_str(eastgate_yaml()).unwrap();
+        let wf = nucleus_startup_workflow(&manifest);
+        let waves = resolve_workflow_waves(&wf).unwrap();
+        // First wave: only the first step (start_tower_atomic, no deps)
+        assert_eq!(waves[0].len(), 1);
+        assert_eq!(waves[0][0].id, "start_tower_atomic");
+    }
+
+    #[test]
+    fn workflow_cycle_detection() {
+        let wf = CompositionWorkflow {
+            name: "cyclic".to_string(),
+            description: String::new(),
+            steps: vec![
+                WorkflowStep {
+                    id: "a".to_string(),
+                    target: WorkflowTarget::All,
+                    action: WorkflowAction::HealthCheck,
+                    depends_on: vec!["b".to_string()],
+                    timeout_secs: 10,
+                },
+                WorkflowStep {
+                    id: "b".to_string(),
+                    target: WorkflowTarget::All,
+                    action: WorkflowAction::HealthCheck,
+                    depends_on: vec!["a".to_string()],
+                    timeout_secs: 10,
+                },
+            ],
+        };
+        let err = resolve_workflow_waves(&wf).unwrap_err();
+        assert!(matches!(err, ManifestError::Cycle { .. }));
     }
 }

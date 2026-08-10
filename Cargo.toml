@@ -110,6 +110,7 @@ members = [
     "experiments/exp120_songbird_self_registration",
     "experiments/exp121_ribocipher_dispatch_autodetect",
     "experiments/exp122_manifest_composition_lifecycle",
+    "experiments/exp123_g72_dep_pandemic_profile",
 ]
 
 [workspace.package]

@@ -287,6 +287,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "exp123_g72_dep_pandemic_profile"
+version = "0.1.0"
+dependencies = [
+ "primalspring",
+ "serde_json",
+ "toml",
+]
+
+[[package]]
 name = "fastrand"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
