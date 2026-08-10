@@ -309,8 +309,7 @@ fn phase_discover_all(v: &mut ValidationResult) {
                     &format!("discover_{cap}"),
                     correct,
                     &format!(
-                        "capability.discover({cap}) → {} (expected {expected_primal})",
-                        if correct { &found_primal } else { &found_primal }
+                        "capability.discover({cap}) → {found_primal} (expected {expected_primal})",
                     ),
                 );
             }
@@ -422,7 +421,7 @@ fn main() {
                         v.check_bool("neural_api_alive", status == "alive", &format!("status={status}"));
                     }
                     Err(e) => {
-                        v.check_bool("neural_api_alive", false, &format!("{e}"));
+                        v.check_bool("neural_api_alive", false, &e.to_string());
                         return;
                     }
                 }

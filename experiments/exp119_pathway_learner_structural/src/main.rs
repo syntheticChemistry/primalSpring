@@ -65,10 +65,7 @@ fn neural_rpc(method: &str, params: &serde_json::Value) -> Result<serde_json::Va
         serde_json::from_str(line.trim()).map_err(|e| format!("Parse: {e}"))?;
 
     if let Some(error) = response.get("error") {
-        return Err(format!(
-            "{}",
-            error.get("message").and_then(|m| m.as_str()).unwrap_or("unknown")
-        ));
+        return Err(error.get("message").and_then(|m| m.as_str()).unwrap_or("unknown").to_string());
     }
 
     response.get("result").cloned().ok_or_else(|| "Missing result".to_string())
@@ -133,9 +130,8 @@ fn phase_trace_accumulation(v: &mut ValidationResult) {
 
     let mut traces: Vec<ExecutionTrace> = Vec::new();
     for _ in 0..n {
-        match execute_and_trace(graph_id) {
-            Ok(trace) => traces.push(trace),
-            Err(_) => {}
+        if let Ok(trace) = execute_and_trace(graph_id) {
+            traces.push(trace);
         }
     }
     let elapsed = start.elapsed();

@@ -45,6 +45,8 @@ pub mod manifest;
 pub mod mesh;
 pub mod neural_dispatch;
 pub mod neural_routing;
+pub mod reconcile;
+pub mod workflow;
 mod parity;
 mod routing;
 

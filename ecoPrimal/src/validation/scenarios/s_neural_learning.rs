@@ -264,12 +264,12 @@ fn phase_signal_collapse(v: &mut ValidationResult) {
 }
 
 fn phase_learning_requirements(v: &mut ValidationResult) {
-    let has_metrics_domain = REGISTRY_TOML.contains("[metrics]")
+    let _has_metrics_domain = REGISTRY_TOML.contains("[metrics]")
         || REGISTRY_TOML.contains("metrics.collect")
         || REGISTRY_TOML.contains("metrics.report");
     v.check_bool(
         "metrics_domain_structural",
-        has_metrics_domain || true,
+        true,
         "Metrics domain: Phase 4 (not yet required — tracing logs suffice for Phase 3)",
     );
 

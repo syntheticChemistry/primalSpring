@@ -107,8 +107,8 @@ fn try_direct_rpc(socket_path: &str, payload: &[u8], prefix: &[u8]) -> bool {
     stream.set_read_timeout(Some(Duration::from_secs(3))).ok();
     stream.set_write_timeout(Some(Duration::from_secs(2))).ok();
 
-    if !prefix.is_empty() {
-        if stream.write_all(prefix).is_err() { return false; }
+    if !prefix.is_empty() && stream.write_all(prefix).is_err() {
+        return false;
     }
     if stream.write_all(payload).is_err() { return false; }
     if stream.write_all(b"\n").is_err() { return false; }
@@ -178,7 +178,7 @@ fn phase_protocol_classification(v: &mut ValidationResult, probes: &[PrimalProbe
 
     let sweetgrass_ribo = probes.iter()
         .find(|p| p.primal == "sweetgrass")
-        .map_or(false, |p| p.affinity == ProtocolAffinity::RiboCipherOnly);
+        .is_some_and(|p| p.affinity == ProtocolAffinity::RiboCipherOnly);
     v.check_bool(
         "sweetgrass_requires_ribocipher",
         sweetgrass_ribo,
@@ -187,7 +187,7 @@ fn phase_protocol_classification(v: &mut ValidationResult, probes: &[PrimalProbe
 
     let beardog_plain = probes.iter()
         .find(|p| p.primal == "beardog")
-        .map_or(false, |p| p.plain_ok);
+        .is_some_and(|p| p.plain_ok);
     v.check_bool(
         "beardog_accepts_plain",
         beardog_plain,

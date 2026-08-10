@@ -326,13 +326,10 @@ fn phase_repeated_execution(v: &mut ValidationResult) {
     let mut exec_ids = Vec::new();
 
     for _ in 0..n {
-        match neural_rpc("graph.execute", &serde_json::json!({"graph_id": graph_id})) {
-            Ok(result) => {
-                if let Some(eid) = result.get("execution_id").and_then(|e| e.as_str()) {
-                    exec_ids.push(eid.to_string());
-                }
+        if let Ok(result) = neural_rpc("graph.execute", &serde_json::json!({"graph_id": graph_id})) {
+            if let Some(eid) = result.get("execution_id").and_then(|e| e.as_str()) {
+                exec_ids.push(eid.to_string());
             }
-            Err(_) => {}
         }
     }
 
