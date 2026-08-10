@@ -120,32 +120,36 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.46 Wave 157a (Aug 8, 2026) — 198 scenarios (15 tracks, 3 tiers),
-704+ registered capability methods, 99 experiments (21 tracks), 102 graph TOMLs
-(16 directories). 1,282 workspace tests. **6/6 NUCLEUS gates redeployed.
+v0.9.46 Wave 157g (Aug 10, 2026) — 198 scenarios (15 tracks, 3 tiers),
+704+ registered capability methods, 100 experiments (22 tracks), 102 graph TOMLs
+(16 directories). 1,282+ workspace tests. **6/6 NUCLEUS gates 157e deployed.
 G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
 G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder).
-140K+ ecosystem tests across 15 primals.** Neural API live on eastGate:
+150K+ ecosystem tests across 16 primals.** Neural API live on eastGate:
 riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
 58 methods registered via primal.announce, 919 exec/s graph throughput,
 dispatch reorder confirmed (mean 1.3ms, was 15s). 9/11 primals forward via
 capability.call. **riboCipher auto-detect FIXED** (`d1f555e7`): TOML-based
 domain flags + capability.call direct path both use `forward_request_ribocipher()`
-for sweetGrass/rhizoCrypt. Gap CLOSED. Depot rebuild will activate fleet-wide.
+for sweetGrass/rhizoCrypt. Gap CLOSED.
 Post-primordial reshape complete: capability-first discovery
 (NeuralBridge → CompositionContext), session-scoped provenance model,
 primordial debt feature-gated behind `primordial-compat`, TOML-driven
 routing throughout. **Owns eastGate temporal cascade** (scripts/temporal_cascade.sh).
-**Depot v4.57.0 deployed on eastGate**: biomeOS + songBird + cellMembrane + swarmVine
-rebuilt, 1.0ms dispatch mean, 11/11 primals announced, swarmVine live (primal #16).
+**Depot v4.57.0 deployed on eastGate**: 14/14 primals active (including nestGate).
+Dispatch 1.0ms mean. riboCipher Tier 2 (`0xED`) confirmed on songBird.
+All 7 capability domains route at 1ms.
 **Vine-bat loop OPERATIONAL** (Aug 9): swarmVine `df97b25` calls skunkBat
-`metadata.analyze` 8-check pre-accept on gossip.spread. 29 primals announced,
-capability registry synced with upstream provenance chain translations (`2fae9144`).
-**Wave 157e Phase 1 DEPLOYED** (Aug 10): Full depot refresh from sporeGate (17
-binaries, 187 MB, 18 BLAKE3SUMS). 14/14 primals active (including nestGate).
-Dispatch 1.0ms mean. riboCipher Tier 2 (`0xED`) confirmed on songBird. bearDog
-`crypto.sign_ed25519` responds (actual signing). toadStool `compute.silicon.registry`
-returns `SiliconRegistry`. All 7 capability domains route at 1ms. 148K+ ecosystem tests.
+`metadata.analyze` 8-check pre-accept on gossip.spread.
+**Wave 157g ENMESH — biome.yaml manifest consumed**: toadStool v1 schema
+(`BiomeManifest` + `CompositionGraph` + `CompositionKind`/`CompositionReadiness`)
+parsed and validated. `config/biome-eastgate.yaml` declares 14 primals across 3
+compositions (Tower/Nest/Node) with dependency edges. Topological sort produces
+correct wave-parallel startup order. `nucleus_launcher --biome` reconciles manifest
+against live NUCLEUS state. exp122 validates 37/37 (structural + live). `spine.list`
+routing gap CLOSED (routes through Neural API to loamSpine). `nucleus_launcher reconcile`
+subcommand reports composition readiness. primalSpring role: composition manifest
+consumer prototype — patterns flow to downstream springs.
 Config-driven topology (`config/mesh_topology.toml` — SSOT for gate roster,
 zones, mesh addresses). Evolution module: CytoplasmZone model
 (backbone/house2/garage/wan), three-hub triangle topology, gate enrollment

@@ -1,0 +1,303 @@
+# NUCLEUS Composition Manifest — eastGate
+#
+# Schema: toadstool_core::manifest::BiomeManifest (v1)
+# Role: primalSpring code + deployment team, overwatch-capable
+#
+# NUCLEUS is a graph of sub-graphs. Each atomic composition (Tower, Nest, Node)
+# is a sub-graph with internal dependency ordering.
+
+api_version: v1
+kind: Biome
+
+metadata:
+  name: eastgate
+  version: "157g"
+  description: "eastGate NUCLEUS — primalSpring code team + deployment + overwatch"
+  team: ecoPrimals
+  environment: production
+  tags:
+    - overwatch
+    - primalspring
+    - code-team
+  labels:
+    gate: eastGate
+    role: code-deploy
+  annotations:
+    ecoPrimals.io/wave: "157g"
+    ecoPrimals.io/depot: plasmidBin
+
+# ─── Primals ────────────────────────────────────────────────────────────────
+
+primals:
+  # Tower Atomic
+  biomeos:
+    capabilities:
+      - nucleus.start
+      - nucleus.stop
+      - capability.call
+      - capability.resolve
+      - graph.execute
+      - primal.announce
+      - primal.list
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/biomeos
+      args: ["neural-api", "--btsp-optional", "--graphs-dir", "springs/primalSpring/runtime_graphs"]
+
+  songbird:
+    capabilities:
+      - mesh.relay
+      - mesh.status
+      - mesh.health
+      - ipc.register
+      - ipc.resolve
+      - federation.transport
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/songbird
+    dependencies: [biomeos]
+    gossip_events:
+      - peer.connected
+      - peer.disconnected
+
+  beardog:
+    capabilities:
+      - crypto.sign_ed25519
+      - crypto.verify_ed25519
+      - crypto.blake3_hash
+      - ribocipher.encode
+      - ribocipher.decode
+      - security.attest
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/beardog
+    dependencies: [biomeos]
+
+  skunkbat:
+    capabilities:
+      - defense.classify
+      - defense.scan
+      - metadata.analyze
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/skunkbat
+    dependencies: [biomeos]
+
+  swarmvine:
+    capabilities:
+      - gossip.inject
+      - gossip.spread
+      - gossip.status
+      - gossip.subscribe
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/swarmvine
+      args: ["--gate-id", "eastGate", "--gossip-port", "7800", "--spread-interval", "30"]
+    dependencies: [biomeos, songbird]
+    gossip_events:
+      - gossip.mesh.changed
+
+  # Nest Atomic (Provenance Trio + Storage)
+  rhizocrypt:
+    capabilities:
+      - dag.event.append
+      - dag.query
+      - dag.health
+      - dag.session.create
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/rhizocrypt
+    dependencies: [biomeos]
+    gossip_events:
+      - dag.session.created
+      - dag.session.complete
+      - dag.branch.created
+
+  loamspine:
+    capabilities:
+      - spine.create
+      - spine.seal
+      - spine.list
+      - spine.status
+      - session.commit
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/loamspine
+    dependencies: [biomeos]
+    gossip_events:
+      - cas.have
+      - braid.head
+      - spine.sealed
+      - anchor.published
+
+  sweetgrass:
+    capabilities:
+      - braid.create
+      - braid.query
+      - braid.verify
+      - braid.sync
+      - convergence.check
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/sweetgrass
+    dependencies: [biomeos, rhizocrypt, loamspine]
+
+  nestgate:
+    capabilities:
+      - content.get
+      - content.put
+      - content.stat
+      - content.ingest
+      - content.list
+      - content.resolve
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/nestgate
+    dependencies: [biomeos]
+
+  # Node Atomic (Compute)
+  toadstool:
+    capabilities:
+      - compute.dispatch
+      - compute.silicon.registry
+      - workload.execute
+      - runtime.manage
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/toadstool
+    dependencies: [biomeos]
+
+  coralreef:
+    capabilities:
+      - shader.compile
+      - shader.compile.wgsl
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/coralreef
+    dependencies: [biomeos, toadstool]
+
+  barracuda:
+    capabilities:
+      - ml.inference
+      - tensor.compute
+      - tensor.dispatch
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/barracuda
+    dependencies: [biomeos, toadstool, coralreef]
+
+  # Utility
+  squirrel:
+    capabilities:
+      - ai.query
+      - ai.complete
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/squirrel
+    dependencies: [biomeos]
+
+  petaltongue:
+    capabilities:
+      - visualization.render
+      - visualization.status
+      - http.serve
+    source:
+      type: Native
+      path: plasmidBin/primals/x86_64-unknown-linux-musl/petaltongue
+    dependencies: [biomeos]
+
+# ─── Compositions ───────────────────────────────────────────────────────────
+
+compositions:
+  - name: tower-atomic
+    kind: Tower
+    members:
+      - biomeos
+      - songbird
+      - beardog
+      - skunkbat
+      - swarmvine
+    dependencies:
+      songbird: [biomeos]
+      beardog: [biomeos]
+      skunkbat: [biomeos]
+      swarmvine: [biomeos, songbird]
+    auto_start: true
+    priority: 0
+    readiness:
+      require_healthy:
+        - biomeos
+        - songbird
+        - beardog
+      timeout_secs: 120
+
+  - name: nest-atomic
+    kind: Nest
+    members:
+      - rhizocrypt
+      - loamspine
+      - sweetgrass
+      - nestgate
+    dependencies:
+      loamspine: [rhizocrypt]
+      sweetgrass: [rhizocrypt, loamspine]
+      nestgate: []
+    auto_start: true
+    priority: 10
+    readiness:
+      require_healthy:
+        - rhizocrypt
+        - loamspine
+      timeout_secs: 60
+
+  - name: node-atomic
+    kind: Node
+    members:
+      - toadstool
+      - coralreef
+      - barracuda
+    dependencies:
+      coralreef: [toadstool]
+      barracuda: [toadstool, coralreef]
+    auto_start: true
+    priority: 20
+    readiness:
+      require_healthy:
+        - toadstool
+      timeout_secs: 60
+
+# ─── Security ──────────────────────────────────────────────────────────────
+
+security:
+  isolation_level: process
+  trust_level: high
+  crypto_required: true
+  crypto_policies:
+    - sovereign-default
+  allowed_networks:
+    - "10.13.37.0/24"
+    - "192.168.0.0/16"
+
+# ─── Networking ─────────────────────────────────────────────────────────────
+
+networking:
+  mode: host
+  dns_servers: []
+  port_mappings:
+    - container_port: 7700
+      protocol: tcp
+    - container_port: 7800
+      protocol: tcp
+
+# ─── Federation ─────────────────────────────────────────────────────────────
+
+federation:
+  enabled: true
+  peers:
+    - sporeGate
+    - westGate
+    - ironGate
+    - strandGate
+    - blueGate
+    - southGate
+  replication: eventual

@@ -10,13 +10,13 @@
 
 | | |
 |-|-|
-| **Wave** | **157e** — G67 ACTIVE. **Phase 1 DEPLOYED** on eastGate. Full depot refresh: 17 binaries (187 MB, 18 BLAKE3SUMS). 14/14 primals alive, 1.0ms dispatch. riboCipher Tier 2 (`0xED`) confirmed. bearDog `crypto.sign_ed25519` live. Node Atomic trio wired. Vine-bat loop operational. 7/7 capability domains route. Owns eastGate temporal cascade. |
+| **Wave** | **157g** — G67 ACTIVE. **ENMESH phase**. `biome.yaml` v1 manifest consumed (toadStool schema): 14 primals, 3 compositions (Tower/Nest/Node), dependency ordering, wave-parallel startup, live reconciliation. `nucleus_launcher --biome` + `reconcile` subcommand. exp122 37/37. `spine.list` gap CLOSED. 14/14 primals alive, 1.0ms dispatch. 7/7 capability domains route. 0 P0, 0 P1, 2 P2. |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.46 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 1,262 lib + 20 doc + experiment (1,282 workspace total) |
-| **Experiments** | 99 (21 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
+| **Experiments** | 100 (22 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
 | **Deploy Graphs** | 102 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 492+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |

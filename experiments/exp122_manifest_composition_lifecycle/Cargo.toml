@@ -1,0 +1,12 @@
+[package]
+name = "exp122_manifest_composition_lifecycle"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+primalspring = { path = "../../ecoPrimal" }
+serde_json = { workspace = true }
+serde_yaml_ng = { workspace = true }

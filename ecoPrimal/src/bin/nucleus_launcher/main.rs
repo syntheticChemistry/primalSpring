@@ -45,6 +45,11 @@ struct Cli {
     #[arg(long, global = true)]
     manifest: Option<std::path::PathBuf>,
 
+    /// NUCLEUS biome.yaml manifest (v1 schema from toadStool).
+    /// Overrides composition ordering with manifest-driven dependency graphs.
+    #[arg(long, global = true)]
+    biome: Option<std::path::PathBuf>,
+
     /// Named profile: tower, nest, compute, edge, full.
     /// Resolves to config/profiles/{name}.toml (convenience for --manifest).
     #[arg(long, global = true)]
@@ -111,6 +116,11 @@ enum NucleusCommand {
         #[arg(long)]
         structural_only: bool,
     },
+    /// Reconcile a biome.yaml manifest against live NUCLEUS state.
+    ///
+    /// Loads the manifest, resolves composition graphs, then probes the
+    /// running gate to report which primals are alive, missing, or extra.
+    Reconcile,
 }
 
 fn resolve_node_id(cli_node_id: Option<String>) -> String {
@@ -249,7 +259,55 @@ fn main() {
         .unwrap_or(&cli.composition);
     let atomic = resolve_atomic(composition_str);
 
+    let biome_manifest = cli.biome.as_deref().map(|path| {
+        match primalspring::composition::manifest::load_biome_manifest(path) {
+            Ok(m) => {
+                println!("  Biome manifest: {} (v{})", m.metadata.name, m.metadata.version);
+                m
+            }
+            Err(e) => {
+                eprintln!("error: {e}");
+                std::process::exit(1);
+            }
+        }
+    });
+
     match cli.command {
+        Some(NucleusCommand::Reconcile) => {
+            let manifest = biome_manifest.unwrap_or_else(|| {
+                let default_path = std::path::Path::new("config/biome-eastgate.yaml");
+                match primalspring::composition::manifest::load_biome_manifest(default_path) {
+                    Ok(m) => m,
+                    Err(e) => {
+                        eprintln!("error: --biome required for reconcile (or config/biome-eastgate.yaml): {e}");
+                        std::process::exit(1);
+                    }
+                }
+            });
+            let recon = primalspring::composition::manifest::reconcile_with_live(&manifest);
+            println!();
+            println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
+            println!("\x1b[36m  Manifest Reconciliation — {}\x1b[0m", recon.gate);
+            println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
+            println!();
+            println!("  Declared: {}", recon.declared);
+            println!("  Alive:    {}", recon.alive);
+            if !recon.missing.is_empty() {
+                println!("  \x1b[31mMissing:  {}\x1b[0m", recon.missing.join(", "));
+            }
+            if !recon.extra.is_empty() {
+                println!("  Extra:    {}", recon.extra.join(", "));
+            }
+            println!();
+            for comp in &recon.compositions {
+                let status = if comp.ready { "\x1b[32mREADY\x1b[0m" } else { "\x1b[31mNOT READY\x1b[0m" };
+                println!("  {} ({}) — {status}", comp.name, comp.kind);
+                if !comp.unhealthy_members.is_empty() {
+                    println!("    unhealthy: {}", comp.unhealthy_members.join(", "));
+                }
+            }
+            println!();
+        }
         Some(NucleusCommand::Stop) => {
             let primals = orchestrator::ordered_primals(atomic);
             let family_id = cli
