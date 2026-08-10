@@ -10,7 +10,7 @@
 
 | | |
 |-|-|
-| **Wave** | **157a** — G64+G65+G66 COMPLETE. **G67 ACTIVE** (Neural API Stage 2 — N1 DONE, N2-N5 verified 90/91, dispatch reorder confirmed). biomeOS TOML fix (`d1f555e7`): riboCipher auto-detect CLOSED. **Vine-bat loop OPERATIONAL** (`df97b25`): swarmVine gossip.spread → skunkBat metadata.analyze 8-check pre-accept. 29 primals announced, 6/6 gates redeployed. Owns eastGate temporal cascade. |
+| **Wave** | **157e** — G67 ACTIVE. **Phase 1 DEPLOYED** on eastGate. Full depot refresh: 17 binaries (187 MB, 18 BLAKE3SUMS). 14/14 primals alive, 1.0ms dispatch. riboCipher Tier 2 (`0xED`) confirmed. bearDog `crypto.sign_ed25519` live. Node Atomic trio wired. Vine-bat loop operational. 7/7 capability domains route. Owns eastGate temporal cascade. |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.46 |
 | **Edition** | Rust 2024 (1.87+) |

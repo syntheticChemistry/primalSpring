@@ -141,6 +141,11 @@ rebuilt, 1.0ms dispatch mean, 11/11 primals announced, swarmVine live (primal #1
 **Vine-bat loop OPERATIONAL** (Aug 9): swarmVine `df97b25` calls skunkBat
 `metadata.analyze` 8-check pre-accept on gossip.spread. 29 primals announced,
 capability registry synced with upstream provenance chain translations (`2fae9144`).
+**Wave 157e Phase 1 DEPLOYED** (Aug 10): Full depot refresh from sporeGate (17
+binaries, 187 MB, 18 BLAKE3SUMS). 14/14 primals active (including nestGate).
+Dispatch 1.0ms mean. riboCipher Tier 2 (`0xED`) confirmed on songBird. bearDog
+`crypto.sign_ed25519` responds (actual signing). toadStool `compute.silicon.registry`
+returns `SiliconRegistry`. All 7 capability domains route at 1ms. 148K+ ecosystem tests.
 Config-driven topology (`config/mesh_topology.toml` — SSOT for gate roster,
 zones, mesh addresses). Evolution module: CytoplasmZone model
 (backbone/house2/garage/wan), three-hub triangle topology, gate enrollment
