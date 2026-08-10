@@ -76,7 +76,7 @@ fn neural_rpc(method: &str, params: &serde_json::Value) -> Result<serde_json::Va
 
 #[derive(Debug, Clone)]
 struct ExecutionTrace {
-    execution_id: String,
+    _execution_id: String,
     duration_ms: u64,
     state: String,
     completed_nodes: Vec<String>,
@@ -97,7 +97,7 @@ fn execute_and_trace(graph_id: &str) -> Result<ExecutionTrace, String> {
     let status = neural_rpc("graph.status", &serde_json::json!({"execution_id": eid}))?;
 
     Ok(ExecutionTrace {
-        execution_id: eid,
+        _execution_id: eid,
         duration_ms: status.get("duration_ms").and_then(|d| d.as_u64()).unwrap_or(0),
         state: status
             .get("state")

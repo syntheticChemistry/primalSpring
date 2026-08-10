@@ -67,12 +67,6 @@ impl CompositionTier {
         }
     }
 
-    /// Derive tier from the primal owner using the TOML-derived
-    /// `[compositions.*].primals` map (0=Tower..4=Orchestration).
-    fn from_owner_tier(owner: &str) -> Self {
-        Self::from_owner_tier_opt(owner).unwrap_or(Self::Standalone)
-    }
-
     /// Try to resolve tier from TOML; returns `None` for unknown owners.
     fn from_owner_tier_opt(owner: &str) -> Option<Self> {
         match super::routing::primal_home_tier_priority(owner) {

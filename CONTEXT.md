@@ -73,8 +73,8 @@ to primalSpring as experiment targets.
 
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries:
   `primalspring` (eukaryotic UniBin: certify + validate + status + checksums + registry + version),
-  `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status with PID tracking + federation)
-- **experiments/** — 93 validation binaries covering 21 tracks
+  `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status/reconcile with PID tracking + federation + biome.yaml manifest)
+- **experiments/** — 100 validation binaries covering 22 tracks
 - **graphs/** — ~102 deploy graph TOMLs + 33 atomic composition graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
@@ -122,16 +122,15 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 v0.9.46 Wave 157g (Aug 10, 2026) — 198 scenarios (15 tracks, 3 tiers),
 704+ registered capability methods, 100 experiments (22 tracks), 102 graph TOMLs
-(16 directories). 1,282+ workspace tests. **6/6 NUCLEUS gates 157e deployed.
+(16 directories). 1,269 workspace tests (1,234 lib + 16 doc + 19 integration).
+**6/6 NUCLEUS gates 157e deployed. 0 test failures, 0 compiler warnings.**
 G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
 G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder).
-150K+ ecosystem tests across 16 primals.** Neural API live on eastGate:
+150K+ ecosystem tests across 16 primals. Neural API live on eastGate:
 riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
 58 methods registered via primal.announce, 919 exec/s graph throughput,
 dispatch reorder confirmed (mean 1.3ms, was 15s). 9/11 primals forward via
-capability.call. **riboCipher auto-detect FIXED** (`d1f555e7`): TOML-based
-domain flags + capability.call direct path both use `forward_request_ribocipher()`
-for sweetGrass/rhizoCrypt. Gap CLOSED.
+capability.call. **riboCipher auto-detect FIXED** (`d1f555e7`).
 Post-primordial reshape complete: capability-first discovery
 (NeuralBridge → CompositionContext), session-scoped provenance model,
 primordial debt feature-gated behind `primordial-compat`, TOML-driven
@@ -148,8 +147,14 @@ compositions (Tower/Nest/Node) with dependency edges. Topological sort produces
 correct wave-parallel startup order. `nucleus_launcher --biome` reconciles manifest
 against live NUCLEUS state. exp122 validates 37/37 (structural + live). `spine.list`
 routing gap CLOSED (routes through Neural API to loamSpine). `nucleus_launcher reconcile`
-subcommand reports composition readiness. primalSpring role: composition manifest
-consumer prototype — patterns flow to downstream springs.
+subcommand reports composition readiness.
+**Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
+stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
+`chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`
+on `mod signal_accept`; removal target Wave 170). `launcher/spawn.rs` primordial
+helpers gated behind `#[cfg(feature = "primordial-compat")]`. Missing docs added.
+exp119/exp121 unused variable warnings fixed. Environmental test assertions updated
+(cross-compile depot threshold, protokarya SPA upstream gap).
 Config-driven topology (`config/mesh_topology.toml` — SSOT for gate roster,
 zones, mesh addresses). Evolution module: CytoplasmZone model
 (backbone/house2/garage/wan), three-hub triangle topology, gate enrollment
@@ -333,7 +338,7 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data fetch + visualization), neuralSpring
 (agentic composition), tideGlass (gen5 drug repurposing via NUCLEUS).
 
-## Glacial Checkpoint — Current and Remaining (Aug 7, 2026 — Wave 157a)
+## Glacial Checkpoint — Current and Remaining (Aug 10, 2026 — Wave 157g)
 
 ### Cephalization Trilogy COMPLETE (G64+G65+G66)
 - **G64 Cephalization** — tarpc convergent evolution **15/15** primals
@@ -346,6 +351,8 @@ memoization), wetSpring (data fetch + visualization), neuralSpring
 - 27+ atomic signal graphs, Phase A (signal collapse) complete
 - Provenance E2E 7/7 validated on westGate + blueGate
 - Session-scoped provenance model proven (westGate convoy: 0.3 → 217 files/sec)
+- `biome.yaml` manifest consumed — toadStool v1 schema integrated
+- `nucleus_launcher reconcile` — live composition readiness reporting
 - See `specs/STAGE2_ACTIVATION.md` and `specs/COMPOSITION_BROKER.md`
 
 ### Previously Completed
@@ -353,7 +360,7 @@ memoization), wetSpring (data fetch + visualization), neuralSpring
 - **Silicon Atheism Phase 1** (Wave 142a): 14/14 primals cross-compile for 4 architectures
 - **Silicon Atheism Phase 2** (Wave 145a): 14/14 primals shipped platform-agnostic transport
 - **Content-Addressed Convergence** (Wave 144a): 6/6 layers complete
-- 490+ method registry (100% exercised), 197 scenarios, 102 deploy graphs, 1,277 tests
+- 490+ method registry (100% exercised), 198 scenarios, 102 deploy graphs, 1,269 tests
 - 13/13 BTSP AEAD, 13/13 behavioral convergence, 12/12 primal.announce
 - 52 depot builds (16 musl + 15 gnu + 15 windows + aarch64), BLAKE3 verified
 - lithoSpore v1.0.0, all 8 springs at Wave 20+, 10/10 foundation threads active
@@ -368,7 +375,7 @@ wateringHole fossilization (numeric drift fixed, 18 gen4 docs organized),
 and Wave 22 upstream primal evolution (13/13 stadial-gate absorbed, 4 new
 methods registered) — all detail fossilized to `fossilRecord/`.
 
-### Remaining (updated June 4, 2026)
+### Remaining (updated Aug 10, 2026)
 
 **Resolved since last review:**
 - ~~**Thread 4**~~ now active (expression + data sources in projectFOUNDATION)

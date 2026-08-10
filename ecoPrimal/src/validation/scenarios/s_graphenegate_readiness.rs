@@ -47,10 +47,6 @@ fn ecoprimals_root() -> Option<std::path::PathBuf> {
     None
 }
 
-fn aarch64_depot_path() -> Option<std::path::PathBuf> {
-    ecoprimals_root().map(|r| r.join("infra/plasmidBin/primals/aarch64-unknown-linux-musl"))
-}
-
 fn provenance_path() -> Option<std::path::PathBuf> {
     ecoprimals_root().map(|r| r.join("infra/plasmidBin/provenance.toml"))
 }
@@ -445,13 +441,6 @@ fn phase_matrix_cell(v: &mut ValidationResult) {
 }
 
 /// Returns a `SystemTime` cutoff: binaries must be newer than this to be "fresh".
-/// TCP fallback adoption commits were June 10 2026 ~08:00 UTC-4.
-fn chrono_lite_cutoff() -> std::time::SystemTime {
-    use std::time::{Duration, UNIX_EPOCH};
-    // 2026-06-10T12:00:00 UTC = after all TCP fallback commits landed
-    UNIX_EPOCH + Duration::from_secs(1_781_294_400)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

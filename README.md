@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml/badge.svg)](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-1282_pass-brightgreen.svg)](#validation-scenarios-198-across-15-tracks)
+[![Tests](https://img.shields.io/badge/tests-1269_pass-brightgreen.svg)](#validation-scenarios-198-across-15-tracks)
 [![Rust](https://img.shields.io/badge/rust-1.87%2B-orange.svg)](https://www.rust-lang.org)
 [![Unsafe: forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance)
 
@@ -10,12 +10,12 @@
 
 | | |
 |-|-|
-| **Wave** | **157g** — G67 ACTIVE. **ENMESH phase**. `biome.yaml` v1 manifest consumed (toadStool schema): 14 primals, 3 compositions (Tower/Nest/Node), dependency ordering, wave-parallel startup, live reconciliation. `nucleus_launcher --biome` + `reconcile` subcommand. exp122 37/37. `spine.list` gap CLOSED. 14/14 primals alive, 1.0ms dispatch. 7/7 capability domains route. 0 P0, 0 P1, 2 P2. |
+| **Wave** | **157g** — G67 ACTIVE. **ENMESH phase**. `biome.yaml` v1 manifest consumed (toadStool schema): 14 primals, 3 compositions (Tower/Nest/Node), dependency ordering, wave-parallel startup, live reconciliation. `nucleus_launcher --biome` + `reconcile` subcommand. exp122 37/37. `spine.list` gap CLOSED. 14/14 primals alive, 1.0ms dispatch. 7/7 capability domains route. **0 test failures, 0 compiler warnings.** Debt sprint: dead code removed, SignalTier suppressed (Wave 170 removal), primordial spawn helpers feature-gated, freshness.toml refreshed (22 HEADs). |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.46 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 1,262 lib + 20 doc + experiment (1,282 workspace total) |
+| **Tests** | 1,234 lib + 16 doc + 19 integration (1,269 workspace total, 0 failures) |
 | **Experiments** | 100 (22 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
 | **Deploy Graphs** | 102 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 492+ registered capability methods; line coverage via llvm-cov |
@@ -84,7 +84,7 @@ primalSpring/
 │       ├── server_ecosystem_genetics.rs  # Three-tier genetics (#[ignore])
 │       ├── server_ecosystem_compose.rs   # Nest/Node composition (#[ignore])
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
-├── experiments/                   # 93 validation experiments (21 tracks)
+├── experiments/                   # 100 validation experiments (22 tracks)
 ├── config/                        # Launch profiles, capability registry, composition tools
 ├── graphs/                        # 82 deploy graph TOMLs + 32 atomic composition graphs
 │   ├── compositions/             # 32 atomic composition graphs (tower/node/nest/meta/rootpulse/ecosystem/impulse/sync)
@@ -178,9 +178,9 @@ cargo coverage
 
 This runs LLVM source-based coverage for the whole workspace, skips paths matching `tests/` in the report. Release gate (`primalspring release`) enforces a **70%** floor. For HTML output, run `cargo llvm-cov --workspace --html` (see upstream docs for `--open`, `--lcov`, CI, etc.).
 
-## Validation Scenarios (196 across 12 tracks)
+## Validation Scenarios (198 across 15 tracks)
 
-primalSpring ships 196 validation scenarios organized into 12 tracks:
+primalSpring ships 198 validation scenarios organized into 15 tracks:
 
 | Track | Scenarios | Tier |
 |-------|-----------|------|
@@ -535,10 +535,11 @@ See [fossilRecord](https://github.com/ecoPrimals/fossilRecord) → `springs/prim
 
 ## Scripts and Tools
 
-**`scripts/`** (5 lab scripts) — experimentation execution layer:
+**`scripts/`** (6 lab + cascade scripts) — experimentation execution layer:
 
 | Script | Purpose |
 |--------|---------|
+| `scripts/temporal_cascade.sh` | eastGate temporal cascade — depot refresh + binary deployment |
 | `scripts/validate_composition.sh` | Validate NUCLEUS composition health and binary presence |
 | `scripts/validate_local_lab.sh` | Quick local lab validation for benchScale topologies |
 | `scripts/chaos-inject.sh` | Inject chaos conditions (partition, kill, disk-fill, slow DNS, clock drift) |

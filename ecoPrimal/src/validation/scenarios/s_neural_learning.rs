@@ -20,6 +20,7 @@ use crate::validation::scenarios::registry::{Scenario, ScenarioMeta, Tier, Track
 
 const REGISTRY_TOML: &str = include_str!("../../../../config/capability_registry.toml");
 
+/// Neural Learning validation scenario — PathwayLearner structural prerequisites.
 pub const SCENARIO: Scenario = Scenario {
     meta: ScenarioMeta {
         id: "neural-learning",
@@ -32,6 +33,7 @@ pub const SCENARIO: Scenario = Scenario {
     run,
 };
 
+/// Execute neural learning structural validation phases.
 pub fn run(v: &mut ValidationResult, _ctx: &mut CompositionContext) {
     v.section("Phase 1: Execution trace surface (graph node observability)");
     phase_trace_surface(v);

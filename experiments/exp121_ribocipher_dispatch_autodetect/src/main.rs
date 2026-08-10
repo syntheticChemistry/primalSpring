@@ -73,7 +73,7 @@ enum ProtocolAffinity {
 
 struct PrimalProbeResult {
     primal: &'static str,
-    socket: &'static str,
+    _socket: &'static str,
     affinity: ProtocolAffinity,
     plain_ok: bool,
     ribo_ok: bool,
@@ -95,7 +95,7 @@ fn probe_primal_direct(primal: &'static str, socket_path: &'static str) -> Prima
         (false, false) => ProtocolAffinity::Unavailable,
     };
 
-    PrimalProbeResult { primal, socket: socket_path, affinity, plain_ok, ribo_ok }
+    PrimalProbeResult { primal, _socket: socket_path, affinity, plain_ok, ribo_ok }
 }
 
 fn try_direct_rpc(socket_path: &str, payload: &[u8], prefix: &[u8]) -> bool {
@@ -225,9 +225,9 @@ fn phase_neural_api_forwarding(v: &mut ValidationResult) {
     announce_all();
 
     let mut pass = 0u32;
-    let mut fail_plain = 0u32;
+    let mut _fail_plain = 0u32;
     let mut fail_ribo = 0u32;
-    let mut fail_other = 0u32;
+    let mut _fail_other = 0u32;
     let total = NUCLEUS_PRIMALS.len() as u32;
 
     for &(_primal, _socket, cap) in NUCLEUS_PRIMALS {
@@ -256,7 +256,7 @@ fn phase_neural_api_forwarding(v: &mut ValidationResult) {
                 );
             }
             Err(ref e) if e.contains("Failed to forward") => {
-                fail_other += 1;
+                _fail_other += 1;
                 v.check_bool(
                     &format!("forward_{cap}"),
                     false,
@@ -264,7 +264,7 @@ fn phase_neural_api_forwarding(v: &mut ValidationResult) {
                 );
             }
             Err(ref e) => {
-                fail_plain += 1;
+                _fail_plain += 1;
                 v.check_bool(
                     &format!("forward_{cap}"),
                     false,

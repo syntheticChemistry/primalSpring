@@ -4,17 +4,27 @@
 //! Process spawning, socket readiness, and stderr relay for child primals.
 
 use std::collections::HashMap;
-use std::fmt;
-use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
+
+#[cfg(feature = "primordial-compat")]
+use std::fmt;
+#[cfg(feature = "primordial-compat")]
+use std::io::{BufRead, BufReader};
+#[cfg(feature = "primordial-compat")]
 use std::process::{Child, Command, Stdio};
+#[cfg(feature = "primordial-compat")]
 use std::time::{Duration, Instant};
 
+#[cfg(feature = "primordial-compat")]
 use crate::tolerances;
+#[cfg(feature = "primordial-compat")]
 use tracing::{debug, info};
 
+#[cfg(feature = "primordial-compat")]
 use super::LaunchError;
+#[cfg(feature = "primordial-compat")]
 use super::discovery::discover_binary;
+#[cfg(feature = "primordial-compat")]
 use super::profiles::{LaunchProfile, load_launch_profiles};
 
 // ---------------------------------------------------------------------------
@@ -115,6 +125,7 @@ impl SocketNucleation {
 // PrimalProcess
 // ---------------------------------------------------------------------------
 
+#[cfg(feature = "primordial-compat")]
 /// A running primal process with RAII cleanup.
 ///
 /// When dropped, sends `SIGTERM` (via `Child::kill`) and waits for exit.
@@ -128,6 +139,7 @@ pub struct PrimalProcess {
     _relay_handle: Option<std::thread::JoinHandle<()>>,
 }
 
+#[cfg(feature = "primordial-compat")]
 impl PrimalProcess {
     /// The child PID.
     #[must_use]
@@ -163,6 +175,7 @@ impl PrimalProcess {
     }
 }
 
+#[cfg(feature = "primordial-compat")]
 impl Drop for PrimalProcess {
     fn drop(&mut self) {
         let _ = self.child.kill();
@@ -171,6 +184,7 @@ impl Drop for PrimalProcess {
     }
 }
 
+#[cfg(feature = "primordial-compat")]
 impl fmt::Debug for PrimalProcess {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("PrimalProcess")
@@ -185,6 +199,7 @@ impl fmt::Debug for PrimalProcess {
 // spawn_primal + socket wait
 // ---------------------------------------------------------------------------
 
+#[cfg(feature = "primordial-compat")]
 /// Spawn a primal process and wait for its socket to appear.
 ///
 /// # Arguments
@@ -320,6 +335,7 @@ pub fn spawn_primal(
     })
 }
 
+#[cfg(feature = "primordial-compat")]
 /// Wait for the primal's JSON-RPC socket to appear and resolve the effective
 /// socket path. Some primals (e.g. toadstool) expose a JSON-RPC socket at a
 /// suffix-derived path separate from the primary tarpc socket.
@@ -360,6 +376,7 @@ fn await_socket_ready(
     }
 }
 
+#[cfg(feature = "primordial-compat")]
 /// Poll for a socket file to appear on disk.
 ///
 /// Returns `true` if the socket appeared, `false` on timeout.
@@ -377,6 +394,7 @@ pub fn wait_for_socket(path: &Path, timeout: Duration) -> bool {
     false
 }
 
+#[cfg(feature = "primordial-compat")]
 /// Spawn a thread that reads a child's stderr and logs each line at `debug`.
 pub fn relay_output(child: &mut Child, primal: &str) -> std::thread::JoinHandle<()> {
     let stderr = child.stderr.take();
