@@ -120,12 +120,15 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.46 Wave 157g (Aug 10, 2026) — 198 scenarios (15 tracks, 3 tiers),
+v0.9.47 Wave 157i (Aug 11, 2026) — 198 scenarios (15 tracks, 3 tiers),
 704+ registered capability methods, 102 experiments (22 tracks), 102 graph TOMLs
 (16 directories). 1,274 workspace tests (1,239 lib + 16 doc + 19 integration).
 **6/6 NUCLEUS gates 157e deployed. 0 test failures, 0 clippy errors, 0 warnings.**
 G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
 G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder).
+**G72 Tier 1 COMPLETE: 11/11 teams, ~155+ crates shed fleet-wide.**
+**Gossip: 7/16 primals LIVE** (barraCuda 22/22 full spec, wetSpring 4/4, nestGate wired).
+**graftGate: 12/15 compiled on macOS** (aarch64-apple-darwin). WG 10.13.37.13.
 150K+ ecosystem tests across 16 primals. Neural API live on eastGate:
 riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
 58 methods registered via primal.announce, 919 exec/s graph throughput,
@@ -159,9 +162,11 @@ modernized to idiomatic patterns (is_some_and, if-let, format simplification).
 **Wave 157i graftGate bootstrap**: `Aarch64Darwin` target variant added to
 `evolution/target.rs` — full NUCLEUS composition tier, permissive deployment,
 UDS + filesystem support, launchd init system. graftGate (M4 Mac Mini) added to
-`mesh_topology.toml`, `deployment_matrix.toml` (pending cell), `biome-eastgate.yaml`
-(federation peer). exp123 G72 thresholds tightened for post-pandemic baselines
-(Tier 1: 9/9 teams COMPLETE, ~114 crates shed fleet-wide).
+`mesh_topology.toml` (WG 10.13.37.13), `deployment_matrix.toml` (12/15 compiled),
+`biome-eastgate.yaml` (federation peer). G72 Tier 1: 11/11 teams COMPLETE,
+~155+ crates shed fleet-wide (bearDog +41, petalTongue telemetry excised).
+Gossip 7/16 LIVE (barraCuda 22/22 full spec, wetSpring 4/4). 3 darwin failures
+logged for code teams (toadStool cfg gate, squirrel linker, petalTongue rustix).
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`
@@ -352,7 +357,7 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data fetch + visualization), neuralSpring
 (agentic composition), tideGlass (gen5 drug repurposing via NUCLEUS).
 
-## Glacial Checkpoint — Current and Remaining (Aug 10, 2026 — Wave 157g)
+## Glacial Checkpoint — Current and Remaining (Aug 11, 2026 — Wave 157i)
 
 ### Cephalization Trilogy COMPLETE (G64+G65+G66)
 - **G64 Cephalization** — tarpc convergent evolution **15/15** primals
@@ -389,7 +394,7 @@ wateringHole fossilization (numeric drift fixed, 18 gen4 docs organized),
 and Wave 22 upstream primal evolution (13/13 stadial-gate absorbed, 4 new
 methods registered) — all detail fossilized to `fossilRecord/`.
 
-### Remaining (updated Aug 10, 2026)
+### Remaining (updated Aug 11, 2026)
 
 **Resolved since last review:**
 - ~~**Thread 4**~~ now active (expression + data sources in projectFOUNDATION)

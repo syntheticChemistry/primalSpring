@@ -2,7 +2,7 @@
 
 [package]
 name = "primalspring"
-version = "0.9.46"
+version = "0.9.47"
 edition.workspace = true
 rust-version.workspace = true
 authors = ["ecoPrimals"]

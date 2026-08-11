@@ -11,7 +11,7 @@ kind: Biome
 
 metadata:
   name: eastgate
-  version: "157g"
+  version: "157i"
   description: "eastGate NUCLEUS — primalSpring code team + deployment + overwatch"
   team: ecoPrimals
   environment: production
@@ -23,7 +23,7 @@ metadata:
     gate: eastGate
     role: code-deploy
   annotations:
-    ecoPrimals.io/wave: "157g"
+    ecoPrimals.io/wave: "157i"
     ecoPrimals.io/depot: plasmidBin
 
 # ─── Primals ────────────────────────────────────────────────────────────────

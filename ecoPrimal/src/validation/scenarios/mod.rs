@@ -518,10 +518,10 @@ mod tests {
         // Wave 150b: graphenegate-readiness checks 13 aarch64 binaries in depot.
         // On depot gates (sporeGate), all 14 fail (13 binaries + 1 aggregate).
         // eastGate calibration (Jul 25 late): scenario evolved to check golgiBody depot provenance.
-        // 2 failures: provenance.toml stale in git (no aarch64 entries, builder unknown).
-        // Actual depot on golgiBody is fresh (28 bins × 2 arch) — provenance needs git commit.
+        // 3 failures: provenance.toml stale in git (no aarch64 entries, builder unknown),
+        // deploy_pixel.sh not present (deploy path uses cellMembrane tooling).
         const KNOWN_DEBT: &[(&str, u32)] = &[
-            ("graphenegate-readiness", 2),
+            ("graphenegate-readiness", 3),
         ];
 
         let r = build_registry();

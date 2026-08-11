@@ -212,9 +212,9 @@ fn profile_ecosystem(v: &mut ValidationResult) {
         &format!("{primal_count} primals scanned"),
     );
 
-    // G72 Tier 1 COMPLETE (Wave 157i): 9/9 teams responded.
-    // Post-pandemic baselines reflect Tier 1 excision.
-    // Tier 2 targets (HTTP→songBird, axum→0.8) are next.
+    // G72 Tier 1 COMPLETE (Wave 157i): 11/11 teams done, ~155+ crates shed.
+    // bearDog +41 deps, petalTongue telemetry excised.
+    // Tier 2 queued: HTTP→songBird, axum→0.8, wgpu→28, YAML unification.
     v.check_bool(
         "tier1_tokio_full_target",
         total_tokio_full == 0,
