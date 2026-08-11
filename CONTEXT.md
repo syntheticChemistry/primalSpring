@@ -74,7 +74,7 @@ to primalSpring as experiment targets.
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries:
   `primalspring` (eukaryotic UniBin: certify + validate + status + checksums + registry + version),
   `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status/reconcile with PID tracking + federation + biome.yaml manifest)
-- **experiments/** — 100 validation binaries covering 22 tracks
+- **experiments/** — 102 validation binaries covering 22 tracks
 - **graphs/** — ~102 deploy graph TOMLs + 33 atomic composition graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
@@ -121,9 +121,9 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 ## Status
 
 v0.9.46 Wave 157g (Aug 10, 2026) — 198 scenarios (15 tracks, 3 tiers),
-704+ registered capability methods, 100 experiments (22 tracks), 102 graph TOMLs
-(16 directories). 1,269 workspace tests (1,234 lib + 16 doc + 19 integration).
-**6/6 NUCLEUS gates 157e deployed. 0 test failures, 0 compiler warnings.**
+704+ registered capability methods, 102 experiments (22 tracks), 102 graph TOMLs
+(16 directories). 1,274 workspace tests (1,239 lib + 16 doc + 19 integration).
+**6/6 NUCLEUS gates 157e deployed. 0 test failures, 0 clippy errors, 0 warnings.**
 G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
 G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder).
 150K+ ecosystem tests across 16 primals. Neural API live on eastGate:
@@ -148,6 +148,14 @@ correct wave-parallel startup order. `nucleus_launcher --biome` reconciles manif
 against live NUCLEUS state. exp122 validates 37/37 (structural + live). `spine.list`
 routing gap CLOSED (routes through Neural API to loamSpine). `nucleus_launcher reconcile`
 subcommand reports composition readiness.
+**Multi-composition orchestration**: workflow engine in `composition/workflow.rs` —
+DAG-based step resolution, wave-parallel execution, standard startup/shutdown/health
+workflows. exp123 G72 dependency pandemic profile: primalSpring G72 CLEAN, 8 primals
+with Tier 1 violations identified for upstream coordination.
+**Smart decomposition sprint**: `manifest.rs` (1185L → 652L) split into
+`workflow.rs` (201L), `reconcile.rs` (124L), `manifest_tests.rs` (242L). 6 crypto
+deps promoted to workspace-level. 4 clippy deny-level errors fixed. All experiments
+modernized to idiomatic patterns (is_some_and, if-let, format simplification).
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`

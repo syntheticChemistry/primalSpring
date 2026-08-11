@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml/badge.svg)](https://github.com/syntheticChemistry/primalSpring/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Tests](https://img.shields.io/badge/tests-1269_pass-brightgreen.svg)](#validation-scenarios-198-across-15-tracks)
+[![Tests](https://img.shields.io/badge/tests-1274_pass-brightgreen.svg)](#validation-scenarios-198-across-15-tracks)
 [![Rust](https://img.shields.io/badge/rust-1.87%2B-orange.svg)](https://www.rust-lang.org)
 [![Unsafe: forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance)
 
@@ -10,13 +10,13 @@
 
 | | |
 |-|-|
-| **Wave** | **157g** — G67 ACTIVE. **ENMESH phase**. `biome.yaml` v1 manifest consumed (toadStool schema): 14 primals, 3 compositions (Tower/Nest/Node), dependency ordering, wave-parallel startup, live reconciliation. `nucleus_launcher --biome` + `reconcile` subcommand. exp122 37/37. `spine.list` gap CLOSED. 14/14 primals alive, 1.0ms dispatch. 7/7 capability domains route. **0 test failures, 0 compiler warnings.** Debt sprint: dead code removed, SignalTier suppressed (Wave 170 removal), primordial spawn helpers feature-gated, freshness.toml refreshed (22 HEADs). |
+| **Wave** | **157g** — G67 ACTIVE. **ENMESH phase**. `biome.yaml` v1 manifest consumed (toadStool schema): 14 primals, 3 compositions (Tower/Nest/Node), dependency ordering, wave-parallel startup, live reconciliation. `nucleus_launcher --biome` + `reconcile` subcommand. exp122 37/37. `spine.list` gap CLOSED. Multi-composition workflow engine (`workflow.rs`). G72 dep pandemic profile (exp123 — primalSpring CLEAN, 8 primals Tier 1 flagged). Smart decomposition: `manifest.rs` 1185L→652L. 14/14 primals alive, 1.0ms dispatch. 7/7 capability domains route. **0 test failures, 0 clippy errors.** All deps workspace-managed. |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.46 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 1,234 lib + 16 doc + 19 integration (1,269 workspace total, 0 failures) |
-| **Experiments** | 100 (22 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
+| **Tests** | 1,239 lib + 16 doc + 19 integration (1,274 workspace total, 0 failures) |
+| **Experiments** | 102 (22 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
 | **Deploy Graphs** | 102 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 492+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
