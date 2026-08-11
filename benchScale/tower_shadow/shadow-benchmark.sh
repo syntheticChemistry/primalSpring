@@ -1,4 +1,7 @@
 #!/bin/bash
+# NOTE: WG IPs below are intentionally hardcoded for benchmark accuracy.
+# DNS resolution would add variable latency noise to measurements.
+# Update manually when gate IPs change (canonical source: ecosystem_manifest.toml).
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TS=$(date +%Y%m%d_%H%M%S)

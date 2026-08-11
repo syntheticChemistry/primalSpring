@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Mesh Topology — WireGuard overlay address assignments + gate roster
 #
+# DEPRECATED (Wave 157h): This file duplicates topology data from
+# infra/wateringHole/ecosystem_manifest.toml. Migrate primalSpring scenarios
+# to read from the canonical manifest instead. Retained as a test fixture
+# until all ~30 scenarios are updated.
+#
 # Single source of truth for the 10.13.37.0/24 sovereign mesh.
 # Adding a gate means adding one [[gate]] entry here.
 # Gates without an `address` field have not yet been peered.

@@ -289,7 +289,6 @@ fn validate_repo_entries(
 
 fn phase_freshness_schema(v: &mut ValidationResult) {
     validate_wave_toml(v);
-    validate_legacy_freshness_toml(v);
 }
 
 fn validate_wave_toml(v: &mut ValidationResult) {
@@ -343,87 +342,6 @@ fn validate_wave_toml(v: &mut ValidationResult) {
                 "schema:wave_toml_parse",
                 false,
                 &format!("wave.toml parse error: {e}"),
-            );
-        }
-    }
-}
-
-fn validate_legacy_freshness_toml(v: &mut ValidationResult) {
-    let freshness_toml = include_str!("../../../../../../infra/wateringHole/freshness.toml");
-    let parsed: toml::Value = match toml::from_str(freshness_toml) {
-        Ok(p) => p,
-        Err(e) => {
-            v.check_bool(
-                "schema:freshness_parse",
-                false,
-                &format!("freshness.toml parse error: {e}"),
-            );
-            return;
-        }
-    };
-
-    v.check_bool(
-        "schema:freshness_parse",
-        true,
-        "freshness.toml parses as valid TOML (deprecated — compat only)",
-    );
-
-    let wave = parsed.get("wave").and_then(|w| w.as_table());
-    v.check_bool(
-        "schema:freshness:wave_section",
-        wave.is_some(),
-        "[wave] section present",
-    );
-
-    if let Some(wave) = wave {
-        let id = wave
-            .get("id")
-            .and_then(toml::Value::as_integer)
-            .unwrap_or(0);
-        v.check_bool(
-            "schema:freshness:wave_id",
-            id > 0,
-            &format!("wave.id = {id}"),
-        );
-
-        let date = wave.get("date").and_then(|v| v.as_str()).unwrap_or("");
-        v.check_bool(
-            "schema:freshness:wave_date",
-            date.len() == 10,
-            &format!("wave.date = \"{date}\""),
-        );
-    }
-
-    let heads = parsed.get("heads").and_then(|h| h.as_table());
-    v.check_bool(
-        "schema:freshness:heads_section",
-        heads.is_some(),
-        "[heads] section present",
-    );
-
-    if let Some(heads) = heads {
-        if heads.len() < 5 {
-            v.check_skip(
-                "schema:freshness:head_count",
-                &format!(
-                    "only {} entries — sparse-publish regression (VPS overwrote full manifest)",
-                    heads.len()
-                ),
-            );
-            return;
-        }
-        v.check_bool(
-            "schema:freshness:head_count",
-            heads.len() >= 20,
-            &format!("{} HEAD refs in freshness.toml (expect >= 20)", heads.len()),
-        );
-
-        for (name, head) in heads {
-            let hash = head.as_str().unwrap_or("");
-            v.check_bool(
-                &format!("schema:freshness:head:{name}:valid_hash"),
-                hash.len() == 40 && hash.chars().all(|c| c.is_ascii_hexdigit()),
-                &format!("{name} has valid 40-char hex HEAD"),
             );
         }
     }
@@ -581,14 +499,6 @@ mod tests {
                 "repo '{name}' missing valid forgejo_repo (got: '{fj}')"
             );
         }
-    }
-
-    #[test]
-    fn freshness_parses_as_valid_toml() {
-        let toml_str = include_str!("../../../../../../infra/wateringHole/freshness.toml");
-        let parsed: toml::Value = toml::from_str(toml_str).expect("valid TOML");
-        assert!(parsed.get("wave").is_some(), "missing [wave] section");
-        assert!(parsed.get("heads").is_some(), "missing [heads] section");
     }
 
     #[test]
