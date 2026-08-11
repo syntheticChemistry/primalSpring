@@ -169,7 +169,7 @@ fn federation_peers() {
     let manifest: BiomeManifest = serde_yaml_ng::from_str(eastgate_yaml()).unwrap();
     let fed = manifest.federation.as_ref().unwrap();
     assert!(fed.enabled);
-    assert_eq!(fed.peers.len(), 6);
+    assert_eq!(fed.peers.len(), 7);
     assert!(fed.peers.contains(&"sporeGate".to_string()));
 }
 

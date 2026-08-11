@@ -185,6 +185,7 @@ impl ProfileConstraints {
     #[must_use]
     pub fn target(&self) -> Target {
         match self.target_triple.as_deref() {
+            Some(t) if t.contains("aarch64") && t.contains("apple") => Target::Aarch64Darwin,
             Some(t) if t.contains("aarch64") => Target::Aarch64Musl,
             Some(t) if t.contains("riscv64") => Target::Riscv64Musl,
             Some(t) if t.contains("wasm") => Target::Wasm32Wasi,

@@ -156,6 +156,12 @@ with Tier 1 violations identified for upstream coordination.
 `workflow.rs` (201L), `reconcile.rs` (124L), `manifest_tests.rs` (242L). 6 crypto
 deps promoted to workspace-level. 4 clippy deny-level errors fixed. All experiments
 modernized to idiomatic patterns (is_some_and, if-let, format simplification).
+**Wave 157i darwinGate bootstrap**: `Aarch64Darwin` target variant added to
+`evolution/target.rs` — full NUCLEUS composition tier, permissive deployment,
+UDS + filesystem support, launchd init system. darwinGate (M4 Mac Mini) added to
+`mesh_topology.toml`, `deployment_matrix.toml` (pending cell), `biome-eastgate.yaml`
+(federation peer). exp123 G72 thresholds tightened for post-pandemic baselines
+(Tier 1: 9/9 teams COMPLETE, ~114 crates shed fleet-wide).
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`

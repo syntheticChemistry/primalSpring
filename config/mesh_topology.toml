@@ -102,3 +102,10 @@ role = "mobile"
 zone = "Wan"
 transport = "adb"
 services = ["nucleus_tower", "beardog", "songbird", "skunkbat"]
+
+[[gate]]
+name = "darwinGate"
+role = "build"
+zone = "House2"
+transport = "lan"
+notes = "M4 Mac Mini (Apple Silicon). First aarch64-apple-darwin target. launchd init. iPhone XS tethering for bootstrap."

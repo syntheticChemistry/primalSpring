@@ -8,7 +8,7 @@
 # when exp081 has run against a live gate matching its parameters with ≥2 live primals.
 
 [matrix]
-architectures = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+architectures = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl", "aarch64-apple-darwin"]
 transports = ["uds_only", "tcp_fallback", "tcp_only"]
 topologies = ["standalone", "mesh_peer", "mesh_hub"]
 
@@ -170,3 +170,15 @@ topology = "standalone"
 primals = 0
 status = "blocked"
 notes = "Hardware ready (76TB ZFS). Not deployed."
+
+# ── darwinGate (aarch64-apple-darwin, standalone, UDS) ──────────────────────
+
+[[cell]]
+id = "darwingate-aarch64-darwin-uds-standalone"
+gate = "darwinGate"
+arch = "aarch64-apple-darwin"
+transport = "uds_only"
+topology = "standalone"
+primals = 0
+status = "pending"
+notes = "M4 Mac Mini arrived (Wave 157i). First aarch64-apple-darwin target. iPhone XS tethering. launchd init system. Self-builds Tower Atomic as bootstrap proof."

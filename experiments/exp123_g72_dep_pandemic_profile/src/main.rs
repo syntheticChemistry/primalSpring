@@ -212,26 +212,28 @@ fn profile_ecosystem(v: &mut ValidationResult) {
         &format!("{primal_count} primals scanned"),
     );
 
-    // G72 targets from spec
+    // G72 Tier 1 COMPLETE (Wave 157i): 9/9 teams responded.
+    // Post-pandemic baselines reflect Tier 1 excision.
+    // Tier 2 targets (HTTP→songBird, axum→0.8) are next.
     v.check_bool(
         "tier1_tokio_full_target",
-        total_tokio_full <= 3,
+        total_tokio_full == 0,
         &format!(
-            "tokio[full] primals: {total_tokio_full} (baseline: 3, target: 0)"
+            "tokio[full] primals: {total_tokio_full} (post-pandemic target: 0)"
         ),
     );
     v.check_bool(
         "tier1_http_client_target",
-        total_reqwest + total_ureq <= 8,
+        total_reqwest + total_ureq <= 5,
         &format!(
-            "HTTP client primals: {} (reqwest={total_reqwest}, ureq={total_ureq}, baseline: 8)",
+            "HTTP client primals: {} (reqwest={total_reqwest}, ureq={total_ureq}, Tier 2 target: 0)",
             total_reqwest + total_ureq
         ),
     );
     v.check_bool(
         "tier1_env_logger_target",
-        total_env_logger <= 4,
-        &format!("env_logger primals: {total_env_logger} (baseline: 4, target: 0)"),
+        total_env_logger <= 2,
+        &format!("env_logger primals: {total_env_logger} (post-pandemic target: 0)"),
     );
 }
 

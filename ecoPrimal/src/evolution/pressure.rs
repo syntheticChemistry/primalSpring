@@ -66,6 +66,7 @@ impl PressureCategory {
     pub fn active_for(target: Target) -> Vec<Self> {
         match target {
             Target::X86_64Musl => vec![Self::Network],
+            Target::Aarch64Darwin => vec![Self::IpcTransport, Self::Network],
             Target::Aarch64Musl => vec![
                 Self::Filesystem,
                 Self::IpcTransport,

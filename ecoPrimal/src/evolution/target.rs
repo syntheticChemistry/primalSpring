@@ -17,6 +17,8 @@ pub enum Target {
     X86_64Musl,
     /// ARM64 Linux with musl (grapheneGate — `SELinux`, restricted dirs).
     Aarch64Musl,
+    /// ARM64 macOS / Apple Silicon (darwinGate — M4, launchd, Mach-O).
+    Aarch64Darwin,
     /// RISC-V 64-bit Linux with musl (toadStool gateway, `SiFive` boards).
     Riscv64Musl,
     /// WebAssembly + WASI (browser/serverless, sandboxed, no filesystem).
@@ -43,6 +45,7 @@ impl Target {
         match self {
             Self::X86_64Musl => "x86_64-unknown-linux-musl",
             Self::Aarch64Musl => "aarch64-unknown-linux-musl",
+            Self::Aarch64Darwin => "aarch64-apple-darwin",
             Self::Riscv64Musl => "riscv64gc-unknown-linux-musl",
             Self::Wasm32Wasi => "wasm32-wasip1",
             Self::BareMetal(Arch::X86_64) => "x86_64-unknown-none",
@@ -65,14 +68,17 @@ impl Target {
     pub const fn has_filesystem(self) -> bool {
         matches!(
             self,
-            Self::X86_64Musl | Self::Aarch64Musl | Self::Riscv64Musl
+            Self::X86_64Musl | Self::Aarch64Musl | Self::Aarch64Darwin | Self::Riscv64Musl
         )
     }
 
     /// Whether this target supports Unix domain sockets.
     #[must_use]
     pub const fn has_uds(self) -> bool {
-        matches!(self, Self::X86_64Musl | Self::Riscv64Musl)
+        matches!(
+            self,
+            Self::X86_64Musl | Self::Aarch64Darwin | Self::Riscv64Musl
+        )
     }
 
     /// Whether TCP networking is available.
@@ -85,7 +91,7 @@ impl Target {
     #[must_use]
     pub const fn tier(self) -> DeploymentTier {
         match self {
-            Self::X86_64Musl => DeploymentTier::Permissive,
+            Self::X86_64Musl | Self::Aarch64Darwin => DeploymentTier::Permissive,
             Self::Aarch64Musl => DeploymentTier::Restricted,
             Self::Riscv64Musl => DeploymentTier::Constrained,
             Self::Wasm32Wasi => DeploymentTier::Sandboxed,
@@ -99,6 +105,8 @@ impl Target {
         let triple = crate::tolerances::platform::current_target_triple();
         if triple.contains("x86_64") && triple.contains("linux") {
             Self::X86_64Musl
+        } else if triple.contains("aarch64") && triple.contains("apple") {
+            Self::Aarch64Darwin
         } else if triple.contains("aarch64") && triple.contains("linux") {
             Self::Aarch64Musl
         } else if triple.contains("riscv64") {
@@ -121,7 +129,7 @@ impl fmt::Display for Target {
 /// pressures apply.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DeploymentTier {
-    /// Full Linux, writable filesystem, UDS, permissive security (eastGate).
+    /// Full Linux or macOS, writable filesystem, UDS, permissive security (eastGate, darwinGate).
     Permissive,
     /// Linux but with SELinux/AppArmor restrictions (grapheneGate).
     Restricted,
@@ -162,7 +170,7 @@ impl CompositionTier {
     #[must_use]
     pub const fn from_target(target: Target) -> Self {
         match target {
-            Target::X86_64Musl | Target::Riscv64Musl => Self::Full,
+            Target::X86_64Musl | Target::Aarch64Darwin | Target::Riscv64Musl => Self::Full,
             Target::Aarch64Musl => Self::Light,
             Target::Wasm32Wasi | Target::BareMetal(_) => Self::Micro,
         }
