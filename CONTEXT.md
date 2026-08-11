@@ -127,8 +127,10 @@ v0.9.47 Wave 157i (Aug 11, 2026) — 198 scenarios (15 tracks, 3 tiers),
 G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
 G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder).
 **G72 Tier 1 COMPLETE: 11/11 teams, ~155+ crates shed fleet-wide.**
-**Gossip: 7/16 primals LIVE** (barraCuda 22/22 full spec, wetSpring 4/4, nestGate wired).
-**graftGate: 12/15 compiled on macOS** (aarch64-apple-darwin). WG 10.13.37.13.
+**G72 Tier 2 partial**: axum 0.7→0.8 (petalTongue), wgpu 22→28 (toadStool), all 4 darwin fixes merged.
+**Gossip: 9/16 primals LIVE** (barraCuda 22/22 full spec, hotSpring 10/10, wetSpring 4/4, nestGate 6 types).
+**5-gate mesh ACTIVE**: eastGate, sporeGate, westGate, ironGate, strandGate.
+**graftGate: 15/15 compiled on macOS** (~98.1M Mach-O arm64). WG LIVE at 10.13.37.13, 6 peers, 38ms RTT.
 150K+ ecosystem tests across 16 primals. Neural API live on eastGate:
 riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
 58 methods registered via primal.announce, 919 exec/s graph throughput,
@@ -162,11 +164,12 @@ modernized to idiomatic patterns (is_some_and, if-let, format simplification).
 **Wave 157i graftGate bootstrap**: `Aarch64Darwin` target variant added to
 `evolution/target.rs` — full NUCLEUS composition tier, permissive deployment,
 UDS + filesystem support, launchd init system. graftGate (M4 Mac Mini) added to
-`mesh_topology.toml` (WG 10.13.37.13), `deployment_matrix.toml` (12/15 compiled),
-`biome-eastgate.yaml` (federation peer). G72 Tier 1: 11/11 teams COMPLETE,
-~155+ crates shed fleet-wide (bearDog +41, petalTongue telemetry excised).
-Gossip 7/16 LIVE (barraCuda 22/22 full spec, wetSpring 4/4). 3 darwin failures
-logged for code teams (toadStool cfg gate, squirrel linker, petalTongue rustix).
+`mesh_topology.toml` (WG LIVE 10.13.37.13, 6 peers, 38ms RTT), `deployment_matrix.toml`
+(15/15 compiled, ~98.1M arm64), `biome-eastgate.yaml` (federation peer). G72 Tier 1:
+11/11 teams COMPLETE, ~155+ crates shed fleet-wide (bearDog +41, petalTongue telemetry
+excised). G72 Tier 2 partial: axum 0.8 + wgpu 28 + all 4 darwin fixes merged.
+Gossip 9/16 LIVE (barraCuda 22/22, hotSpring 10/10, wetSpring 4/4, nestGate 6 types).
+5-gate mesh ACTIVE. 3 darwin failures all resolved upstream — G12 COMPLETE.
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`
