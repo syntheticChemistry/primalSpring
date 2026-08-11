@@ -165,11 +165,13 @@ modernized to idiomatic patterns (is_some_and, if-let, format simplification).
 `evolution/target.rs` — full NUCLEUS composition tier, permissive deployment,
 UDS + filesystem support, launchd init system. graftGate (M4 Mac Mini) added to
 `mesh_topology.toml` (WG LIVE 10.13.37.13, 6 peers, 38ms RTT), `deployment_matrix.toml`
-(15/15 compiled, ~98.1M arm64), `biome-eastgate.yaml` (federation peer). G72 Tier 1:
-11/11 teams COMPLETE, ~155+ crates shed fleet-wide (bearDog +41, petalTongue telemetry
-excised). G72 Tier 2 partial: axum 0.8 + wgpu 28 + all 4 darwin fixes merged.
-Gossip 9/16 LIVE (barraCuda 22/22, hotSpring 10/10, wetSpring 4/4, nestGate 6 types).
-5-gate mesh ACTIVE. 3 darwin failures all resolved upstream — G12 COMPLETE.
+(15/15 compiled, ~98.1M arm64, fully enmeshed), `biome-eastgate.yaml` (federation peer).
+G72 Tier 1: 11/11 teams COMPLETE, ~155+ crates shed fleet-wide. G72 Tier 2 partial:
+axum 0.8 + wgpu 28 + all 4 darwin fixes merged. Gossip 9/16 LIVE (barraCuda 22/22,
+hotSpring 10/10, wetSpring 4/4, nestGate 6 types). 5-gate mesh ACTIVE.
+songBird MeshRelay SHIPPED (relay/inject/spread/subscribe) — blueGate + southGate
+cross-gate gossip UNBLOCKED. sporeGate Phase 1 COMPLETE: depot rebuilt (37 binaries,
+4 archs), sub-mesh topology evolved. G12 COMPLETE.
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`

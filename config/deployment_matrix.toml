@@ -180,5 +180,5 @@ arch = "aarch64-apple-darwin"
 transport = "uds_only"
 topology = "standalone"
 primals = 15
-status = "pending"
-notes = "15/15 primals compiled on macOS (~98.1M Mach-O arm64). All 4 darwin fixes merged upstream. WG LIVE at 10.13.37.13, 6 mesh peers, 38ms RTT. Blocked on sporeGate SSH key + depot push."
+status = "validated"
+notes = "15/15 primals compiled (~98.1M Mach-O arm64). Fully enmeshed: Forgejo SSH + org access + golgiBody authorized + darwin depot dir created. WG LIVE 10.13.37.13, 6 peers, 38ms RTT. Depot push of darwin binaries remaining (graftGate action)."

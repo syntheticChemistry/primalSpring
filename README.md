@@ -10,7 +10,7 @@
 
 | | |
 |-|-|
-| **Wave** | **157i** — G67 ACTIVE. **POST-PANDEMIC CASCADE COMPLETE.** G72 Tier 1: **11/11 teams DONE, ~155+ crates shed**. Tier 2 partial: axum 0.8, wgpu 28, 4 darwin fixes merged. Gossip: **9/16 primals LIVE** (barraCuda 22/22, hotSpring 10/10, wetSpring 4/4). **5-gate mesh ACTIVE**. graftGate: **15/15 compiled on macOS** (~98.1M arm64), WG LIVE 10.13.37.13, G12 COMPLETE. `biome.yaml` v1 manifest, multi-composition workflow engine. 14/14 primals alive, 1.0ms dispatch. **0 test failures, 0 clippy errors.** |
+| **Wave** | **157i** — G67 ACTIVE. **POST-PANDEMIC CASCADE COMPLETE.** G72 Tier 1: **11/11 DONE, ~155+ crates**. Tier 2 partial: axum 0.8, wgpu 28, 4 darwin fixes. Gossip: **9/16 primals LIVE** (barraCuda 22/22, hotSpring 10/10). **5-gate mesh ACTIVE**. songBird MeshRelay SHIPPED — southGate+blueGate UNBLOCKED. graftGate: **15/15 compiled**, fully enmeshed, WG LIVE, G12 COMPLETE. sporeGate depot rebuilt (37 bins, 4 archs). `biome.yaml` v1 manifest, multi-composition workflow engine. **0 test failures, 0 clippy errors.** |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.47 |
 | **Edition** | Rust 2024 (1.87+) |
