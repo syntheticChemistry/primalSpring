@@ -171,11 +171,11 @@ primals = 0
 status = "blocked"
 notes = "Hardware ready (76TB ZFS). Not deployed."
 
-# ── darwinGate (aarch64-apple-darwin, standalone, UDS) ──────────────────────
+# ── graftGate (aarch64-apple-darwin, standalone, UDS) ──────────────────────
 
 [[cell]]
-id = "darwingate-aarch64-darwin-uds-standalone"
-gate = "darwinGate"
+id = "graftgate-aarch64-darwin-uds-standalone"
+gate = "graftGate"
 arch = "aarch64-apple-darwin"
 transport = "uds_only"
 topology = "standalone"

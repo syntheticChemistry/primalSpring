@@ -17,7 +17,7 @@ pub enum Target {
     X86_64Musl,
     /// ARM64 Linux with musl (grapheneGate — `SELinux`, restricted dirs).
     Aarch64Musl,
-    /// ARM64 macOS / Apple Silicon (darwinGate — M4, launchd, Mach-O).
+    /// ARM64 macOS / Apple Silicon (graftGate — M4, launchd, Mach-O).
     Aarch64Darwin,
     /// RISC-V 64-bit Linux with musl (toadStool gateway, `SiFive` boards).
     Riscv64Musl,
@@ -129,7 +129,7 @@ impl fmt::Display for Target {
 /// pressures apply.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DeploymentTier {
-    /// Full Linux or macOS, writable filesystem, UDS, permissive security (eastGate, darwinGate).
+    /// Full Linux or macOS, writable filesystem, UDS, permissive security (eastGate, graftGate).
     Permissive,
     /// Linux but with SELinux/AppArmor restrictions (grapheneGate).
     Restricted,
