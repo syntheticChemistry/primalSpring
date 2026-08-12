@@ -104,7 +104,7 @@ pub struct BiomeMetadata {
 }
 
 /// Primal configuration within a manifest.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ManifestPrimalConfig {
     /// Primal version
     #[serde(default)]

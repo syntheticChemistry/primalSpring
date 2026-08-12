@@ -121,6 +121,11 @@ enum NucleusCommand {
     /// Loads the manifest, resolves composition graphs, then probes the
     /// running gate to report which primals are alive, missing, or extra.
     Reconcile,
+    /// Assess the deploy→gossip→verify lifecycle for all primals.
+    ///
+    /// Probes socket existence, swarmVine gossip registration, and biomeOS
+    /// mesh routability to report each primal's lifecycle phase.
+    Lifecycle,
 }
 
 fn resolve_node_id(cli_node_id: Option<String>) -> String {
@@ -304,6 +309,47 @@ fn main() {
                 println!("  {} ({}) — {status}", comp.name, comp.kind);
                 if !comp.unhealthy_members.is_empty() {
                     println!("    unhealthy: {}", comp.unhealthy_members.join(", "));
+                }
+            }
+            println!();
+        }
+        Some(NucleusCommand::Lifecycle) => {
+            let manifest = biome_manifest.unwrap_or_else(|| {
+                let default_path = std::path::Path::new("config/biome-eastgate.yaml");
+                match primalspring::composition::manifest::load_biome_manifest(default_path) {
+                    Ok(m) => m,
+                    Err(e) => {
+                        eprintln!("error: --biome required for lifecycle (or config/biome-eastgate.yaml): {e}");
+                        std::process::exit(1);
+                    }
+                }
+            });
+            let report = primalspring::composition::lifecycle::assess_lifecycle(&manifest);
+            println!();
+            println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
+            println!("\x1b[36m  Lifecycle Assessment — {}\x1b[0m", report.gate);
+            println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
+            println!();
+            println!("  Total: {}  |  Verified: {}  |  Gossip: {}  |  Deployed: {}  |  Missing: {}",
+                report.summary.total,
+                report.summary.verified,
+                report.summary.gossip_only,
+                report.summary.deployed_only,
+                report.summary.not_deployed,
+            );
+            println!("  Elapsed: {}ms", report.elapsed_ms);
+            println!();
+            for state in &report.primals {
+                let icon = match state.phase {
+                    primalspring::composition::lifecycle::LifecyclePhase::Verified => "\x1b[32m✓\x1b[0m",
+                    primalspring::composition::lifecycle::LifecyclePhase::GossipRegistered => "\x1b[33m◉\x1b[0m",
+                    primalspring::composition::lifecycle::LifecyclePhase::Deployed => "\x1b[34m●\x1b[0m",
+                    primalspring::composition::lifecycle::LifecyclePhase::NotDeployed => "\x1b[31m✗\x1b[0m",
+                };
+                let phase_label = state.phase.label();
+                println!("  {icon} {:<14} {phase_label}", state.slug);
+                if !state.declared_gossip_events.is_empty() && state.confirmed_gossip_events.is_empty() {
+                    println!("      gossip: {} events declared, 0 confirmed", state.declared_gossip_events.len());
                 }
             }
             println!();
