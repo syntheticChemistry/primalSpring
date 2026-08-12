@@ -120,7 +120,7 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.47 Wave 157i (Aug 11, 2026) — 198 scenarios (15 tracks, 3 tiers),
+v0.9.47 Wave 157j (Aug 11, 2026) — 198 scenarios (15 tracks, 3 tiers),
 704+ registered capability methods, 102 experiments (22 tracks), 102 graph TOMLs
 (16 directories). 1,274 workspace tests (1,239 lib + 16 doc + 19 integration).
 **6/6 NUCLEUS gates 157e deployed. 0 test failures, 0 clippy errors, 0 warnings.**
@@ -129,8 +129,9 @@ G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder)
 **G72 Tier 1 COMPLETE: 11/11 teams, ~155+ crates shed fleet-wide.**
 **G72 Tier 2 partial**: axum 0.7→0.8 (petalTongue), wgpu 22→28 (toadStool), all 4 darwin fixes merged.
 **Gossip: 9/16 primals LIVE** (barraCuda 22/22 full spec, hotSpring 10/10, wetSpring 4/4, nestGate 6 types).
-**5-gate mesh ACTIVE**: eastGate, sporeGate, westGate, ironGate, strandGate.
-**graftGate: 15/15 compiled on macOS** (~98.1M Mach-O arm64). WG LIVE at 10.13.37.13, 6 peers, 38ms RTT.
+**5-gate mesh ACTIVE + southGate LAN VALIDATED** (4 gossip peers, 39 entries on 192.168.4.x).
+**graftGate: 15/15 compiled, depot PUSHED** (104M, BLAKE3, 5th OS family). iOS cross-compile live.
+**songBird MeshRelay SHIPPED** (relay/inject/spread/subscribe) — blueGate + southGate UNBLOCKED.
 150K+ ecosystem tests across 16 primals. Neural API live on eastGate:
 riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
 58 methods registered via primal.announce, 919 exec/s graph throughput,
@@ -161,17 +162,19 @@ with Tier 1 violations identified for upstream coordination.
 `workflow.rs` (201L), `reconcile.rs` (124L), `manifest_tests.rs` (242L). 6 crypto
 deps promoted to workspace-level. 4 clippy deny-level errors fixed. All experiments
 modernized to idiomatic patterns (is_some_and, if-let, format simplification).
-**Wave 157i graftGate bootstrap**: `Aarch64Darwin` target variant added to
+**Wave 157i/j graftGate bootstrap + LAN gossip**: `Aarch64Darwin` target variant added to
 `evolution/target.rs` — full NUCLEUS composition tier, permissive deployment,
-UDS + filesystem support, launchd init system. graftGate (M4 Mac Mini) added to
+UDS + filesystem support, launchd init system. graftGate (M4 Mac Mini) fully enmeshed:
 `mesh_topology.toml` (WG LIVE 10.13.37.13, 6 peers, 38ms RTT), `deployment_matrix.toml`
-(15/15 compiled, ~98.1M arm64, fully enmeshed), `biome-eastgate.yaml` (federation peer).
+(15/15 compiled, depot PUSHED 104M BLAKE3, 5th OS family, iOS cross-compile live).
 G72 Tier 1: 11/11 teams COMPLETE, ~155+ crates shed fleet-wide. G72 Tier 2 partial:
 axum 0.8 + wgpu 28 + all 4 darwin fixes merged. Gossip 9/16 LIVE (barraCuda 22/22,
-hotSpring 10/10, wetSpring 4/4, nestGate 6 types). 5-gate mesh ACTIVE.
-songBird MeshRelay SHIPPED (relay/inject/spread/subscribe) — blueGate + southGate
-cross-gate gossip UNBLOCKED. sporeGate Phase 1 COMPLETE: depot rebuilt (37 binaries,
-4 archs), sub-mesh topology evolved. G12 COMPLETE.
+hotSpring 10/10, wetSpring 4/4, nestGate 6 types). 5-gate mesh + southGate LAN VALIDATED
+(4 gossip peers, 39 entries on 192.168.4.x — previous "topology blocked" was stale WG-era
+peer addresses). songBird MeshRelay SHIPPED (relay/inject/spread/subscribe) — blueGate +
+southGate UNBLOCKED. sporeGate Phase 1 COMPLETE: depot rebuilt (37 binaries, 4 archs).
+nestGate S149 FIXED (content.exists dispatch error). bearDog -25% binary (bloat fixed).
+G12 COMPLETE.
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`

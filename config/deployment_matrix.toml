@@ -181,4 +181,4 @@ transport = "uds_only"
 topology = "standalone"
 primals = 15
 status = "validated"
-notes = "15/15 primals compiled (~98.1M Mach-O arm64). Fully enmeshed: Forgejo SSH + org access + golgiBody authorized + darwin depot dir created. WG LIVE 10.13.37.13, 6 peers, 38ms RTT. Depot push of darwin binaries remaining (graftGate action)."
+notes = "15/15 primals compiled (~98.1M Mach-O arm64). Fully enmeshed. Depot PUSHED (104M, BLAKE3). 5th OS family in depot. iOS cross-compile live. WG LIVE 10.13.37.13, 6 peers, 38ms RTT."
