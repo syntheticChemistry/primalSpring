@@ -48,7 +48,7 @@ fn capability_count_from_list_value(val: &serde_json::Value) -> usize {
 
 fn phase_structural(v: &mut ValidationResult) {
     let required = AtomicType::FullNucleus.required_capabilities();
-    v.check_count("full_nucleus_required_caps", required.len(), 13);
+    v.check_count("full_nucleus_required_caps", required.len(), 14);
 }
 
 fn phase_discovery(v: &mut ValidationResult, ctx: &CompositionContext) {

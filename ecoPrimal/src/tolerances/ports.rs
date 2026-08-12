@@ -201,6 +201,11 @@ pub static PORT_REGISTRY: &[PortEntry] = &[
         env_key: "SKUNKBAT_PORT",
     },
     PortEntry {
+        slug: primal_names::SWARMVINE,
+        port: 7800,
+        env_key: "SWARMVINE_PORT",
+    },
+    PortEntry {
         slug: primal_names::BIOMEOS,
         port: 9800,
         env_key: "BIOMEOS_PORT",

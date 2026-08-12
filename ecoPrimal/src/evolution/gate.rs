@@ -134,7 +134,7 @@ impl GateStatus {
             primals_alive: 0,
             #[expect(
                 clippy::cast_possible_truncation,
-                reason = "primal count fits in u8 (currently 13)"
+                reason = "primal count fits in u8 (currently 14)"
             )]
             primals_expected: all_primal_slugs().len() as u8,
             depot_fresh: false,
@@ -508,7 +508,7 @@ mod tests {
         g.primals_alive = 5;
         assert_eq!(g.derived_readiness(), ReadinessLevel::Partial);
 
-        g.primals_alive = 13;
+        g.primals_alive = g.primals_expected;
         assert_eq!(g.derived_readiness(), ReadinessLevel::Full);
 
         g.vcs_synced = true;

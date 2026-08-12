@@ -23,18 +23,28 @@ pub use probes::{
 };
 
 /// Atomic composition layer — each represents a testable deployment target.
+///
+/// Corrected atomic model (Wave 157k):
+/// - Tower = bearDog + songBird + skunkBat + swarmVine (shared electron cloud)
+/// - Node = Tower + toadStool + barraCuda + coralReef
+/// - Nest = Tower + nestGate + rhizoCrypt + loamSpine + sweetGrass
+/// - NUCLEUS = Tower + Node + Nest + biomeOS + petalTongue + squirrel + cellMembrane
+///
+/// Nest and Node always include Tower via bonding model. Tower provides the
+/// shared electron cloud (crypto, mesh, defense, gossip) for all compositions.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AtomicType {
     /// `BearDog` only (optional `SkunkBat`). The micro-atomic: minimal crypto identity.
     /// Used on fieldMouse-class embedded devices (≤256MB, single-core, TCP-only).
     Micro,
-    /// `BearDog` + Songbird + skunkBat (crypto + mesh + defense). The electron shell.
+    /// bearDog + songBird + skunkBat + swarmVine (shared electron cloud).
+    /// Crypto + mesh + defense + gossip — present in ALL compositions.
     Tower,
-    /// Tower + compute trio (`ToadStool` + `barraCuda` + `coralReef`). 6 primals.
+    /// Tower + compute trio (toadStool + barraCuda + coralReef). 7 primals.
     Node,
-    /// Tower + `NestGate` + provenance trio (`rhizoCrypt` + `LoamSpine` + `sweetGrass`). 7 primals.
+    /// Tower + nestGate + provenance trio (rhizoCrypt + loamSpine + sweetGrass). 8 primals.
     Nest,
-    /// All 13 primals: Tower + Node + Nest + meta-tier.
+    /// Tower + Node + Nest + biomeOS + petalTongue + squirrel + cellMembrane.
     FullNucleus,
 }
 
@@ -85,11 +95,12 @@ impl AtomicType {
     pub const fn required_capabilities(self) -> &'static [&'static str] {
         match self {
             Self::Micro => &["security"],
-            Self::Tower => &["security", "discovery", "defense"],
+            Self::Tower => &["security", "discovery", "defense", "gossip"],
             Self::Node => &[
                 "security",
                 "discovery",
                 "defense",
+                "gossip",
                 "compute",
                 "tensor",
                 "shader",
@@ -98,6 +109,7 @@ impl AtomicType {
                 "security",
                 "discovery",
                 "defense",
+                "gossip",
                 "storage",
                 "dag",
                 "ledger",
@@ -107,6 +119,7 @@ impl AtomicType {
                 "security",
                 "discovery",
                 "defense",
+                "gossip",
                 "compute",
                 "tensor",
                 "shader",
@@ -179,9 +192,9 @@ impl AtomicType {
     pub const fn from_primal_count(count: usize) -> &'static str {
         match count {
             0..=2 => "Micro",
-            3..=4 => "Tower Atomic",
-            5..=6 => "Node Atomic",
-            7..=12 => "Nest",
+            3..=5 => "Tower Atomic",
+            6..=7 => "Node Atomic",
+            8..=12 => "Nest",
             _ => "Full NUCLEUS",
         }
     }
@@ -191,12 +204,12 @@ impl AtomicType {
     pub const fn description(self) -> &'static str {
         match self {
             Self::Micro => "BearDog only — minimal crypto identity (embedded/fieldMouse)",
-            Self::Tower => "Security + Discovery + Defense (crypto + mesh + audit)",
+            Self::Tower => "Shared electron cloud (crypto + mesh + defense + gossip)",
             Self::Node => "Tower + Compute trio (dispatch + math + shaders)",
             Self::Nest => {
                 "Tower + Storage + Provenance trio (content + DAG + ledger + attribution)"
             }
-            Self::FullNucleus => "All 13 primals: Tower + Node + Nest + meta-tier",
+            Self::FullNucleus => "Tower + Node + Nest + biomeOS + petalTongue + squirrel",
         }
     }
 }
@@ -287,33 +300,36 @@ mod tests {
     use crate::primal_names;
 
     #[test]
-    fn tower_derives_three_primal_slugs() {
+    fn tower_derives_four_primal_slugs() {
         let slugs = AtomicType::Tower.required_primal_slugs();
-        assert_eq!(slugs.len(), 3);
+        assert_eq!(slugs.len(), 4);
         assert!(slugs.contains(&primal_names::BEARDOG));
         assert!(slugs.contains(&primal_names::SONGBIRD));
         assert!(slugs.contains(&primal_names::SKUNKBAT));
+        assert!(slugs.contains(&primal_names::SWARMVINE));
     }
 
     #[test]
-    fn node_derives_six_primal_slugs() {
+    fn node_derives_seven_primal_slugs() {
         let slugs = AtomicType::Node.required_primal_slugs();
-        assert_eq!(slugs.len(), 6);
+        assert_eq!(slugs.len(), 7);
         assert!(slugs.contains(&primal_names::BEARDOG));
         assert!(slugs.contains(&primal_names::SONGBIRD));
         assert!(slugs.contains(&primal_names::SKUNKBAT));
+        assert!(slugs.contains(&primal_names::SWARMVINE));
         assert!(slugs.contains(&primal_names::TOADSTOOL));
         assert!(slugs.contains(&primal_names::BARRACUDA));
         assert!(slugs.contains(&primal_names::CORALREEF));
     }
 
     #[test]
-    fn nest_derives_seven_primal_slugs() {
+    fn nest_derives_eight_primal_slugs() {
         let slugs = AtomicType::Nest.required_primal_slugs();
-        assert_eq!(slugs.len(), 7);
+        assert_eq!(slugs.len(), 8);
         assert!(slugs.contains(&primal_names::BEARDOG));
         assert!(slugs.contains(&primal_names::SONGBIRD));
         assert!(slugs.contains(&primal_names::SKUNKBAT));
+        assert!(slugs.contains(&primal_names::SWARMVINE));
         assert!(slugs.contains(&primal_names::NESTGATE));
         assert!(slugs.contains(&primal_names::RHIZOCRYPT));
         assert!(slugs.contains(&primal_names::LOAMSPINE));
@@ -321,10 +337,11 @@ mod tests {
     }
 
     #[test]
-    fn full_nucleus_derives_twelve_primal_slugs() {
+    fn full_nucleus_derives_thirteen_primal_slugs() {
         let slugs = AtomicType::FullNucleus.required_primal_slugs();
-        assert_eq!(slugs.len(), 12);
+        assert_eq!(slugs.len(), 13);
         assert!(slugs.contains(&primal_names::SKUNKBAT));
+        assert!(slugs.contains(&primal_names::SWARMVINE));
         assert!(slugs.contains(&primal_names::BARRACUDA));
         assert!(slugs.contains(&primal_names::CORALREEF));
         assert!(slugs.contains(&primal_names::PETALTONGUE));
@@ -414,18 +431,19 @@ mod tests {
     }
 
     #[test]
-    fn required_capabilities_tower_has_security_discovery_defense() {
+    fn required_capabilities_tower_has_security_discovery_defense_gossip() {
         let caps = AtomicType::Tower.required_capabilities();
         assert!(caps.contains(&"security"));
         assert!(caps.contains(&"discovery"));
         assert!(caps.contains(&"defense"));
-        assert_eq!(caps.len(), 3);
+        assert!(caps.contains(&"gossip"));
+        assert_eq!(caps.len(), 4);
     }
 
     #[test]
-    fn required_capabilities_full_nucleus_has_thirteen() {
+    fn required_capabilities_full_nucleus_has_fourteen() {
         let caps = AtomicType::FullNucleus.required_capabilities();
-        assert_eq!(caps.len(), 13);
+        assert_eq!(caps.len(), 14);
         assert!(caps.contains(&"defense"));
         assert!(caps.contains(&"tensor"));
         assert!(caps.contains(&"shader"));

@@ -85,6 +85,19 @@ capabilities = [
     "threat.assess", "recon.scan",
 ]
 
+[[graph.nodes]]
+name = "swarmvine"
+binary = "swarmvine"
+order = 4
+required = true
+depends_on = ["beardog", "songbird"]
+health_method = "health.liveness"
+by_capability = "gossip"
+security_model = "btsp"
+capabilities = [
+    "gossip.inject", "gossip.spread", "gossip.status", "gossip.subscribe",
+]
+
 # ── Orchestration substrate ──────────────────────────────────────────
 # biomeOS neural-api: provides signal.dispatch, capability.call,
 # composition.deploy, graph.verify, composition.deploy.shadow.
@@ -92,7 +105,7 @@ capabilities = [
 [[graph.nodes]]
 name = "biomeos_neural_api"
 binary = "biomeos"
-order = 4
+order = 5
 required = true
 spawn = false
 depends_on = ["beardog", "songbird"]
@@ -111,7 +124,7 @@ capabilities = [
 [[graph.nodes]]
 name = "squirrel"
 binary = "squirrel"
-order = 5
+order = 6
 required = true
 depends_on = ["beardog", "songbird", "skunkbat", "biomeos_neural_api"]
 health_method = "health.liveness"

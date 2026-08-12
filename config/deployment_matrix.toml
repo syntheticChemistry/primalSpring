@@ -181,4 +181,4 @@ transport = "uds_only"
 topology = "standalone"
 primals = 15
 status = "validated"
-notes = "15/15 primals compiled (~98.1M Mach-O arm64). Fully enmeshed. Depot PUSHED (104M, BLAKE3). 5th OS family in depot. iOS cross-compile live. WG LIVE 10.13.37.13, 6 peers, 38ms RTT."
+notes = "FULL NUCLEUS: 21 domains, 1830 caps, <60s. First non-Linux NUCLEUS. 15/15 primals (~98.1M Mach-O arm64). Depot PUSHED (104M, BLAKE3). 5th OS family. 10 divergences documented."

@@ -37,7 +37,7 @@ pub const SCENARIO: Scenario = Scenario {
 
 const ALL_PRIMALS: &[&str] = Primal::ALL_SLUGS;
 
-const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat"];
+const TOWER_PRIMALS: &[&str] = &["beardog", "songbird", "skunkbat", "swarmvine"];
 
 const ADB_PORTS: &[(&str, u16)] = &[("beardog", 9100), ("songbird", 9200), ("skunkbat", 9140)];
 

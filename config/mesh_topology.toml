@@ -115,4 +115,11 @@ address = "10.13.37.13"
 role = "build"
 zone = "House2"
 transport = "lan"
-notes = "M4 Mac Mini (Apple Silicon). 15/15 primals compiled. WG LIVE, 6 mesh peers, 38ms RTT. launchd init. iPhone XS USB tethering."
+notes = "M4 Mac Mini (Apple Silicon). FULL NUCLEUS: 21 domains, 1830 caps, <60s. First non-Linux NUCLEUS. 15/15 primals. WG LIVE, 6 mesh peers, 38ms RTT. launchd init."
+
+[[gate]]
+name = "iosGate"
+role = "edge"
+zone = "House2"
+transport = "lan"
+notes = "iPhone XS. 6th OS family. FIRST DEPLOY: BearDogApp + 4 iOS Rust binaries. WiFi LAN peer discovery."

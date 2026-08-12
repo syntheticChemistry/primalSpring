@@ -67,6 +67,19 @@ depends_on = ["beardog_identity"]
 by_capability = "defense"
 capabilities = ["security.audit_event", "defense.status"]
 
+# swarmVine depends on bearDog + songbird for gossip mesh.
+
+[[graph.nodes]]
+name = "swarmvine_gossip"
+binary = "swarmvine"
+order = 4
+required = true
+spawn = true
+phase = 1
+depends_on = ["beardog_identity", "songbird_discovery"]
+by_capability = "gossip"
+capabilities = ["gossip.inject", "gossip.spread", "gossip.status"]
+
 # ─── Phase 2: Graph-driven expansion (biomeOS available) ─────────────
 # biomeOS discovers the running Tower via songbird, seeds the registry,
 # and verifies health. From this point forward, all operations are
@@ -75,7 +88,7 @@ capabilities = ["security.audit_event", "defense.status"]
 [[graph.nodes]]
 name = "biomeos_discover"
 binary = "biomeos"
-order = 4
+order = 5
 required = false
 spawn = false
 phase = 2
@@ -86,7 +99,7 @@ capabilities = ["graph.list", "topology.rescan"]
 [[graph.nodes]]
 name = "registry_seed"
 binary = "songbird"
-order = 5
+order = 6
 required = false
 spawn = false
 phase = 2
@@ -97,7 +110,7 @@ capabilities = ["ipc.register"]
 [[graph.nodes]]
 name = "health_verify"
 binary = "biomeos"
-order = 6
+order = 7
 required = false
 spawn = false
 phase = 2

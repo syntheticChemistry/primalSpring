@@ -10,9 +10,9 @@
 
 | | |
 |-|-|
-| **Wave** | **157k** — **INNER MEMBRANE LIVE.** 11 gates ONLINE (biomeGate DOWN). Gate×team ownership RATIONALIZED. Lifecycle executor: deploy→gossip→verify pipeline. G72 11/11 (~155+ crates). Gossip **9/16 LIVE** (barraCuda 22/22, hotSpring 10/10). **6-gate mesh + southGate LAN**. graftGate 15/15 enmeshed. songBird MeshRelay SHIPPED. `biome.yaml` v1 manifest, workflow engine. **0 test failures, 0 clippy errors.** |
+| **Wave** | **157k** — **7 NUCLEUS gates. 19 goals COMPLETE.** Atomic model corrected: Tower = 4 primals (shared electron cloud). graftGate **FULL NUCLEUS** (21 domains, 1830 caps). iosGate **FIRST DEPLOY** (6th OS). All 4 canary bugs RESOLVED. songBird deep-debt 8,500+ tests. Gossip **9/16 LIVE**. **7-gate mesh + southGate LAN**. Lifecycle executor. Depot STALE — rebuild pending. **0 test failures, 0 clippy errors.** |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
-| **Version** | 0.9.48 |
+| **Version** | 0.9.49 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 1,239 lib + 16 doc + 19 integration (1,274 workspace total, 0 failures) |
@@ -446,7 +446,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
 ## Mixed Composition + Live Validation Matrix (April 7, 2026)
 
-- **Particle model adopted**: Tower = electron (trust boundary, mediates bonds), Node = proton (compute, fungible), Nest = neutron (data at rest, non-fungible), NUCLEUS = atom. Grounded in Paper 23 (Mass-Energy-Information Equivalence). See `specs/MIXED_COMPOSITION_PATTERNS.md`.
+- **Particle model adopted (corrected Wave 157k)**: Tower = shared electron cloud (bearDog + songBird + skunkBat + swarmVine — crypto + mesh + defense + gossip, present in ALL compositions), Node = proton (Tower + compute trio), Nest = neutron (Tower + storage + provenance trio), NUCLEUS = Tower + Node + Nest + biomeOS + petalTongue + squirrel + cellMembrane. Genetics: mitoBeacon → nuclear → genetic child. Bonding: weak → ionic → metallic → covalent. See `specs/MIXED_COMPOSITION_PATTERNS.md`.
 - **Layered validation framework**: L0 (biomeOS + any primal), L1 (each atomic), L2 (mixed atomics), L3 (bonding patterns on top of atomics). Full NUCLEUS Validation Matrix at `specs/NUCLEUS_VALIDATION_MATRIX.md`.
 - **12 sketch graphs** (archived to `fossilRecord/stale_graphs_apr12_2026/sketches/`): L0 primal routing matrix, L2 dual-tower ionic / dedicated tower / nest enclave, L3 covalent mesh backup / ionic lease / organo-metal-salt.
 - **3 new experiments** (exp091–093): L0 primal routing matrix, L2 dual-tower ionic structural, L3 covalent mesh backup structural.

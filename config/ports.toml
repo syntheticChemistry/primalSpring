@@ -49,6 +49,10 @@ env_key = "BARRACUDA_PORT"
 port = 9140
 env_key = "SKUNKBAT_PORT"
 
+[swarmvine]
+port = 7800
+env_key = "SWARMVINE_PORT"
+
 [biomeos]
 port = 9800
 env_key = "BIOMEOS_PORT"

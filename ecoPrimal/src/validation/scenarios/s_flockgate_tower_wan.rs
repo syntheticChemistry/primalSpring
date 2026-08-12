@@ -23,6 +23,7 @@ const TOWER_PRIMALS: &[&str] = &[
     primal_names::BEARDOG,
     primal_names::SONGBIRD,
     primal_names::SKUNKBAT,
+    primal_names::SWARMVINE,
 ];
 
 /// flockGate Tower WAN validation scenario.

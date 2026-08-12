@@ -360,11 +360,11 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
 
     v.check_bool(
         "bootstrap:node_count",
-        nodes.len() == 6,
-        &format!("tower_bootstrap.toml has {} nodes, expected 6", nodes.len()),
+        nodes.len() == 7,
+        &format!("tower_bootstrap.toml has {} nodes, expected 7", nodes.len()),
     );
 
-    // Phase 1 nodes: beardog, songbird, skunkbat (spawned, required)
+    // Phase 1 nodes: beardog, songbird, skunkbat, swarmvine (spawned, required)
     let phase1_nodes: Vec<&toml::Value> = nodes
         .iter()
         .filter(|n| n.get("phase").and_then(toml::Value::as_integer) == Some(1))
@@ -372,9 +372,9 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
 
     v.check_bool(
         "bootstrap:phase1_count",
-        phase1_nodes.len() == 3,
+        phase1_nodes.len() == 4,
         &format!(
-            "Phase 1 has {} nodes, expected 3 (beardog, songbird, skunkbat)",
+            "Phase 1 has {} nodes, expected 4 (beardog, songbird, skunkbat, swarmvine)",
             phase1_nodes.len()
         ),
     );
@@ -446,28 +446,33 @@ fn validate_tower_bootstrap(v: &mut ValidationResult) {
         );
     }
 
-    // No circular dependencies in Phase 1: songbird/skunkbat depend on beardog, not each other
+    // No circular dependencies in Phase 1: dependencies must only reference
+    // nodes with lower order (acyclic). beardog is root (no deps), songbird/skunkbat
+    // depend on beardog, swarmvine depends on beardog + songbird.
     for node in &phase1_nodes {
         let name = node
             .get("name")
             .and_then(|n| n.as_str())
             .unwrap_or("unknown");
-        let binary = node.get("binary").and_then(|b| b.as_str()).unwrap_or("");
+        let order = node.get("order").and_then(|o| o.as_integer()).unwrap_or(0);
         let deps: Vec<&str> = node
             .get("depends_on")
             .and_then(|d| d.as_array())
             .map(|a| a.iter().filter_map(|v| v.as_str()).collect())
             .unwrap_or_default();
 
-        if binary == "beardog" {
-            continue;
-        }
-
-        let depends_only_on_beardog = deps.iter().all(|d| d.contains("beardog"));
+        let all_deps_lower_order = deps.iter().all(|dep| {
+            phase1_nodes.iter().any(|other| {
+                let other_name = other.get("name").and_then(|v| v.as_str()).unwrap_or("");
+                let other_order = other.get("order").and_then(|o| o.as_integer()).unwrap_or(0);
+                *dep == other_name && other_order < order
+            })
+        });
+        let deps_valid = deps.is_empty() || all_deps_lower_order;
         v.check_bool(
             &format!("bootstrap:no_circular:{name}"),
-            depends_only_on_beardog,
-            &format!("{name} depends only on beardog node(s), not on other Tower primals"),
+            deps_valid,
+            &format!("{name} depends only on Phase 1 nodes with lower order (acyclic)"),
         );
     }
 

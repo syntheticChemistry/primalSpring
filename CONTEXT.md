@@ -120,10 +120,12 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.48 Wave 157k (Aug 12, 2026) — 198 scenarios (15 tracks, 3 tiers),
+v0.9.49 Wave 157k (Aug 12, 2026) — 198 scenarios (15 tracks, 3 tiers),
 704+ registered capability methods, 102 experiments (22 tracks), 102 graph TOMLs
-(16 directories). 1,247 workspace tests (lib + 16 doc + 19 integration).
-**Inner membrane LIVE. 11 gates ONLINE (biomeGate DOWN). 0/0/0.**
+(16 directories). 1,253 workspace tests (lib + 16 doc + 19 integration).
+**11 gates ONLINE (biomeGate DOWN). 7 NUCLEUS gates. 19 goals COMPLETE. 0/0/0.**
+**Atomic model CORRECTED**: Tower = bearDog + songBird + skunkBat + swarmVine
+(shared electron cloud). Nest/Node always include Tower via bonding.
 **Gate×team ownership RATIONALIZED** — eastGate owns orchestration + sovereignty.
 **0 test failures, 0 clippy errors, 0 warnings.**
 G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
@@ -132,7 +134,8 @@ G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder)
 **G72 Tier 2 partial**: axum 0.7→0.8 (petalTongue), wgpu 22→28 (toadStool), all 4 darwin fixes merged.
 **Gossip: 9/16 primals LIVE** (barraCuda 22/22 full spec, hotSpring 10/10, wetSpring 4/4, nestGate 6 types).
 **5-gate mesh ACTIVE + southGate LAN VALIDATED** (4 gossip peers, 39 entries on 192.168.4.x).
-**graftGate: 15/15 compiled, depot PUSHED** (104M, BLAKE3, 5th OS family). iOS cross-compile live.
+**graftGate FULL NUCLEUS** (21 domains, 1830 caps, <60s) — first non-Linux NUCLEUS.
+**iosGate FIRST DEPLOY** (6th OS family, 4 iOS Rust binaries).
 **songBird MeshRelay SHIPPED** (relay/inject/spread/subscribe) — blueGate + southGate UNBLOCKED.
 150K+ ecosystem tests across 16 primals. Neural API live on eastGate:
 riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
@@ -186,6 +189,15 @@ Lifecycle executor validates deploy→gossip→verify pipeline. Post-restart: 10
 (was stale, not an ironGate bug). NOPASSWD sudoers entry added for agent autonomy.
 4 remaining operational blockers: blueGate depot pull, songBird node-id, southGate LAN IP,
 biomeGate SSH recovery.
+**Wave 157k ortho sweep**: graftGate FULL NUCLEUS (21 domains, 1830 caps, <60s) — first
+non-Linux NUCLEUS, 10 divergences documented. iosGate FIRST DEPLOY (6th OS family, 4 iOS
+Rust binaries, WiFi LAN peer discovery). All 4 canary bugs RESOLVED in source (songBird
+deep-debt 8,500+ tests, swarmVine 186 tests/90.8% coverage, toadStool wgpu28, biomeOS spawn
+leak). Depot STALE (Aug 1-3) — sporeGate rebuild needed. G11+G12 graduated (19 goals COMPLETE).
+Atomic model corrected: Tower = 4 primals (shared electron cloud), `Primal::SwarmVine` added
+to enum, all Tower/Node/Nest/NUCLEUS groupings updated. Genetics hierarchy codified:
+mitoBeacon → nuclear → genetic child. Deployment signaling spec filed (Phase 1: biomeOS
+`deploy.result` gossip → Phase 2: primalSpring fleet aggregation).
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`

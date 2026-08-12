@@ -44,8 +44,10 @@ pub enum Primal {
     LoamSpine,
     /// Attribution & commit braids (Nest neutron).
     SweetGrass,
-    /// Defense, audit & threat assessment (Tower electron).
+    /// Defense, audit & threat assessment (Tower electron cloud).
     SkunkBat,
+    /// Gossip propagation & event mesh (Tower electron cloud).
+    SwarmVine,
 }
 
 /// Every known spring in the ecosystem.
@@ -96,9 +98,8 @@ pub enum Spring {
 /// data securely to compute-heavy gates without shared secrets.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Atomic {
-    /// Electron shell: `BearDog` + Songbird + `SkunkBat`.
-    /// The trust boundary — BTSP encryption, mesh discovery, threat assessment.
-    /// Present in every other atomic as the encryption substrate.
+    /// Shared electron cloud: bearDog + songBird + skunkBat + swarmVine.
+    /// Crypto + mesh + defense + gossip — present in ALL compositions via bonding.
     Tower,
     /// Proton: Tower + `ToadStool` + `BarraCuda` + `CoralReef`.
     /// Compute capacity — dispatch, tensor math, shader compilation.
@@ -170,6 +171,7 @@ impl Primal {
             Self::LoamSpine => "loamspine",
             Self::SweetGrass => "sweetgrass",
             Self::SkunkBat => "skunkbat",
+            Self::SwarmVine => "swarmvine",
         }
     }
 
@@ -190,6 +192,7 @@ impl Primal {
             Self::LoamSpine => "LoamSpine",
             Self::SweetGrass => "sweetGrass",
             Self::SkunkBat => "skunkBat",
+            Self::SwarmVine => "swarmVine",
         }
     }
 
@@ -198,6 +201,7 @@ impl Primal {
         Self::BearDog,
         Self::Songbird,
         Self::SkunkBat,
+        Self::SwarmVine,
         Self::ToadStool,
         Self::BarraCuda,
         Self::CoralReef,
@@ -214,11 +218,12 @@ impl Primal {
     #[must_use]
     pub const fn for_atomic(atomic: Atomic) -> &'static [Self] {
         match atomic {
-            Atomic::Tower => &[Self::BearDog, Self::Songbird, Self::SkunkBat],
+            Atomic::Tower => &[Self::BearDog, Self::Songbird, Self::SkunkBat, Self::SwarmVine],
             Atomic::Node => &[
                 Self::BearDog,
                 Self::Songbird,
                 Self::SkunkBat,
+                Self::SwarmVine,
                 Self::ToadStool,
                 Self::BarraCuda,
                 Self::CoralReef,
@@ -227,6 +232,7 @@ impl Primal {
                 Self::BearDog,
                 Self::Songbird,
                 Self::SkunkBat,
+                Self::SwarmVine,
                 Self::NestGate,
                 Self::RhizoCrypt,
                 Self::LoamSpine,
@@ -236,11 +242,12 @@ impl Primal {
         }
     }
 
-    /// The NUCLEUS atom — all 10 foundation primals (Tower + Node + Nest, deduplicated).
+    /// The NUCLEUS atom — all 11 foundation primals (Tower + Node + Nest, deduplicated).
     pub const NUCLEUS: &'static [Self] = &[
         Self::BearDog,
         Self::Songbird,
         Self::SkunkBat,
+        Self::SwarmVine,
         Self::ToadStool,
         Self::BarraCuda,
         Self::CoralReef,
@@ -251,9 +258,9 @@ impl Primal {
     ];
 
     /// Tower primals as slugs (sorted).
-    pub const TOWER_SLUGS: &'static [&'static str] = &["beardog", "skunkbat", "songbird"];
+    pub const TOWER_SLUGS: &'static [&'static str] = &["beardog", "skunkbat", "songbird", "swarmvine"];
 
-    /// All 13 primal slugs (sorted alphabetically).
+    /// All 14 primal slugs (sorted alphabetically).
     pub const ALL_SLUGS: &'static [&'static str] = &[
         "barracuda",
         "beardog",
@@ -266,11 +273,12 @@ impl Primal {
         "skunkbat",
         "songbird",
         "squirrel",
+        "swarmvine",
         "sweetgrass",
         "toadstool",
     ];
 
-    /// All 13 primal slugs excluding biomeOS (the substrate, not a spawned primal).
+    /// All 14 primal slugs excluding biomeOS (the substrate, not a spawned primal).
     pub const ALL_SLUGS_NO_BIOMEOS: &'static [&'static str] = &[
         "barracuda",
         "beardog",
@@ -282,6 +290,7 @@ impl Primal {
         "skunkbat",
         "songbird",
         "squirrel",
+        "swarmvine",
         "sweetgrass",
         "toadstool",
     ];
@@ -311,6 +320,7 @@ impl FromStr for Primal {
             "loamspine" | "LoamSpine" => Ok(Self::LoamSpine),
             "sweetgrass" | "sweetGrass" => Ok(Self::SweetGrass),
             "skunkbat" | "skunkBat" => Ok(Self::SkunkBat),
+            "swarmvine" | "swarmVine" => Ok(Self::SwarmVine),
             _ => Err(UnknownPrimal(s.to_owned())),
         }
     }
@@ -408,6 +418,8 @@ pub const BARRACUDA: &str = "barracuda";
 pub const CORALREEF: &str = "coralreef";
 /// Legacy slug constant — prefer `Primal::SkunkBat.slug()`.
 pub const SKUNKBAT: &str = "skunkbat";
+/// Legacy slug constant — prefer `Primal::SwarmVine.slug()`.
+pub const SWARMVINE: &str = "swarmvine";
 
 /// Lowercase discovery slug → mixed-case display name (legacy wrapper).
 #[must_use]
@@ -513,21 +525,22 @@ mod tests {
 
     #[test]
     fn all_primals_count() {
-        assert_eq!(Primal::ALL.len(), 13);
+        assert_eq!(Primal::ALL.len(), 14);
     }
 
     #[test]
     fn nucleus_count() {
-        assert_eq!(Primal::NUCLEUS.len(), 10);
+        assert_eq!(Primal::NUCLEUS.len(), 11);
     }
 
     #[test]
     fn tower_atomic_membership() {
         let tower = Primal::for_atomic(Atomic::Tower);
-        assert_eq!(tower.len(), 3);
+        assert_eq!(tower.len(), 4);
         assert!(tower.contains(&Primal::BearDog));
         assert!(tower.contains(&Primal::Songbird));
         assert!(tower.contains(&Primal::SkunkBat));
+        assert!(tower.contains(&Primal::SwarmVine));
     }
 
     #[test]

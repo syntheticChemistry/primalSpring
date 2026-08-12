@@ -66,6 +66,7 @@ static SLUG_PREFIXES: std::sync::LazyLock<Vec<String>> = std::sync::LazyLock::ne
         Primal::LoamSpine,
         Primal::SweetGrass,
         Primal::SkunkBat,
+        Primal::SwarmVine,
     ];
     let springs = [
         Spring::PrimalSpring,

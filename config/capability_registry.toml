@@ -1011,6 +1011,18 @@ methods = [
     "webb.scene.current",
 ]
 
+[gossip]
+primary = true
+owner = "swarmvine"
+methods = [
+    "gossip.inject",
+    "gossip.spread",
+    "gossip.status",
+    "gossip.subscribe",
+    "gossip.relay",
+    "gossip.mesh.changed",
+]
+
 [defense]
 primary = true
 owner = "skunkbat"

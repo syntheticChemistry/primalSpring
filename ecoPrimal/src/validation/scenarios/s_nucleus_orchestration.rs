@@ -66,9 +66,9 @@ fn phase_atomic_types(v: &mut ValidationResult) {
         );
     }
 
-    // Full NUCLEUS must have exactly 13 capabilities
+    // Full NUCLEUS must have exactly 14 capabilities
     let full_caps = AtomicType::FullNucleus.required_capabilities();
-    v.check_count("atomic:full_nucleus:cap_count", full_caps.len(), 13);
+    v.check_count("atomic:full_nucleus:cap_count", full_caps.len(), 14);
 
     // Micro must be subset of Tower must be subset of Full
     let micro_caps: std::collections::HashSet<&str> = AtomicType::Micro
