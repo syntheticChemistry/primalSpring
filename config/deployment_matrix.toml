@@ -97,7 +97,7 @@ topology = "standalone"
 primals = 13
 status = "validated"
 wave = 108
-notes = "Pixel 8a (Android). Tower Atomic ONLINE. Managed via ADB from eastGate. aarch64 depot rebuilt on eastGate. Wave 108 validated 13/13 (pre-swarmVine)."
+notes = "Pixel 8a (Android). Tower Atomic DEPLOYED+VERIFIED (4/4 alive, corrected model). swarmVine cross-compiled on eastGate. SELinux: --abstract/--no-uds/TCP required. biomeOS+cellMembrane missing (no aarch64 binary). Depot stale (Jun 10)."
 
 [[cell]]
 id = "graphenegate-aarch64-fallback-standalone"
