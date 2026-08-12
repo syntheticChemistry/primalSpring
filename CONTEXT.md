@@ -120,10 +120,12 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.47 Wave 157j (Aug 11, 2026) — 198 scenarios (15 tracks, 3 tiers),
+v0.9.48 Wave 157k (Aug 12, 2026) — 198 scenarios (15 tracks, 3 tiers),
 704+ registered capability methods, 102 experiments (22 tracks), 102 graph TOMLs
-(16 directories). 1,274 workspace tests (1,239 lib + 16 doc + 19 integration).
-**6/6 NUCLEUS gates 157e deployed. 0 test failures, 0 clippy errors, 0 warnings.**
+(16 directories). 1,247 workspace tests (lib + 16 doc + 19 integration).
+**Inner membrane LIVE. 11 gates ONLINE (biomeGate DOWN). 0/0/0.**
+**Gate×team ownership RATIONALIZED** — eastGate owns orchestration + sovereignty.
+**0 test failures, 0 clippy errors, 0 warnings.**
 G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
 G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder).
 **G72 Tier 1 COMPLETE: 11/11 teams, ~155+ crates shed fleet-wide.**
@@ -175,6 +177,14 @@ peer addresses). songBird MeshRelay SHIPPED (relay/inject/spread/subscribe) — 
 southGate UNBLOCKED. sporeGate Phase 1 COMPLETE: depot rebuilt (37 binaries, 4 archs).
 nestGate S149 FIXED (content.exists dispatch error). bearDog -25% binary (bloat fixed).
 G12 COMPLETE.
+**Wave 157k ownership rationalization + inner membrane**: Gate×team ownership RATIONALIZED
+and codified. eastGate: biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch
+infra (orchestration + sovereignty). Inner membrane LIVE, 11 gates ONLINE (biomeGate DOWN).
+Lifecycle executor validates deploy→gossip→verify pipeline: 8 verified, 2 gossip_registered,
+3 deployed, 1 missing (songBird — socket not created, ironGate bug). eastGate hostname fix
+identified: `pop-os` → `eastgate` via `hostnamectl` (no reboot required). 5 operational
+blockers tracked: blueGate depot pull, eastGate hostname, songBird node-id, southGate LAN IP,
+biomeGate SSH recovery.
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`
@@ -340,11 +350,13 @@ record for pattern reference only.
 
 | Field | Value |
 |-------|-------|
-| **Gate** | eastGate (primary) — experimentation |
-| **Composition** | Full NUCLEUS (13/13 primals) |
-| **NUCLEUS status** | operational — VALIDATED |
-| **Songbird federation** | port 7700 |
-| **LAN mesh** | ready — covalent linking via Songbird TCP |
+| **Gate** | eastGate — orchestration + sovereignty |
+| **Code teams** | biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch infra |
+| **Composition** | Full NUCLEUS (14/14 primals incl nestGate) |
+| **NUCLEUS status** | operational — hostname fix pending (`pop-os` → `eastgate`) |
+| **Songbird federation** | port 7700 (socket not created — ironGate bug) |
+| **Gossip mesh** | 6-gate mesh + southGate LAN. 9/16 primals gossiping. |
+| **Inner membrane** | LIVE |
 
 primalSpring lives on eastGate. VPS deployment, binary refresh, and
 membrane ops are owned by cellMembrane. See
@@ -365,7 +377,7 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data fetch + visualization), neuralSpring
 (agentic composition), tideGlass (gen5 drug repurposing via NUCLEUS).
 
-## Glacial Checkpoint — Current and Remaining (Aug 11, 2026 — Wave 157i)
+## Glacial Checkpoint — Current and Remaining (Aug 12, 2026 — Wave 157k)
 
 ### Cephalization Trilogy COMPLETE (G64+G65+G66)
 - **G64 Cephalization** — tarpc convergent evolution **15/15** primals

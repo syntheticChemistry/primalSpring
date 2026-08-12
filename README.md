@@ -10,9 +10,9 @@
 
 | | |
 |-|-|
-| **Wave** | **157j** — G67 ACTIVE. **LAN GOSSIP VALIDATED.** southGate confirms Tower Atomic mesh works on LAN without WireGuard (stale peer registry was the actual blocker). G72 11/11 (~155+ crates). Tier 2 partial: axum 0.8, wgpu 28, 4 darwin fixes. Gossip **9/16 LIVE** (barraCuda 22/22, hotSpring 10/10). **5-gate mesh + southGate LAN**. graftGate 15/15, depot PUSHED (5th OS, iOS live). songBird MeshRelay SHIPPED. `biome.yaml` v1 manifest, workflow engine. **0 test failures, 0 clippy errors.** |
+| **Wave** | **157k** — **INNER MEMBRANE LIVE.** 11 gates ONLINE (biomeGate DOWN). Gate×team ownership RATIONALIZED. Lifecycle executor: deploy→gossip→verify pipeline. G72 11/11 (~155+ crates). Gossip **9/16 LIVE** (barraCuda 22/22, hotSpring 10/10). **6-gate mesh + southGate LAN**. graftGate 15/15 enmeshed. songBird MeshRelay SHIPPED. `biome.yaml` v1 manifest, workflow engine. **0 test failures, 0 clippy errors.** |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
-| **Version** | 0.9.47 |
+| **Version** | 0.9.48 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 1,239 lib + 16 doc + 19 integration (1,274 workspace total, 0 failures) |

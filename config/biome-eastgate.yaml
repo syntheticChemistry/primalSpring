@@ -11,20 +11,22 @@ kind: Biome
 
 metadata:
   name: eastgate
-  version: "157i"
-  description: "eastGate NUCLEUS — primalSpring code team + deployment + overwatch"
+  version: "157k"
+  description: "eastGate NUCLEUS — orchestration + sovereignty (biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch infra)"
   team: ecoPrimals
   environment: production
   tags:
     - overwatch
     - primalspring
-    - code-team
+    - orchestration
+    - sovereignty
   labels:
     gate: eastGate
-    role: code-deploy
+    role: orchestration-sovereignty
   annotations:
-    ecoPrimals.io/wave: "157i"
+    ecoPrimals.io/wave: "157k"
     ecoPrimals.io/depot: plasmidBin
+    ecoPrimals.io/hostname: eastgate
 
 # ─── Primals ────────────────────────────────────────────────────────────────
 

@@ -20,10 +20,10 @@ gate = "eastGate"
 arch = "x86_64-unknown-linux-musl"
 transport = "uds_only"
 topology = "mesh_hub"
-primals = 13
+primals = 14
 status = "validated"
-wave = 107
-notes = "Primary development gate. 13/13 FULL NUCLEUS. Hub for 4-gate mesh."
+wave = 157
+notes = "Orchestration + sovereignty gate. 14/14 NUCLEUS (incl nestGate). Hub for 6-gate mesh. Hostname fix pending (pop-os → eastgate). Inner membrane LIVE."
 
 [[cell]]
 id = "eastgate-x86-tcp-hub"
