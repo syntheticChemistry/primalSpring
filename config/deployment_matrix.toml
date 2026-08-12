@@ -97,7 +97,7 @@ topology = "standalone"
 primals = 13
 status = "validated"
 wave = 108
-notes = "13/13 DEPLOYED AND ALIVE on Pixel 8a (Wave 108). aarch64 depot rebuilt on eastGate. coralReef required local rebuild (build-primal.sh shallow clone missed b1ec1f4). All 13 procs confirmed via pgrep + TCP probe + JSON-RPC health."
+notes = "Pixel 8a (Android). Tower Atomic ONLINE. Managed via ADB from eastGate. aarch64 depot rebuilt on eastGate. Wave 108 validated 13/13 (pre-swarmVine)."
 
 [[cell]]
 id = "graphenegate-aarch64-fallback-standalone"

@@ -107,7 +107,9 @@ name = "grapheneGate"
 role = "mobile"
 zone = "Wan"
 transport = "adb"
-services = ["nucleus_tower", "beardog", "songbird", "skunkbat"]
+managed_by = "eastGate"
+services = ["nucleus_tower", "beardog", "songbird", "skunkbat", "swarmvine"]
+notes = "Pixel 8a (Android beacon). Tower Atomic via ADB from eastGate. No WG address — reachable only through eastGate USB/ADB bridge."
 
 [[gate]]
 name = "graftGate"

@@ -364,12 +364,13 @@ record for pattern reference only.
 | Field | Value |
 |-------|-------|
 | **Gate** | eastGate — orchestration + sovereignty |
-| **Code teams** | biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch infra |
+| **Code teams** | biomeOS, squirrel, projectNUCLEUS, primalSpring + overwatch infra |
 | **Composition** | Full NUCLEUS (14/14 primals incl nestGate) |
 | **NUCLEUS status** | operational — hostname FIXED (`eastgate`), 14/14 restarted |
 | **Songbird federation** | port 7700 (socket restored after NUCLEUS restart) |
-| **Gossip mesh** | 6-gate mesh + southGate LAN. 9/16 primals gossiping. |
+| **Gossip mesh** | 7-gate mesh + southGate LAN. 9/16 primals gossiping. |
 | **Inner membrane** | LIVE |
+| **Managed gates** | grapheneGate (Pixel 8a, Android beacon) via ADB |
 
 primalSpring lives on eastGate. VPS deployment, binary refresh, and
 membrane ops are owned by cellMembrane. See
