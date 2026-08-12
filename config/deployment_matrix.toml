@@ -23,7 +23,7 @@ topology = "mesh_hub"
 primals = 14
 status = "validated"
 wave = 157
-notes = "Orchestration + sovereignty gate. 14/14 NUCLEUS (incl nestGate). Hub for 6-gate mesh. Hostname fix pending (pop-os → eastgate). Inner membrane LIVE."
+notes = "Orchestration + sovereignty gate. 14/14 NUCLEUS (incl nestGate). Hub for 6-gate mesh. Hostname FIXED. Inner membrane LIVE. 10 verified, 4 deployed (gossip pending)."
 
 [[cell]]
 id = "eastgate-x86-tcp-hub"

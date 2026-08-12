@@ -44,7 +44,7 @@ address = "10.13.37.5"
 lan_addr = "192.168.4.244"
 role = "meta"
 zone = "Backbone"
-notes = "Orchestration + sovereignty. biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch. Hostname fix pending (pop-os → eastgate)."
+notes = "Orchestration + sovereignty. biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch. Hostname FIXED (eastgate). Inner membrane LIVE."
 
 [[gate]]
 name = "flockGate"

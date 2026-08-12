@@ -180,10 +180,11 @@ G12 COMPLETE.
 **Wave 157k ownership rationalization + inner membrane**: Gate×team ownership RATIONALIZED
 and codified. eastGate: biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch
 infra (orchestration + sovereignty). Inner membrane LIVE, 11 gates ONLINE (biomeGate DOWN).
-Lifecycle executor validates deploy→gossip→verify pipeline: 8 verified, 2 gossip_registered,
-3 deployed, 1 missing (songBird — socket not created, ironGate bug). eastGate hostname fix
-identified: `pop-os` → `eastgate` via `hostnamectl` (no reboot required). 5 operational
-blockers tracked: blueGate depot pull, eastGate hostname, songBird node-id, southGate LAN IP,
+Lifecycle executor validates deploy→gossip→verify pipeline. Post-restart: 10 verified,
+4 deployed (gossip pending), 0 missing. eastGate hostname FIXED: `pop-os` → `eastgate` via
+`hostnamectl` + graceful NUCLEUS restart (no reboot). songBird socket restored after restart
+(was stale, not an ironGate bug). NOPASSWD sudoers entry added for agent autonomy.
+4 remaining operational blockers: blueGate depot pull, songBird node-id, southGate LAN IP,
 biomeGate SSH recovery.
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
@@ -353,8 +354,8 @@ record for pattern reference only.
 | **Gate** | eastGate — orchestration + sovereignty |
 | **Code teams** | biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch infra |
 | **Composition** | Full NUCLEUS (14/14 primals incl nestGate) |
-| **NUCLEUS status** | operational — hostname fix pending (`pop-os` → `eastgate`) |
-| **Songbird federation** | port 7700 (socket not created — ironGate bug) |
+| **NUCLEUS status** | operational — hostname FIXED (`eastgate`), 14/14 restarted |
+| **Songbird federation** | port 7700 (socket restored after NUCLEUS restart) |
 | **Gossip mesh** | 6-gate mesh + southGate LAN. 9/16 primals gossiping. |
 | **Inner membrane** | LIVE |
 
