@@ -206,8 +206,11 @@ wgpu28 crash). Depot REBUILT + CURRENT (musl 15/15 + aarch64 15/15). Cascade sub
 fan-out WIRED (`f6ea497` — Tower Atomic MeshRelay, zero SSH). ironGate registered as
 aarch64-musl sub-builder. G69 Phase 2 lineage tracking LIVE (`previous_blake3` + `generation`).
 Foreman pipeline self-healed (auto-rebuilt songBird from westGate commit). primalSpring deploy
-health Phase 2 scaffolding READY to consume deploy.result gossip. grapheneGate promoted to
-FULL NUCLEUS (biomeOS + cellMembrane cross-compiled aarch64, all 15 primals deployed).
+health Phase 2 WIRED: `query_fleet_health()` queries swarmVine `gossip.query` for `deploy.result`
+events, `FleetDeployHealth` aggregates per-gate health, `nucleus_launcher fleet-health` CLI
+subcommand (human + JSON output). biomeOS Phase 1 confirmed: `emit_deploy_result()` already
+exists in `routing_orchestration.rs`. grapheneGate promoted to 13/15 NUCLEUS (biomeOS +
+cellMembrane cross-compiled aarch64, petalTongue blocked on G65 negotiate UDS upstream).
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`

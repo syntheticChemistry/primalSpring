@@ -126,6 +126,16 @@ enum NucleusCommand {
     /// Probes socket existence, swarmVine gossip registration, and biomeOS
     /// mesh routability to report each primal's lifecycle phase.
     Lifecycle,
+    /// Query fleet deployment health from swarmVine gossip.
+    ///
+    /// Connects to swarmVine and queries `deploy.result` gossip events
+    /// emitted by biomeOS after each `composition.orchestrate` cycle.
+    /// Aggregates per-gate health into a fleet summary.
+    FleetHealth {
+        /// Output as JSON instead of human-readable text.
+        #[arg(long)]
+        json: bool,
+    },
 }
 
 fn resolve_node_id(cli_node_id: Option<String>) -> String {
@@ -353,6 +363,62 @@ fn main() {
                 }
             }
             println!();
+        }
+        Some(NucleusCommand::FleetHealth { json }) => {
+            let fleet = primalspring::composition::deploy_health::query_fleet_health();
+
+            if json {
+                match serde_json::to_string_pretty(&fleet) {
+                    Ok(s) => println!("{s}"),
+                    Err(e) => {
+                        eprintln!("error: {e}");
+                        std::process::exit(1);
+                    }
+                }
+            } else {
+                println!();
+                println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
+                println!("\x1b[36m  Fleet Deployment Health\x1b[0m");
+                println!("\x1b[36m══════════════════════════════════════════════\x1b[0m");
+                println!();
+                if fleet.gates_reporting == 0 {
+                    println!("  No deploy.result gossip events found.");
+                    println!("  biomeOS emits these after composition.orchestrate.");
+                    println!("  Ensure swarmVine is running and biomeOS has deployed.");
+                } else {
+                    let status_icon = if fleet.is_fleet_healthy() {
+                        "\x1b[32m●\x1b[0m"
+                    } else {
+                        "\x1b[31m●\x1b[0m"
+                    };
+                    println!("  {status_icon} Fleet: {}/{} healthy  ({:.0}%)",
+                        fleet.gates_healthy, fleet.gates_reporting,
+                        fleet.health_ratio() * 100.0);
+                    if fleet.gates_failed > 0 {
+                        println!("  \x1b[31m  Failed: {}\x1b[0m", fleet.gates_failed);
+                    }
+                    if fleet.gates_stale > 0 {
+                        println!("  \x1b[33m  Stale:  {}\x1b[0m", fleet.gates_stale);
+                    }
+                    println!();
+                    for (gate, health) in &fleet.gates {
+                        let icon = if health.latest.success {
+                            "\x1b[32m✓\x1b[0m"
+                        } else {
+                            "\x1b[31m✗\x1b[0m"
+                        };
+                        println!("  {icon} {gate:<14} {}/{} primals  {}ms  ({}s ago)",
+                            health.latest.primals_alive,
+                            health.latest.primals_expected,
+                            health.latest.deploy_ms,
+                            health.staleness_secs);
+                        if let Some(ref err) = health.latest.error {
+                            println!("      error: {err}");
+                        }
+                    }
+                }
+                println!();
+            }
         }
         Some(NucleusCommand::Stop) => {
             let primals = orchestrator::ordered_primals(atomic);

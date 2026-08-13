@@ -169,6 +169,89 @@ impl Default for FleetDeployHealth {
     }
 }
 
+/// Query swarmVine for `deploy.result` gossip events and build fleet health.
+///
+/// Connects to swarmVine via standard socket discovery, queries gossip entries
+/// with topic `deploy.result`, deserializes the payloads, and ingests them
+/// into a `FleetDeployHealth` summary.
+pub fn query_fleet_health() -> FleetDeployHealth {
+    let mut fleet = FleetDeployHealth::new();
+
+    let entries = query_deploy_result_entries();
+    for entry in entries {
+        fleet.ingest(entry);
+    }
+
+    fleet.recompute();
+    fleet
+}
+
+/// Query swarmVine `gossip.query` for deploy.result entries.
+///
+/// Returns deserialized `DeployResult` events from the gossip mesh.
+/// Returns an empty vec on connection failure or parse errors (graceful).
+fn query_deploy_result_entries() -> Vec<DeployResult> {
+    use crate::ipc::client::connect_primal;
+
+    let mut client = match connect_primal("swarmvine") {
+        Ok(c) => c,
+        Err(e) => {
+            tracing::debug!("swarmVine not reachable for fleet health query: {e}");
+            return Vec::new();
+        }
+    };
+
+    let params = serde_json::json!({
+        "topic": "deploy.result",
+        "key_prefix": "deploy.result:",
+    });
+
+    let response = match client.call("gossip.query", params) {
+        Ok(r) => r,
+        Err(e) => {
+            tracing::debug!("gossip.query failed: {e}");
+            return Vec::new();
+        }
+    };
+
+    let Some(result) = response.result else {
+        return Vec::new();
+    };
+
+    extract_deploy_results(&result)
+}
+
+/// Extract `DeployResult` payloads from a gossip.query response.
+///
+/// Handles two response shapes:
+/// - `{"entries": [{"value": <DeployResult>}, ...]}`
+/// - `[{"value": <DeployResult>}, ...]`
+fn extract_deploy_results(value: &serde_json::Value) -> Vec<DeployResult> {
+    let entries = value
+        .get("entries")
+        .and_then(|e| e.as_array())
+        .or_else(|| value.as_array());
+
+    let Some(arr) = entries else {
+        if let Ok(single) = serde_json::from_value::<DeployResult>(value.clone()) {
+            return vec![single];
+        }
+        return Vec::new();
+    };
+
+    arr.iter()
+        .filter_map(|entry| {
+            let payload = entry.get("value").unwrap_or(entry);
+            // Try parsing string payloads (gossip may store as JSON string)
+            if let Some(s) = payload.as_str() {
+                serde_json::from_str::<DeployResult>(s).ok()
+            } else {
+                serde_json::from_value::<DeployResult>(payload.clone()).ok()
+            }
+        })
+        .collect()
+}
+
 fn now_unix() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -250,5 +333,44 @@ mod tests {
         assert!(fleet.is_fleet_healthy());
         assert_eq!(fleet.gates_reporting, 4);
         assert_eq!(fleet.gates_healthy, 4);
+    }
+
+    #[test]
+    fn extract_from_entries_array() {
+        let ts = now_unix();
+        let value = serde_json::json!({
+            "entries": [
+                {"value": {"gate":"eastGate","composition":"nucleus","success":true,
+                            "primals_alive":14,"primals_expected":14,"deploy_ms":450,"timestamp":ts}},
+                {"value": {"gate":"ironGate","composition":"tower","success":true,
+                            "primals_alive":4,"primals_expected":4,"deploy_ms":120,"timestamp":ts}},
+            ]
+        });
+        let results = extract_deploy_results(&value);
+        assert_eq!(results.len(), 2);
+        assert_eq!(results[0].gate, "eastGate");
+        assert_eq!(results[1].gate, "ironGate");
+    }
+
+    #[test]
+    fn extract_from_string_payloads() {
+        let ts = now_unix();
+        let inner = serde_json::json!({"gate":"westGate","composition":"nest","success":false,
+                                       "primals_alive":6,"primals_expected":8,"deploy_ms":900,
+                                       "timestamp":ts,"error":"spawn failure"});
+        let value = serde_json::json!({
+            "entries": [{"value": inner.to_string()}]
+        });
+        let results = extract_deploy_results(&value);
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].gate, "westGate");
+        assert!(!results[0].success);
+    }
+
+    #[test]
+    fn extract_empty_on_garbage() {
+        let value = serde_json::json!({"unrelated": "data"});
+        let results = extract_deploy_results(&value);
+        assert!(results.is_empty());
     }
 }
