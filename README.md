@@ -10,12 +10,12 @@
 
 | | |
 |-|-|
-| **Wave** | **157k CASCADE COMPLETE.** ALL 10 active gates responded. ALL code blockers CLOSED. Depot REBUILT + CURRENT (musl 15/15 + aarch64 15/15). Sub-builder fan-out WIRED (Tower Atomic mesh, zero SSH). 19 goals COMPLETE. 7 NUCLEUS gates. **160K+ ecosystem tests.** Gossip **9/16 LIVE**. **7-gate mesh + southGate LAN**. deploy.result Phase 1 NEXT. **0 test failures, 0 clippy errors.** |
+| **Wave** | **157k INTERSTADIAL.** CASCADE COMPLETE. Code stabilizing — teams in debt sweeps. deploy.result gossip Phase 1+2 WIRED (`nucleus_launcher fleet-health`). grapheneGate 13/15 NUCLEUS. Depot CURRENT (musl 15/15 + aarch64 15/15). 7 NUCLEUS gates. **160K+ ecosystem tests.** Infrastructure autonomous. **0 test failures, 0 clippy errors.** |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.50 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
-| **Tests** | 1,239 lib + 16 doc + 19 integration (1,274 workspace total, 0 failures) |
+| **Tests** | 1,256 lib + 16 doc + 19 integration (1,291 workspace total, 0 failures) |
 | **Experiments** | 102 (22 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
 | **Deploy Graphs** | 102 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 492+ registered capability methods; line coverage via llvm-cov |
