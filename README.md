@@ -10,9 +10,9 @@
 
 | | |
 |-|-|
-| **Wave** | **157k** — **7 NUCLEUS gates. 19 goals COMPLETE.** Atomic model corrected: Tower = 4 primals (shared electron cloud). graftGate **FULL NUCLEUS** (21 domains, 1830 caps). iosGate **FIRST DEPLOY** (6th OS). All 4 canary bugs RESOLVED. songBird deep-debt 8,500+ tests. Gossip **9/16 LIVE**. **7-gate mesh + southGate LAN**. Lifecycle executor. Depot STALE — rebuild pending. **0 test failures, 0 clippy errors.** |
+| **Wave** | **157k CASCADE COMPLETE.** ALL 10 active gates responded. ALL code blockers CLOSED. Depot REBUILT + CURRENT (musl 15/15 + aarch64 15/15). Sub-builder fan-out WIRED (Tower Atomic mesh, zero SSH). 19 goals COMPLETE. 7 NUCLEUS gates. **160K+ ecosystem tests.** Gossip **9/16 LIVE**. **7-gate mesh + southGate LAN**. deploy.result Phase 1 NEXT. **0 test failures, 0 clippy errors.** |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
-| **Version** | 0.9.49 |
+| **Version** | 0.9.50 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 1,239 lib + 16 doc + 19 integration (1,274 workspace total, 0 failures) |

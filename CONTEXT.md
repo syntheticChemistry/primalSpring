@@ -120,9 +120,11 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.49 Wave 157k (Aug 12, 2026) — 198 scenarios (15 tracks, 3 tiers),
+v0.9.50 Wave 157k CASCADE COMPLETE (Aug 13, 2026) — 198 scenarios (15 tracks, 3 tiers),
 704+ registered capability methods, 102 experiments (22 tracks), 102 graph TOMLs
 (16 directories). 1,253 workspace tests (lib + 16 doc + 19 integration).
+**CASCADE COMPLETE. ALL 10 active gates responded. ALL code blockers CLOSED.**
+**Depot REBUILT + CURRENT** (musl 15/15 + aarch64 15/15). Sub-builder fan-out WIRED.
 **11 gates ONLINE (biomeGate DOWN). 7 NUCLEUS gates. 19 goals COMPLETE. 0/0/0.**
 **Atomic model CORRECTED**: Tower = bearDog + songBird + skunkBat + swarmVine
 (shared electron cloud). Nest/Node always include Tower via bonding.
@@ -198,6 +200,14 @@ Atomic model corrected: Tower = 4 primals (shared electron cloud), `Primal::Swar
 to enum, all Tower/Node/Nest/NUCLEUS groupings updated. Genetics hierarchy codified:
 mitoBeacon → nuclear → genetic child. Deployment signaling spec filed (Phase 1: biomeOS
 `deploy.result` gossip → Phase 2: primalSpring fleet aggregation).
+**Wave 157k CASCADE COMPLETE**: ALL 10 active gates responded. ALL code blockers CLOSED
+(#6 songBird Windows, #7 swarmVine Windows, #8 D11 swarmVine NUCLEUS graph, #9 toadStool
+wgpu28 crash). Depot REBUILT + CURRENT (musl 15/15 + aarch64 15/15). Cascade sub-builder
+fan-out WIRED (`f6ea497` — Tower Atomic MeshRelay, zero SSH). ironGate registered as
+aarch64-musl sub-builder. G69 Phase 2 lineage tracking LIVE (`previous_blake3` + `generation`).
+Foreman pipeline self-healed (auto-rebuilt songBird from westGate commit). primalSpring deploy
+health Phase 2 scaffolding READY to consume deploy.result gossip. grapheneGate promoted to
+FULL NUCLEUS (biomeOS + cellMembrane cross-compiled aarch64, all 15 primals deployed).
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`

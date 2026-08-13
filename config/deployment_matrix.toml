@@ -94,10 +94,10 @@ gate = "grapheneGate"
 arch = "aarch64-unknown-linux-musl"
 transport = "tcp_only"
 topology = "standalone"
-primals = 13
+primals = 15
 status = "validated"
-wave = 108
-notes = "Pixel 8a (Android). Tower Atomic DEPLOYED+VERIFIED (4/4 alive, corrected model). swarmVine cross-compiled on eastGate. SELinux: --abstract/--no-uds/TCP required. biomeOS+cellMembrane missing (no aarch64 binary). Depot stale (Jun 10)."
+wave = 157
+notes = "Pixel 8a (Android). FULL NUCLEUS — 15/15 primals deployed (biomeOS + cellMembrane cross-compiled on eastGate Aug 13). SELinux: --abstract/--no-uds/TCP required. Tower Atomic 4/4 VERIFIED. Depot CURRENT (aarch64 15/15 rebuilt)."
 
 [[cell]]
 id = "graphenegate-aarch64-fallback-standalone"
