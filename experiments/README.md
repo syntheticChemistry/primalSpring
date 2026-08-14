@@ -1,6 +1,6 @@
 # primalSpring Experiments
 
-**95 experiments across 21 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25+). Zero deprecated `probe_primal` callers remain as of Wave 18.
+**96 experiments across 22 tracks** validating coordination, composition, and emergent behavior in the ecoPrimals ecosystem. All experiments use the modern `CompositionContext` pattern (v0.9.25+). Zero deprecated `probe_primal` callers remain as of Wave 18.
 
 ---
 
@@ -66,6 +66,7 @@ PRIMALSPRING_JSON=1 cargo run --release -p primalspring-exp001
 | 19 | Foundation Validation | exp107 | **Structural + IPC** (8-phase sediment pipeline: structural → discovery → health → provenance → storage → compute → ledger → attribution; validates foundation composition through NUCLEUS primals via Rust IPC) |
 | 20 | Later-Term Evolution | exp108–111 | **IPC** (token federation, composition lifecycle, audit pipeline, gate routing — pressure-tests JH-11, JH-3, JH-5 against upstream primals) |
 | 21 | PostPrimordial + Glacial Shift | exp112–115 | **Live validated** — exp112: full NUCLEUS audit (13/13 primals, 48 sockets, 15 ecoBin, Neural API 300+ methods); exp113: cephalization plan (25 flat sockets → primal-scoped dirs, Phase A: beardog/barracuda/songbird/toadstool); exp114: Tower CNS convergence (19/19 UDS coverage, 3 TCP ports droppable → 2-port Songbird-only target); exp115: Nest ingest pseudoSpore gateway (ownership matrix, liveSpore schema, litho emit contract, NUCLEUS gateway, provenance trio) |
+| 22 | Provenance Trio Experiment Suite | exp124 | **Live validated** — 14-experiment `membrane experiment.*` validation: break/rebraid/falsify/audit/reward/export/translate/compress + dehydrate/spine/encrypt/zfs/compose/inventory. 8-phase validation covering all 5 provenance primals. Cross-industry standard exports (W3C PROV-O, RO-Crate, BagIt, DataCite). |
 
 ## Experiment Status Key
 
@@ -140,6 +141,7 @@ the experiment → scenario module mapping.
 | 59 | Later-Term Evolution | exp108–111 (token federation, composition lifecycle, audit pipeline, gate routing). JH-11 `TokenVerifier` trait + `BearDogVerifier`, `CompositionContext::call_authenticated`, stub primal harness, guidestone Layer 8 lifecycle. |
 | 60 | **Interstadial Rewire** | **All 93 experiments** rewired to modern `CompositionContext` pattern (v0.9.25). Old patterns (`discover_primal`, `PrimalClient`, `AtomicHarness`, `discover_by_capability`) replaced with `CompositionContext::from_live_discovery_with_fallback()` + `ctx.call()`. Pre-rewire sources fossilized in `fossilRecord/experiments_pre_interstadial_may2026/`. Last deprecated `probe_primal` calls removed from exp004/exp107 (Wave 18). Zero clippy warnings, **797** lib tests + **17** doc tests across workspace (as of 2026-05-28 Wave 58b). |
 || 61 | **PostPrimordial Glacial Shift** | exp112: full NUCLEUS audit (**40/40**); exp113: cephalization plan (**26/26**); exp114: Tower CNS convergence (**40/40**). 13/13 primals live from plasmidBin, 19/19 UDS 100% coverage, 25 flat sockets mapped for primal-scoped cephalization (Phase A: beardog/barracuda/songbird/toadstool), 3 TCP ports droppable to 2-port Songbird-only target, Neural API 300+ methods routed. |
+|| 62 | **Provenance Trio Experiment Suite** | exp124: 14-experiment validation suite (`membrane experiment.*`) codified in primalSpring. 8-phase validation: discovery → health → braid → DAG → spine → crypto → storage → nest. Cross-industry standard exports (W3C PROV-O, RO-Crate, BagIt, DataCite). Validates compositional trust as emergent property of 5 primal cooperation via Neural API. |
 
 ## Frozen Results (`results/`)
 

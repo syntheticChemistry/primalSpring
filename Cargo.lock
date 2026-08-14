@@ -296,6 +296,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "exp124_provenance_trio_experiments"
+version = "0.1.0"
+dependencies = [
+ "primalspring",
+ "primalspring-trio-ops",
+ "serde_json",
+]
+
+[[package]]
 name = "fastrand"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

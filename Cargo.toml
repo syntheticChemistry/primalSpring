@@ -111,6 +111,7 @@ members = [
     "experiments/exp121_ribocipher_dispatch_autodetect",
     "experiments/exp122_manifest_composition_lifecycle",
     "experiments/exp123_g72_dep_pandemic_profile",
+    "experiments/exp124_provenance_trio_experiments",
 ]
 
 [workspace.package]

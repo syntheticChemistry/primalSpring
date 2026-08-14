@@ -1,0 +1,12 @@
+[package]
+name = "exp124_provenance_trio_experiments"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+primalspring = { path = "../../ecoPrimal" }
+primalspring-trio-ops = { path = "../trio_ops" }
+serde_json = { workspace = true }
