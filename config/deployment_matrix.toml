@@ -20,10 +20,10 @@ gate = "eastGate"
 arch = "x86_64-unknown-linux-musl"
 transport = "uds_only"
 topology = "mesh_hub"
-primals = 14
+primals = 13
 status = "validated"
-wave = 157
-notes = "Orchestration + sovereignty gate. 14/14 NUCLEUS (incl nestGate). Hub for 6-gate mesh. Hostname FIXED. Inner membrane LIVE. 10 verified, 4 deployed (gossip pending)."
+wave = 107
+notes = "Primary development gate. 13/13 FULL NUCLEUS. Hub for 4-gate mesh."
 
 [[cell]]
 id = "eastgate-x86-tcp-hub"
@@ -94,10 +94,10 @@ gate = "grapheneGate"
 arch = "aarch64-unknown-linux-musl"
 transport = "tcp_only"
 topology = "standalone"
-primals = 15
+primals = 13
 status = "validated"
-wave = 157
-notes = "Pixel 8a (Android). FULL NUCLEUS — 15/15 primals deployed (biomeOS + cellMembrane cross-compiled on eastGate Aug 13). SELinux: --abstract/--no-uds/TCP required. Tower Atomic 4/4 VERIFIED. Depot CURRENT (aarch64 15/15 rebuilt)."
+wave = 108
+notes = "13/13 DEPLOYED AND ALIVE on Pixel 8a (Wave 108). aarch64 depot rebuilt on eastGate. coralReef required local rebuild (build-primal.sh shallow clone missed b1ec1f4). All 13 procs confirmed via pgrep + TCP probe + JSON-RPC health."
 
 [[cell]]
 id = "graphenegate-aarch64-fallback-standalone"
@@ -179,6 +179,6 @@ gate = "graftGate"
 arch = "aarch64-apple-darwin"
 transport = "uds_only"
 topology = "standalone"
-primals = 15
-status = "validated"
-notes = "FULL NUCLEUS: 21 domains, 1830 caps, <60s. First non-Linux NUCLEUS. 15/15 primals (~98.1M Mach-O arm64). Depot PUSHED (104M, BLAKE3). 5th OS family. 10 divergences documented."
+primals = 0
+status = "pending"
+notes = "M4 Mac Mini arrived (Wave 157i). First aarch64-apple-darwin target. iPhone XS tethering. launchd init system. Self-builds Tower Atomic as bootstrap proof."

@@ -10,17 +10,17 @@
 
 | | |
 |-|-|
-| **Wave** | **157k INTERSTADIAL.** CASCADE COMPLETE. Code stabilizing — teams in debt sweeps. deploy.result gossip Phase 1+2 WIRED (`nucleus_launcher fleet-health`). grapheneGate 13/15 NUCLEUS. Depot CURRENT (musl 15/15 + aarch64 15/15). 7 NUCLEUS gates. **160K+ ecosystem tests.** Infrastructure autonomous. **0 test failures, 0 clippy errors.** |
+| **Wave** | **157k ENMESHMENT.** CASCADE COMPLETE. 12 gates ONLINE. deploy.result gossip Phase 1+2 WIRED (`nucleus_launcher fleet-health`). grapheneGate 13/15 NUCLEUS. Depot CURRENT (musl 15/15 + aarch64 15/15 + darwin 16/16). 7 NUCLEUS gates. **160K+ ecosystem tests.** rootPulse step handlers: rhizoCrypt + sweetGrass DONE (2/5). swarmVine topic CLOSED. Pipeline + provenance CONVERGED. DF64 sovereign shaders LANDED. Infrastructure autonomous. **0 test failures, 0 clippy errors.** |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.50 |
 | **Edition** | Rust 2024 (1.87+) |
 | **License** | AGPL-3.0-or-later |
 | **Tests** | 1,256 lib + 16 doc + 19 integration (1,291 workspace total, 0 failures) |
-| **Experiments** | 102 (22 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
+| **Experiments** | 104 (22 tracks) — 198 validation scenarios (15 tracks, 3 tiers) |
 | **Deploy Graphs** | 102 graph TOMLs (16 directories) — fragment-first with `resolve = true` |
 | **Coverage** | Method coverage against 492+ registered capability methods; line coverage via llvm-cov |
 | **Compositions** | Tower + Nest + Node + NUCLEUS + Graph Overlays + Squirrel Discovery + Graph Execution + Provenance Trio + Multi-Node Bonding + biomeOS Substrate + Cross-Gate + Deployment Matrix + Substrate Stress + Pure Composition (ludoSpring + esotericWebb as graph-defined products) + **7 Decomposed Subsystems (C1-C7)** + **Mixed Atomics (L2) + Bonding Patterns (L3)** (87/87 gates). **exp091 12/12 routing, exp094 19/19 parity, exp096 14/15 cross-arch** (HSM cfg-gated) |
-| **Mesh** | 9-node sovereign relay (golgi ↔ sporeGate ↔ eastGate ↔ flockGate ↔ ironGate ↔ northGate ↔ southGate ↔ graftGate[10.13.37.13]). WG overlay 10.13.37.0/24. TOML-driven topology (`config/mesh_topology.toml`). K-Derm cytoplasm zones: backbone/house2/garage/wan. Three-hub triangle topology. Live overlay validation (s_mesh_overlay). `gate.enroll` automated enrollment pipeline. Sovereignty roadmap validation (Tower Atomic → WG replacement). |
+| **Mesh** | 8-node sovereign relay (golgi ↔ sporeGate ↔ eastGate ↔ flockGate ↔ ironGate ↔ northGate ↔ southGate + graftGate). WG overlay 10.13.37.0/24. TOML-driven topology (`config/mesh_topology.toml`). K-Derm cytoplasm zones: backbone/house2/garage/wan. Three-hub triangle topology. Live overlay validation (s_mesh_overlay). `gate.enroll` automated enrollment pipeline. Sovereignty roadmap validation (Tower Atomic → WG replacement). |
 | **Subsystems** | C1: Render (petalTongue) + C2: Narration (Squirrel) + C3: Session (esotericWebb) + C4: Game Science (ludoSpring) + C5: Persistence (NestGate) + C6: Proprioception (petalTongue) + C7: Full Interactive |
 | **Provenance** | All 96 experiments carry structured `with_provenance()` metadata |
 | **Clippy** | 0 warnings — pedantic + nursery clean (`cargo clippy --all-targets`). `#![warn(missing_docs)]` enforced. |
@@ -84,7 +84,7 @@ primalSpring/
 │       ├── server_ecosystem_genetics.rs  # Three-tier genetics (#[ignore])
 │       ├── server_ecosystem_compose.rs   # Nest/Node composition (#[ignore])
 │       └── server_ecosystem_overlay.rs   # Graph-driven overlays (#[ignore])
-├── experiments/                   # 100 validation experiments (22 tracks)
+├── experiments/                   # 104 validation experiments (22 tracks)
 ├── config/                        # Launch profiles, capability registry, composition tools
 ├── graphs/                        # 82 deploy graph TOMLs + 32 atomic composition graphs
 │   ├── compositions/             # 32 atomic composition graphs (tower/node/nest/meta/rootpulse/ecosystem/impulse/sync)
@@ -446,7 +446,7 @@ See `specs/CROSS_SPRING_EVOLUTION.md` for full evolution path.
 
 ## Mixed Composition + Live Validation Matrix (April 7, 2026)
 
-- **Particle model adopted (corrected Wave 157k)**: Tower = shared electron cloud (bearDog + songBird + skunkBat + swarmVine — crypto + mesh + defense + gossip, present in ALL compositions), Node = proton (Tower + compute trio), Nest = neutron (Tower + storage + provenance trio), NUCLEUS = Tower + Node + Nest + biomeOS + petalTongue + squirrel + cellMembrane. Genetics: mitoBeacon → nuclear → genetic child. Bonding: weak → ionic → metallic → covalent. See `specs/MIXED_COMPOSITION_PATTERNS.md`.
+- **Particle model adopted**: Tower = electron (trust boundary, mediates bonds), Node = proton (compute, fungible), Nest = neutron (data at rest, non-fungible), NUCLEUS = atom. Grounded in Paper 23 (Mass-Energy-Information Equivalence). See `specs/MIXED_COMPOSITION_PATTERNS.md`.
 - **Layered validation framework**: L0 (biomeOS + any primal), L1 (each atomic), L2 (mixed atomics), L3 (bonding patterns on top of atomics). Full NUCLEUS Validation Matrix at `specs/NUCLEUS_VALIDATION_MATRIX.md`.
 - **12 sketch graphs** (archived to `fossilRecord/stale_graphs_apr12_2026/sketches/`): L0 primal routing matrix, L2 dual-tower ionic / dedicated tower / nest enclave, L3 covalent mesh backup / ionic lease / organo-metal-salt.
 - **3 new experiments** (exp091–093): L0 primal routing matrix, L2 dual-tower ionic structural, L3 covalent mesh backup structural.

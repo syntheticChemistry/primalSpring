@@ -1,11 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Mesh Topology — WireGuard overlay address assignments + gate roster
 #
-# DEPRECATED (Wave 157h): This file duplicates topology data from
-# infra/wateringHole/ecosystem_manifest.toml. Migrate primalSpring scenarios
-# to read from the canonical manifest instead. Retained as a test fixture
-# until all ~30 scenarios are updated.
-#
 # Single source of truth for the 10.13.37.0/24 sovereign mesh.
 # Adding a gate means adding one [[gate]] entry here.
 # Gates without an `address` field have not yet been peered.
@@ -44,7 +39,6 @@ address = "10.13.37.5"
 lan_addr = "192.168.4.244"
 role = "meta"
 zone = "Backbone"
-notes = "Orchestration + sovereignty. biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch. Hostname FIXED (eastgate). Inner membrane LIVE."
 
 [[gate]]
 name = "flockGate"
@@ -107,21 +101,11 @@ name = "grapheneGate"
 role = "mobile"
 zone = "Wan"
 transport = "adb"
-managed_by = "eastGate"
-services = ["nucleus_full"]
-notes = "Pixel 8a (Android). FULL NUCLEUS — 15/15 primals deployed via ADB from eastGate. SELinux: --abstract/--no-uds/TCP. biomeOS + cellMembrane cross-compiled aarch64 on eastGate. No WG address — reachable only through eastGate USB/ADB bridge."
+services = ["nucleus_tower", "beardog", "songbird", "skunkbat"]
 
 [[gate]]
 name = "graftGate"
-address = "10.13.37.13"
 role = "build"
 zone = "House2"
 transport = "lan"
-notes = "M4 Mac Mini (Apple Silicon). FULL NUCLEUS: 21 domains, 1830 caps, <60s. First non-Linux NUCLEUS. 15/15 primals. WG LIVE, 6 mesh peers, 38ms RTT. launchd init."
-
-[[gate]]
-name = "iosGate"
-role = "edge"
-zone = "House2"
-transport = "lan"
-notes = "iPhone XS. 6th OS family. FIRST DEPLOY: BearDogApp + 4 iOS Rust binaries. WiFi LAN peer discovery."
+notes = "M4 Mac Mini (Apple Silicon). First aarch64-apple-darwin target. launchd init. iPhone XS tethering for bootstrap."

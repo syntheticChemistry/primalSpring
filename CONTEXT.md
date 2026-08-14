@@ -74,7 +74,7 @@ to primalSpring as experiment targets.
 - **ecoPrimal/** — library crate (`primalspring`) + 2 binaries:
   `primalspring` (eukaryotic UniBin: certify + validate + status + checksums + registry + version),
   `nucleus_launcher` (Rust NUCLEUS lifecycle: start/stop/status/reconcile with PID tracking + federation + biome.yaml manifest)
-- **experiments/** — 102 validation binaries covering 22 tracks
+- **experiments/** — 104 validation binaries covering 22 tracks
 - **graphs/** — ~102 deploy graph TOMLs + 33 atomic composition graphs using fragment-first
   composition (14 root + 9 profiles + 6 fragments + 9 spring validation + 5 multi-node +
   5 bonding + 4 patterns + 4 desktop + 3 downstream + 2 spring deploy + 2 chaos +
@@ -120,36 +120,18 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.50 Wave 157k CASCADE COMPLETE (Aug 13, 2026) — 198 scenarios (15 tracks, 3 tiers),
-704+ registered capability methods, 102 experiments (22 tracks), 102 graph TOMLs
-(16 directories). 1,253 workspace tests (lib + 16 doc + 19 integration).
-**CASCADE COMPLETE. ALL 10 active gates responded. ALL code blockers CLOSED.**
-**Depot REBUILT + CURRENT** (musl 15/15 + aarch64 15/15). Sub-builder fan-out WIRED.
-**11 gates ONLINE (biomeGate DOWN). 7 NUCLEUS gates. 19 goals COMPLETE. 0/0/0.**
+v0.9.50 Wave 157k ENMESHMENT (Aug 14, 2026) — 198 scenarios (15 tracks, 3 tiers),
+704+ registered capability methods, 104 experiments (22 tracks), 102 graph TOMLs
+(16 directories). 1,291 workspace tests (1,256 lib + 16 doc + 19 integration).
+**12 gates ONLINE. 7 NUCLEUS gates. 0/0/0.**
+**Pipeline + provenance CONVERGED.** rootPulse step handlers: rhizoCrypt DONE +
+sweetGrass DONE (2/5). swarmVine topic fix CLOSED. deploy.result gossip Phase 1+2
+WIRED (`nucleus_launcher fleet-health`). DF64 sovereign shaders LANDED.
+Depot CURRENT (musl 15/15 + aarch64 15/15 + darwin 16/16).
 **Atomic model CORRECTED**: Tower = bearDog + songBird + skunkBat + swarmVine
 (shared electron cloud). Nest/Node always include Tower via bonding.
 **Gate×team ownership RATIONALIZED** — eastGate owns orchestration + sovereignty.
 **0 test failures, 0 clippy errors, 0 warnings.**
-G64+G65+G66 COMPLETE (cephalization trilogy — 15/15 primals).
-G67 ACTIVE (Neural API Stage 2 — N1 DONE, N2-N5 verified via dispatch reorder).
-**G72 Tier 1 COMPLETE: 11/11 teams, ~155+ crates shed fleet-wide.**
-**G72 Tier 2 partial**: axum 0.7→0.8 (petalTongue), wgpu 22→28 (toadStool), all 4 darwin fixes merged.
-**Gossip: 9/16 primals LIVE** (barraCuda 22/22 full spec, hotSpring 10/10, wetSpring 4/4, nestGate 6 types).
-**5-gate mesh ACTIVE + southGate LAN VALIDATED** (4 gossip peers, 39 entries on 192.168.4.x).
-**graftGate FULL NUCLEUS** (21 domains, 1830 caps, <60s) — first non-Linux NUCLEUS.
-**iosGate FIRST DEPLOY** (6th OS family, 4 iOS Rust binaries).
-**songBird MeshRelay SHIPPED** (relay/inject/spread/subscribe) — blueGate + southGate UNBLOCKED.
-150K+ ecosystem tests across 16 primals. Neural API live on eastGate:
-riboCipher dual-lane protocol (0xEC + tier + NDJSON), 34 capabilities and
-58 methods registered via primal.announce, 919 exec/s graph throughput,
-dispatch reorder confirmed (mean 1.3ms, was 15s). 9/11 primals forward via
-capability.call. **riboCipher auto-detect FIXED** (`d1f555e7`).
-Post-primordial reshape complete: capability-first discovery
-(NeuralBridge → CompositionContext), session-scoped provenance model,
-primordial debt feature-gated behind `primordial-compat`, TOML-driven
-routing throughout. **Owns eastGate temporal cascade** (scripts/temporal_cascade.sh).
-**Depot v4.57.0 deployed on eastGate**: 14/14 primals active (including nestGate).
-Dispatch 1.0ms mean. riboCipher Tier 2 (`0xED`) confirmed on songBird.
 All 7 capability domains route at 1ms.
 **Vine-bat loop OPERATIONAL** (Aug 9): swarmVine `df97b25` calls skunkBat
 `metadata.analyze` 8-check pre-accept on gossip.spread.
@@ -161,6 +143,17 @@ correct wave-parallel startup order. `nucleus_launcher --biome` reconciles manif
 against live NUCLEUS state. exp122 validates 37/37 (structural + live). `spine.list`
 routing gap CLOSED (routes through Neural API to loamSpine). `nucleus_launcher reconcile`
 subcommand reports composition readiness.
+**Wave 157k Enmeshment**: deploy.result gossip Phase 1 (biomeOS `emit_deploy_result()`)
++ Phase 2 (primalSpring `query_fleet_health()` → `FleetDeployHealth` aggregation via
+swarmVine `gossip.query`). `nucleus_launcher fleet-health` CLI subcommand (human + JSON).
+exp124 provenance trio experiment suite (8-phase validation from westGate). Pipeline +
+provenance convergence: two-pass TOML parse bypasses serde(flatten) collision, target-aware
+drift detection, rootPulse trio wiring. grapheneGate 13/15 NUCLEUS deployed (petalTongue
+UDS upstream blocker, biomeOS BTSP bootstrap needed). D12/D13 merged in biomeOS
+(`31da2861`). content.put translation entry CLOSED. 12 gates ONLINE (biomeGate restored).
+Foreman pipeline self-healed. Depot CURRENT on 3 targets (musl 13/13, aarch64 15/15,
+darwin 16/16). swarmVine topic fix CLOSED (`31e3e0a`). DF64 sovereign shader compilation
+LANDED (barraCuda + coralReef).
 **Multi-composition orchestration**: workflow engine in `composition/workflow.rs` —
 DAG-based step resolution, wave-parallel execution, standard startup/shutdown/health
 workflows. exp123 G72 dependency pandemic profile: primalSpring G72 CLEAN, 8 primals
@@ -169,48 +162,12 @@ with Tier 1 violations identified for upstream coordination.
 `workflow.rs` (201L), `reconcile.rs` (124L), `manifest_tests.rs` (242L). 6 crypto
 deps promoted to workspace-level. 4 clippy deny-level errors fixed. All experiments
 modernized to idiomatic patterns (is_some_and, if-let, format simplification).
-**Wave 157i/j graftGate bootstrap + LAN gossip**: `Aarch64Darwin` target variant added to
+**Wave 157i graftGate bootstrap**: `Aarch64Darwin` target variant added to
 `evolution/target.rs` — full NUCLEUS composition tier, permissive deployment,
-UDS + filesystem support, launchd init system. graftGate (M4 Mac Mini) fully enmeshed:
-`mesh_topology.toml` (WG LIVE 10.13.37.13, 6 peers, 38ms RTT), `deployment_matrix.toml`
-(15/15 compiled, depot PUSHED 104M BLAKE3, 5th OS family, iOS cross-compile live).
-G72 Tier 1: 11/11 teams COMPLETE, ~155+ crates shed fleet-wide. G72 Tier 2 partial:
-axum 0.8 + wgpu 28 + all 4 darwin fixes merged. Gossip 9/16 LIVE (barraCuda 22/22,
-hotSpring 10/10, wetSpring 4/4, nestGate 6 types). 5-gate mesh + southGate LAN VALIDATED
-(4 gossip peers, 39 entries on 192.168.4.x — previous "topology blocked" was stale WG-era
-peer addresses). songBird MeshRelay SHIPPED (relay/inject/spread/subscribe) — blueGate +
-southGate UNBLOCKED. sporeGate Phase 1 COMPLETE: depot rebuilt (37 binaries, 4 archs).
-nestGate S149 FIXED (content.exists dispatch error). bearDog -25% binary (bloat fixed).
-G12 COMPLETE.
-**Wave 157k ownership rationalization + inner membrane**: Gate×team ownership RATIONALIZED
-and codified. eastGate: biomeOS, squirrel, projectNUCLEUS, primalSpring, blueFish + overwatch
-infra (orchestration + sovereignty). Inner membrane LIVE, 11 gates ONLINE (biomeGate DOWN).
-Lifecycle executor validates deploy→gossip→verify pipeline. Post-restart: 10 verified,
-4 deployed (gossip pending), 0 missing. eastGate hostname FIXED: `pop-os` → `eastgate` via
-`hostnamectl` + graceful NUCLEUS restart (no reboot). songBird socket restored after restart
-(was stale, not an ironGate bug). NOPASSWD sudoers entry added for agent autonomy.
-4 remaining operational blockers: blueGate depot pull, songBird node-id, southGate LAN IP,
-biomeGate SSH recovery.
-**Wave 157k ortho sweep**: graftGate FULL NUCLEUS (21 domains, 1830 caps, <60s) — first
-non-Linux NUCLEUS, 10 divergences documented. iosGate FIRST DEPLOY (6th OS family, 4 iOS
-Rust binaries, WiFi LAN peer discovery). All 4 canary bugs RESOLVED in source (songBird
-deep-debt 8,500+ tests, swarmVine 186 tests/90.8% coverage, toadStool wgpu28, biomeOS spawn
-leak). Depot STALE (Aug 1-3) — sporeGate rebuild needed. G11+G12 graduated (19 goals COMPLETE).
-Atomic model corrected: Tower = 4 primals (shared electron cloud), `Primal::SwarmVine` added
-to enum, all Tower/Node/Nest/NUCLEUS groupings updated. Genetics hierarchy codified:
-mitoBeacon → nuclear → genetic child. Deployment signaling spec filed (Phase 1: biomeOS
-`deploy.result` gossip → Phase 2: primalSpring fleet aggregation).
-**Wave 157k CASCADE COMPLETE**: ALL 10 active gates responded. ALL code blockers CLOSED
-(#6 songBird Windows, #7 swarmVine Windows, #8 D11 swarmVine NUCLEUS graph, #9 toadStool
-wgpu28 crash). Depot REBUILT + CURRENT (musl 15/15 + aarch64 15/15). Cascade sub-builder
-fan-out WIRED (`f6ea497` — Tower Atomic MeshRelay, zero SSH). ironGate registered as
-aarch64-musl sub-builder. G69 Phase 2 lineage tracking LIVE (`previous_blake3` + `generation`).
-Foreman pipeline self-healed (auto-rebuilt songBird from westGate commit). primalSpring deploy
-health Phase 2 WIRED: `query_fleet_health()` queries swarmVine `gossip.query` for `deploy.result`
-events, `FleetDeployHealth` aggregates per-gate health, `nucleus_launcher fleet-health` CLI
-subcommand (human + JSON output). biomeOS Phase 1 confirmed: `emit_deploy_result()` already
-exists in `routing_orchestration.rs`. grapheneGate promoted to 13/15 NUCLEUS (biomeOS +
-cellMembrane cross-compiled aarch64, petalTongue blocked on G65 negotiate UDS upstream).
+UDS + filesystem support, launchd init system. graftGate (M4 Mac Mini) added to
+`mesh_topology.toml`, `deployment_matrix.toml` (pending cell), `biome-eastgate.yaml`
+(federation peer). exp123 G72 thresholds tightened for post-pandemic baselines
+(Tier 1: 9/9 teams COMPLETE, ~114 crates shed fleet-wide).
 **Wave 157g debt sprint**: `freshness.toml` updated with 22 real git HEADs (was
 stale version strings). Dead code removed (`from_owner_tier`, `aarch64_depot_path`,
 `chrono_lite_cutoff`). `SignalTier` deprecated module suppressed (`#[allow(deprecated)]`
@@ -376,14 +333,11 @@ record for pattern reference only.
 
 | Field | Value |
 |-------|-------|
-| **Gate** | eastGate — orchestration + sovereignty |
-| **Code teams** | biomeOS, squirrel, projectNUCLEUS, primalSpring + overwatch infra |
-| **Composition** | Full NUCLEUS (14/14 primals incl nestGate) |
-| **NUCLEUS status** | operational — hostname FIXED (`eastgate`), 14/14 restarted |
-| **Songbird federation** | port 7700 (socket restored after NUCLEUS restart) |
-| **Gossip mesh** | 7-gate mesh + southGate LAN. 9/16 primals gossiping. |
-| **Inner membrane** | LIVE |
-| **Managed gates** | grapheneGate (Pixel 8a, Android beacon) via ADB |
+| **Gate** | eastGate (primary) — experimentation |
+| **Composition** | Full NUCLEUS (13/13 primals) |
+| **NUCLEUS status** | operational — VALIDATED |
+| **Songbird federation** | port 7700 |
+| **LAN mesh** | ready — covalent linking via Songbird TCP |
 
 primalSpring lives on eastGate. VPS deployment, binary refresh, and
 membrane ops are owned by cellMembrane. See
@@ -404,7 +358,7 @@ ludoSpring (interaction fidelity), hotSpring (async compute/DAG
 memoization), wetSpring (data fetch + visualization), neuralSpring
 (agentic composition), tideGlass (gen5 drug repurposing via NUCLEUS).
 
-## Glacial Checkpoint — Current and Remaining (Aug 12, 2026 — Wave 157k)
+## Glacial Checkpoint — Current and Remaining (Aug 10, 2026 — Wave 157g)
 
 ### Cephalization Trilogy COMPLETE (G64+G65+G66)
 - **G64 Cephalization** — tarpc convergent evolution **15/15** primals
@@ -441,7 +395,7 @@ wateringHole fossilization (numeric drift fixed, 18 gen4 docs organized),
 and Wave 22 upstream primal evolution (13/13 stadial-gate absorbed, 4 new
 methods registered) — all detail fossilized to `fossilRecord/`.
 
-### Remaining (updated Aug 11, 2026)
+### Remaining (updated Aug 10, 2026)
 
 **Resolved since last review:**
 - ~~**Thread 4**~~ now active (expression + data sources in projectFOUNDATION)
