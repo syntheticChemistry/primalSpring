@@ -120,14 +120,14 @@ Capability-based discovery via Neural API or 6-tier filesystem probing.
 
 ## Status
 
-v0.9.50 Wave 157k ENMESHMENT (Aug 14, 2026) — 198 scenarios (15 tracks, 3 tiers),
+v0.9.50 Wave 157k ENMESHMENT + INGESTION (Aug 16, 2026) — 198 scenarios (15 tracks, 3 tiers),
 704+ registered capability methods, 104 experiments (22 tracks), 102 graph TOMLs
 (16 directories). 1,291 workspace tests (1,256 lib + 16 doc + 19 integration).
 **12 gates ONLINE. 7 NUCLEUS gates. 0/0/0.**
-**Pipeline + provenance CONVERGED.** rootPulse step handlers: rhizoCrypt DONE +
-sweetGrass DONE (2/5). swarmVine topic fix CLOSED. deploy.result gossip Phase 1+2
-WIRED (`nucleus_launcher fleet-health`). DF64 sovereign shaders LANDED.
-Depot CURRENT (musl 15/15 + aarch64 15/15 + darwin 16/16).
+**bonsai-bt FORKED** + exp125 first contact (23/24 PASS). DECIDE layer ingesting.
+**Pipeline + provenance CONVERGED.** rootPulse 6/6 graphs registered in biomeOS.
+swarmVine topic fix CLOSED. deploy.result gossip Phase 1+2 WIRED.
+DF64 sovereign shaders LANDED. Depot CURRENT (musl 13/13 + aarch64 15/15 + darwin 16/16).
 **Atomic model CORRECTED**: Tower = bearDog + songBird + skunkBat + swarmVine
 (shared electron cloud). Nest/Node always include Tower via bonding.
 **Gate×team ownership RATIONALIZED** — eastGate owns orchestration + sovereignty.

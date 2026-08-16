@@ -10,7 +10,7 @@
 
 | | |
 |-|-|
-| **Wave** | **157k ENMESHMENT.** CASCADE COMPLETE. 12 gates ONLINE. deploy.result gossip Phase 1+2 WIRED (`nucleus_launcher fleet-health`). grapheneGate 13/15 NUCLEUS. Depot CURRENT (musl 15/15 + aarch64 15/15 + darwin 16/16). 7 NUCLEUS gates. **160K+ ecosystem tests.** rootPulse step handlers: rhizoCrypt + sweetGrass DONE (2/5). swarmVine topic CLOSED. Pipeline + provenance CONVERGED. DF64 sovereign shaders LANDED. Infrastructure autonomous. **0 test failures, 0 clippy errors.** |
+| **Wave** | **157k ENMESHMENT + INGESTION.** CASCADE COMPLETE. 12 gates ONLINE. bonsai-bt FORKED + exp125 first contact (23/24 PASS, 5 behavior trees against NUCLEUS). deploy.result gossip Phase 1+2 WIRED. rootPulse 6/6 graphs REGISTERED in biomeOS. Depot CURRENT (musl 13/13 + aarch64 15/15 + darwin 16/16). 7 NUCLEUS gates. **160K+ ecosystem tests.** DF64 sovereign shaders LANDED. Infrastructure autonomous. **0 test failures, 0 clippy errors.** |
 | **Domain** | Primal experimentation — atomic composition, graph execution, emergent systems, bonding models, mesh behavior |
 | **Version** | 0.9.50 |
 | **Edition** | Rust 2024 (1.87+) |
