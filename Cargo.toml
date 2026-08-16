@@ -112,6 +112,7 @@ members = [
     "experiments/exp122_manifest_composition_lifecycle",
     "experiments/exp123_g72_dep_pandemic_profile",
     "experiments/exp124_provenance_trio_experiments",
+    "experiments/exp125_behavior_tree_bonsai",
 ]
 
 [workspace.package]

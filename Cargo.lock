@@ -96,6 +96,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bonsai-bt"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "92db4e790e349976c91f224c7e7c946799a8fee8e864399454cac840c2144f2c"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "cc"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -301,6 +310,17 @@ version = "0.1.0"
 dependencies = [
  "primalspring",
  "primalspring-trio-ops",
+ "serde_json",
+]
+
+[[package]]
+name = "exp125_behavior_tree_bonsai"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "bonsai-bt",
+ "primalspring",
+ "serde",
  "serde_json",
 ]
 
